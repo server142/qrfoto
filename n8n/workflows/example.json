@@ -1,0 +1,57 @@
+{
+  "name": "Event Reminders Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "f516629d-4cca-4330-bbdd-5db0d62da3c8",
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=http://veltrix_backend:3000/api/cron/events/reminders",
+        "method": "POST"
+      },
+      "id": "e21c3b6f-7848-4cd7-9f4a-7ed4a7f0581f",
+      "name": "Trigger Reminders on Backend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "Trigger Reminders on Backend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f0ad254e-670d-4034-8b6b-c3f2b4c8d451"
+}
