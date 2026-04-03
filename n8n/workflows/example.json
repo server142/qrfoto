@@ -23,7 +23,7 @@
     },
     {
       "parameters": {
-        "url": "=http://veltrix_backend:3000/api/cron/events/reminders",
+        "url": "=http://qrfoto_backend:3000/api/cron/events/reminders",
         "method": "POST"
       },
       "id": "e21c3b6f-7848-4cd7-9f4a-7ed4a7f0581f",

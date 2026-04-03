@@ -62,7 +62,7 @@ export default function RegisterPage() {
             <div className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center mb-6 border border-white/10">
                 <UserPlus className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">Únete a Veltrix</h1>
+            <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">Únete a QRFoto</h1>
             <p className="text-white/40 mt-2">Crea tu cuenta SaaS y empieza a innovar.</p>
         </div>
 

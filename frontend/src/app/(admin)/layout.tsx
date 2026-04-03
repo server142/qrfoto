@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 import Link from "next/link";
-import { Home, Users, CreditCard, Settings, Calendar, LogOut, BarChart3 } from "lucide-react";
+import { Home, Users, CreditCard, Settings, Calendar, LogOut, BarChart3, Star } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "@/lib/LanguageContext";
 
@@ -14,7 +14,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <aside className="w-64 border-r border-white/10 bg-zinc-950 p-6 md:flex flex-col hidden">
         <div className="mb-10">
           <h2 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 uppercase italic tracking-tighter">
-            Veltrix Pro
+            QRFoto Pro
           </h2>
           <p className="text-[10px] text-white/40 uppercase tracking-[0.3em] font-black mt-1">Super Admin</p>
         </div>
@@ -28,6 +28,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </Link>
           <Link href="/admin/users" className="flex items-center gap-3 px-4 py-3 text-white/50 hover:bg-white/5 hover:text-white rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest">
             <Users className="w-4 h-4" /> {t.admin.users}
+          </Link>
+          <Link href="/admin/reviews" className="flex items-center gap-3 px-4 py-3 text-white/50 hover:bg-white/5 hover:text-white rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest">
+            <Star className="w-4 h-4" /> {t.admin.reviews_title || "Reviews"}
           </Link>
           <Link href="#" className="flex items-center gap-3 px-4 py-3 text-white/20 cursor-not-allowed rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest">
             <BarChart3 className="w-4 h-4" /> Analytics
@@ -50,7 +53,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             {t.language === 'es' ? 'Panel de Administración Central' : 'Central Administration Panel'}
           </h1>
           <div className="flex items-center gap-4">
-             <LanguageSwitcher />
+            <LanguageSwitcher />
           </div>
         </header>
         <div className="p-8">

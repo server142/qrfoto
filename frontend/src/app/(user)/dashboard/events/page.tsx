@@ -14,7 +14,7 @@ import {
   DialogDescription
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
-import { Plus, Calendar, QrCode, ExternalLink, Trash2, Settings, Image as ImageIcon, Loader2, Printer, Download, Power, CheckCircle } from "lucide-react";
+import { Plus, Calendar, QrCode, ExternalLink, Trash2, Settings, Image as ImageIcon, Loader2, Printer, Download, Power, CheckCircle, Star } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
@@ -31,6 +31,14 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [localConfig, setLocalConfig] = useState<any>(null);
+
+  // Modal Finish State
+  const [finishingEvent, setFinishingEvent] = useState<any>(null);
+  const [password, setPassword] = useState("");
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [isFinishing, setIsFinishing] = useState(false);
+  const [finishError, setFinishError] = useState("");
 
   // Helper to get token from cookies
   const getToken = () => {
@@ -112,6 +120,43 @@ export default function EventsPage() {
       }
     } catch (error) {
       console.error("Error deleting event:", error);
+    }
+  };
+
+  const submitFinish = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!finishingEvent) return;
+    setIsFinishing(true);
+    setFinishError("");
+
+    try {
+      const res = await fetch(`${getApiUrl()}/events/${finishingEvent.id}/status`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          password,
+          rating: rating > 0 ? rating : undefined,
+          comment: comment.trim() !== '' ? comment : undefined
+        })
+      });
+
+      if (res.ok) {
+        setFinishingEvent(null);
+        setPassword("");
+        setRating(0);
+        setComment("");
+        await fetchEvents();
+      } else {
+        const d = await res.json();
+        setFinishError(d.message || t.user_dashboard.finish_modal.wrong_password);
+      }
+    } catch (err) {
+      setFinishError(t.user_dashboard.finish_modal.wrong_password);
+    } finally {
+      setIsFinishing(false);
     }
   };
 
@@ -215,7 +260,7 @@ export default function EventsPage() {
                         includeMargin={false}
                       />
                       <p className="text-[9px] text-black/20 mt-4 font-mono font-bold tracking-tighter truncate w-full text-center">
-                        VELTRIX-EID-{event.slug.toUpperCase()}
+                        QRFOTO-EID-{event.slug.toUpperCase()}
                       </p>
                     </div>
                   </div>
@@ -244,16 +289,7 @@ export default function EventsPage() {
                     </Button>
 
                     <Button
-                      onClick={async () => {
-                        if (event.status === 'Active' && !confirm(t.events.finish_confirm)) return;
-                        try {
-                          const res = await fetch(`${getApiUrl()}/events/${event.id}/status`, {
-                            method: "POST",
-                            headers: { "Authorization": `Bearer ${getToken()}` }
-                          });
-                          if (res.ok) await fetchEvents();
-                        } catch (err) { console.error(err); }
-                      }}
+                      onClick={() => setFinishingEvent({ ...event, isReactivating: event.status !== 'Active' })}
                       className={`flex-1 rounded-2xl text-[10px] h-12 font-bold uppercase border ${event.status === 'Active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/10 hover:bg-orange-500/20' : 'bg-green-500/10 text-green-400 border-green-500/10 hover:bg-green-500/20'}`}
                     >
                       {event.status === 'Active' ? <Power className="w-3.5 h-3.5 mr-1" /> : <CheckCircle className="w-3.5 h-3.5 mr-1" />}
@@ -278,6 +314,68 @@ export default function EventsPage() {
           )}
         </div>
       )}
+
+      <Dialog open={!!finishingEvent} onOpenChange={(val) => { if (!val) setFinishingEvent(null); }}>
+        <DialogContent className="bg-zinc-950 border-white/10 text-white rounded-[2rem] p-10 max-w-sm shadow-2xl shadow-purple-600/5">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-center text-purple-500">
+              {finishingEvent?.isReactivating ? t.events.activate_btn : t.user_dashboard.finish_modal.title}
+            </DialogTitle>
+            <DialogDescription className="text-white/40 text-sm text-center">
+              {t.user_dashboard.finish_modal.subtitle}
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={submitFinish} className="space-y-6 pt-6">
+            <div className="space-y-2">
+              <Label className="text-white/60 text-[10px] uppercase tracking-widest font-black">{t.user_dashboard.finish_modal.password}</Label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-black/40 border-white/5 text-white h-12 rounded-xl focus:border-purple-500/50"
+                required
+              />
+              {finishError && <p className="text-red-500 text-xs mt-1">{finishError}</p>}
+            </div>
+
+            {!finishingEvent?.isReactivating && (
+              <div className="pt-4 border-t border-white/5 space-y-4">
+                <div className="text-center space-y-2">
+                  <Label className="text-white/90 text-sm font-black">{t.user_dashboard.finish_modal.rating_title}</Label>
+                  <p className="text-[10px] text-white/40 uppercase tracking-widest">{t.user_dashboard.finish_modal.rating_desc}</p>
+                </div>
+                <div className="flex justify-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="focus:outline-none transition-transform hover:scale-110"
+                    >
+                      <Star className={`w-8 h-8 ${rating >= star ? 'fill-yellow-500 text-yellow-500' : 'text-white/20'}`} />
+                    </button>
+                  ))}
+                </div>
+
+                <div className="space-y-2 mt-4">
+                  <Input
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder={t.user_dashboard.finish_modal.comment_placeholder}
+                    className="bg-black/40 border-white/5 text-white h-12 rounded-xl focus:border-purple-500/50"
+                  />
+                </div>
+              </div>
+            )}
+
+            <Button disabled={isFinishing} type="submit" className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-purple-600/10 transition-all mt-4">
+              {isFinishing ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t.user_dashboard.finish_modal.submit}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

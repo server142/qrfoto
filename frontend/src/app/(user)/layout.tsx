@@ -25,7 +25,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
       <aside className="w-64 border-r border-white/10 bg-zinc-950 p-6 md:flex flex-col hidden fixed h-full">
         <div className="mb-10">
           <h2 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 uppercase italic tracking-tighter">
-            Veltrix
+            QRFoto
           </h2>
           <p className="text-[10px] text-white/40 uppercase font-black tracking-widest mt-1 italic">{t.dashboard.portal_client}</p>
         </div>

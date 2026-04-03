@@ -132,19 +132,19 @@ export class MediaController {
     // Add Player
     const { getPlayerHtml } = require('./player.template');
     const playerHtml = getPlayerHtml(event.name, mediaListData);
-    archive.append(playerHtml, { name: 'REPRODUCTOR_VELTRIX.html' });
+    archive.append(playerHtml, { name: 'REPRODUCTOR_QRFOTO.html' });
 
     // Add Instructions
     const instructions = `
 ===========================================================
-VELTRIX EVENTS - EXPORT BUNDLE
+QRFOTO EVENTS - EXPORT BUNDLE
 ===========================================================
 
-Gracias por usar Veltrix para capturar tus momentos.
+Gracias por usar QRFoto para capturar tus momentos.
 
 INSTRUCCIONES:
 1. Descomprime (Extrae) todos los archivos de este ZIP en una carpeta.
-2. Abre el archivo "REPRODUCTOR_VELTRIX.html" con cualquier navegador (Chrome, Edge, Safari).
+2. Abre el archivo "REPRODUCTOR_QRFOTO.html" con cualquier navegador (Chrome, Edge, Safari).
 3. Podrás ver todas las fotos y videos en una galería interactiva.
 
 CONSEJO:
@@ -152,7 +152,7 @@ CONSEJO:
 - ¡Asegúrate siempre de EXTRAER TODO antes!
 
 -----------------------------------------------------------
-Veltrix Events • Memorias en Tiempo Real
+QRFoto Events • Memorias en Tiempo Real
 ===========================================================
     `;
     archive.append(instructions, { name: 'LEEME_INSTRUCCIONES.txt' });

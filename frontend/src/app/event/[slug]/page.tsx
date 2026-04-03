@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getApiUrl } from "@/lib/api";
 
-const STORAGE_KEY = "veltrix_guest_identity";
+const STORAGE_KEY = "qrfoto_guest_identity";
 
 interface GuestIdentity {
   name: string;
@@ -336,7 +336,7 @@ export default function GuestUploadPage() {
 
         <footer className="mt-auto py-10 text-center">
           <p className="text-[9px] text-white/10 uppercase tracking-[0.5em] font-black">
-            Live Experience Powered by Veltrix
+            Live Experience Powered by QRFoto
           </p>
         </footer>
       </div>

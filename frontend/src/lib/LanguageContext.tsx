@@ -17,13 +17,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("es");
 
   useEffect(() => {
-    const saved = localStorage.getItem("veltrix_lang") as Language;
+    const saved = localStorage.getItem("qrfoto_lang") as Language;
     if (saved) setLanguageState(saved);
   }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem("veltrix_lang", lang);
+    localStorage.setItem("qrfoto_lang", lang);
   };
 
   const t = translations[language];

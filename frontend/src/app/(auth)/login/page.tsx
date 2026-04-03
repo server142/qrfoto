@@ -72,7 +72,7 @@ export default function LoginPage() {
                     <Sparkles className="w-8 h-8 text-purple-400" />
                 </div>
             </motion.div>
-            <h1 className="text-4xl font-black italic tracking-tighter uppercase text-white">Veltrix Events</h1>
+            <h1 className="text-4xl font-black italic tracking-tighter uppercase text-white">QRFoto Events</h1>
             <p className="text-white/40 font-medium">Inicia sesión en tu portal de cliente</p>
         </div>
 
@@ -84,7 +84,7 @@ export default function LoginPage() {
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
                   <Input 
                     type="email" 
-                    placeholder="admin@veltrix.com"
+                    placeholder="admin@qrfoto.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required

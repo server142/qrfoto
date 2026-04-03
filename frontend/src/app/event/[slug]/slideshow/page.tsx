@@ -47,7 +47,7 @@ export default function SlideshowPage() {
         });
 
         socket.on("connect", () => {
-          console.log("SUCCESS: Connected to Veltrix Real-time Engine");
+          console.log("SUCCESS: Connected to QRFoto Real-time Engine");
           socket.emit('joinEvent', evData.id);
         });
 

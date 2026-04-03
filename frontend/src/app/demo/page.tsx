@@ -57,7 +57,7 @@ export default function GalleryDemo() {
               className="bg-zinc-900 border border-white/10 p-8 rounded-3xl max-w-2xl w-full text-center shadow-2xl"
             >
               <h2 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                ¿Cómo funciona Veltrix Events?
+                ¿Cómo funciona QRFoto Events?
               </h2>
               
               <div className="grid md:grid-cols-3 gap-6 mb-8 text-left">

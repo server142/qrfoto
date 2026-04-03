@@ -17,8 +17,8 @@ export class UploadsService {
     const publicIp = this.configService.get<string>('PUBLIC_IP', 'localhost');
     this.publicBaseUrl = `http://${publicIp}:${minioPort}`;
 
-    console.log(`[Veltrix-Media] Internal endpoint: ${internalEndpoint}`);
-    console.log(`[Veltrix-Media] Public base URL: ${this.publicBaseUrl}`);
+    console.log(`[QRFoto-Media] Internal endpoint: ${internalEndpoint}`);
+    console.log(`[QRFoto-Media] Public base URL: ${this.publicBaseUrl}`);
 
     this.s3Client = new S3.S3Client({
       region: this.configService.get<string>('MINIO_REGION', 'us-east-1'),
@@ -30,7 +30,7 @@ export class UploadsService {
       forcePathStyle: true,
     });
 
-    this.bucketName = this.configService.get<string>('MINIO_BUCKET_NAME', 'veltrix-media');
+    this.bucketName = this.configService.get<string>('MINIO_BUCKET_NAME', 'qrfoto-media');
     this.ensureBucketPublic();
   }
 
@@ -41,9 +41,9 @@ export class UploadsService {
   private async ensureBucketPublic() {
     try {
       await this.s3Client.send(new S3.HeadBucketCommand({ Bucket: this.bucketName }));
-      console.log(`[Veltrix-Media] Bucket "${this.bucketName}" already exists.`);
+      console.log(`[QRFoto-Media] Bucket "${this.bucketName}" already exists.`);
     } catch {
-      console.log(`[Veltrix-Media] Creating bucket "${this.bucketName}"...`);
+      console.log(`[QRFoto-Media] Creating bucket "${this.bucketName}"...`);
       await this.s3Client.send(new S3.CreateBucketCommand({ Bucket: this.bucketName }));
     }
 
@@ -67,9 +67,9 @@ export class UploadsService {
           Policy: publicPolicy,
         }),
       );
-      console.log(`[Veltrix-Media] ✅ Bucket is now PUBLIC. Images will load on all devices.`);
+      console.log(`[QRFoto-Media] ✅ Bucket is now PUBLIC. Images will load on all devices.`);
     } catch (err) {
-      console.error(`[Veltrix-Media] ❌ Could not set bucket policy:`, err.message);
+      console.error(`[QRFoto-Media] ❌ Could not set bucket policy:`, err.message);
     }
   }
 

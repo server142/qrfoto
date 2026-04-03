@@ -3,13 +3,13 @@ version: '3.8'
 services:
   database:
     image: mysql:8.2
-    container_name: veltrix_db
+    container_name: qrfoto_db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: veltrix_events
-      MYSQL_USER: veltrix
-      MYSQL_PASSWORD: veltrix_password
+      MYSQL_DATABASE: qrfoto_events
+      MYSQL_USER: qrfoto
+      MYSQL_PASSWORD: qrfoto_password
     ports:
       - '3306:3306'
     volumes:
@@ -18,7 +18,7 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: veltrix_redis
+    container_name: qrfoto_redis
     restart: unless-stopped
     ports:
       - '6379:6379'
@@ -27,7 +27,7 @@ services:
 
   minio:
     image: minio/minio
-    container_name: veltrix_minio
+    container_name: qrfoto_minio
     restart: unless-stopped
     ports:
       - '9000:9000'
@@ -41,7 +41,7 @@ services:
 
   n8n:
     image: docker.n8n.io/n8nio/n8n
-    container_name: veltrix_n8n
+    container_name: qrfoto_n8n
     restart: unless-stopped
     ports:
       - '5678:5678'

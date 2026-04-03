@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS veltrix_events;
-USE veltrix_events;
+CREATE DATABASE IF NOT EXISTS qrfoto_events;
+USE qrfoto_events;
 
 -- Users Table
 CREATE TABLE users (

@@ -7,6 +7,10 @@ export const translations = {
       demo: "View Demo",
       galleries: "Event Galleries"
     },
+    reviews: {
+      title: "What our users say",
+      subtitle: "See why hosts trust us for their most important moments."
+    },
     nav: {
       features: "Features",
       pricing: "Pricing",
@@ -67,10 +71,17 @@ export const translations = {
       recent_payments: "Recent Payments (Stripe)",
       income_charts: "Income Charts",
       users: "Users Management",
-      settings: "Global Settings"
+      settings: "Global Settings",
+      reviews_title: "Platform Reviews",
+      reviews_subtitle: "Manage what your users say on the landing page.",
+      approve: "Approve",
+      reject: "Reject",
+      hide: "Hide",
+      approved: "Approved",
+      hidden: "Hidden"
     },
     pricing: {
-      title: "Choose your Veltrix Plan",
+      title: "Choose your QRFoto Plan",
       subtitle: "Powerful collaborative galleries, S3 hosting included and support for thousands of guests.",
       badge: "SaaS Subscriptions",
       popular: "Most Popular",
@@ -89,7 +100,7 @@ export const translations = {
       share: "Share the Moments",
       scan: "PLEASE SCAN",
       instruction: "THIS CODE TO UPLOAD & SHARE YOUR PHOTOS WITH US!",
-      footer: "Powered by Veltrix Events",
+      footer: "Powered by QRFoto Events",
       print_btn: "Print Card",
       scan_here: "Scan here"
     },
@@ -137,7 +148,18 @@ export const translations = {
       active: "Active",
       scheduled: "Scheduled",
       photos: "photos",
-      no_recent_events: "No recent events"
+      no_recent_events: "No recent events",
+      finish_modal: {
+        title: "Security Confirmation",
+        subtitle: "Please enter your account password to confirm.",
+        password: "Password",
+        rating_title: "How was your experience?",
+        rating_desc: "Leave a rating (optional)",
+        comment_placeholder: "Tell everyone what you loved most! (Optional)",
+        submit: "Confirm & Finish",
+        cancel: "Cancel",
+        wrong_password: "Invalid password."
+      }
     }
   },
   es: {
@@ -147,6 +169,10 @@ export const translations = {
       cta: "Empezar ahora",
       demo: "Ver Demo",
       galleries: "Galerías en Vivo"
+    },
+    reviews: {
+      title: "Lo que dicen nuestros usuarios",
+      subtitle: "Descubre por qué cientos de anfitriones confían en nosotros."
     },
     nav: {
       features: "Funcionalidades",
@@ -208,10 +234,17 @@ export const translations = {
       recent_payments: "Últimos Pagos Recibidos (Stripe)",
       income_charts: "Graficas de Ingresos",
       users: "Gestión de Usuarios",
-      settings: "Ajustes Globales"
+      settings: "Ajustes Globales",
+      reviews_title: "Reseñas de la Plataforma",
+      reviews_subtitle: "Administra qué reseñas se muestran en la pantalla inicial.",
+      approve: "Aprobar",
+      reject: "Rechazar",
+      hide: "Ocultar",
+      approved: "Aprobada",
+      hidden: "Oculta"
     },
     pricing: {
-      title: "Escoge tu Plan Veltrix",
+      title: "Escoge tu Plan QRFoto",
       subtitle: "Galerías colaborativas potentes, hosting S3 incluido y soporte para miles de invitados.",
       badge: "Suscripciones SaaS",
       popular: "Más Popular",
@@ -230,7 +263,7 @@ export const translations = {
       share: "Comparte estos Momentos",
       scan: "POR FAVOR ESCANEA",
       instruction: "ESTE CÓDIGO & COMPARTE TUS FOTOS CON NOSOTROS!",
-      footer: "Impulsado por Veltrix Events",
+      footer: "Impulsado por QRFoto Events",
       print_btn: "Imprimir Tarjeta",
       scan_here: "Escanea aquí"
     },
@@ -278,7 +311,18 @@ export const translations = {
       active: "Activo",
       scheduled: "Programado",
       photos: "fotos",
-      no_recent_events: "No hay eventos recientes"
+      no_recent_events: "No hay eventos recientes",
+      finish_modal: {
+        title: "Confirmación de Seguridad",
+        subtitle: "Por favor, ingresa tu contraseña para confirmar.",
+        password: "Contraseña",
+        rating_title: "¿Cómo fue tu experiencia?",
+        rating_desc: "Deja una calificación (opcional)",
+        comment_placeholder: "¡Cuéntale a todos lo que más te gustó! (Opcional)",
+        submit: "Confirmar y Finalizar",
+        cancel: "Cancelar",
+        wrong_password: "Contraseña incorrecta."
+      }
     }
   }
 };

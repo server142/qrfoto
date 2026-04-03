@@ -1,4 +1,4 @@
-# 🌐 Cambio de IP de Red — Veltrix Events
+# 🌐 Cambio de IP de Red — QRFoto Events
 
 Usa esta guía cada vez que cambies de red Wi-Fi o tu IP local cambie.
 
@@ -24,7 +24,7 @@ Dirección IPv4. . . . : 192.168.X.XX   ← Esta es tu nueva IP
 
 Abre el archivo:
 ```
-veltrix-events\backend\.env
+qrfoto-events\backend\.env
 ```
 
 Cambia las tres líneas que contienen la IP anterior por la nueva:

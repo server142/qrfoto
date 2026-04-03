@@ -5,7 +5,7 @@ export const getPlayerHtml = (eventName: string, mediaList: any[]) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veltrix - ${eventName}</title>
+    <title>QRFoto - ${eventName}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sacramento&family=Outfit:wght@300;400;900&display=swap" rel="stylesheet">
@@ -79,7 +79,7 @@ export const getPlayerHtml = (eventName: string, mediaList: any[]) => {
     <div class="container">
         <div class="header">
             <h1 id="event-name">${eventName}</h1>
-            <p>Veltrix Memories • Export Bundle</p>
+            <p>QRFoto Memories • Export Bundle</p>
         </div>
         <div class="grid" id="gallery"></div>
     </div>
@@ -152,11 +152,11 @@ export const getPlayerHtml = (eventName: string, mediaList: any[]) => {
 
     <!-- Branding Footer -->
     <footer style="margin-top: 10rem; padding: 6rem 2rem; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; background: #000;">
-        <h2 style="font-family: 'Outfit', sans-serif; font-weight: 300; text-transform: uppercase; letter-spacing: 0.5em; font-size: 1rem; margin-bottom: 0.5rem; color: #fff;">Veltrix</h2>
+        <h2 style="font-family: 'Outfit', sans-serif; font-weight: 300; text-transform: uppercase; letter-spacing: 0.5em; font-size: 1rem; margin-bottom: 0.5rem; color: #fff;">QRFoto</h2>
         <p style="text-transform: uppercase; font-size: 0.65rem; font-weight: 900; color: #8b5cf6; letter-spacing: 0.3rem; margin-bottom: 2rem;">Memorias Colaborativas en Tiempo Real</p>
         <p style="max-width: 500px; margin: 0 auto; font-size: 0.8rem; opacity: 0.4; line-height: 1.8; margin-bottom: 3rem;">Captura cada momento de tus invitados con una galería en vivo e interactiva. Crea tu propia experiencia profesional.</p>
-        <a href="https://veltrix.events" style="display: inline-block; padding: 1.2rem 2.5rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 1.2rem; color: #fff; text-decoration: none; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3rem; transition: all 0.3s;" onmouseover="this.style.background='white'; this.style.color='black'; this.style.borderColor='white'" onmouseout="this.style.background='transparent'; this.style.color='white'; this.style.borderColor='rgba(255,255,255,0.1)'">
-            Ir a veltrix.events
+        <a href="https://qrfoto.events" style="display: inline-block; padding: 1.2rem 2.5rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 1.2rem; color: #fff; text-decoration: none; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3rem; transition: all 0.3s;" onmouseover="this.style.background='white'; this.style.color='black'; this.style.borderColor='white'" onmouseout="this.style.background='transparent'; this.style.color='white'; this.style.borderColor='rgba(255,255,255,0.1)'">
+            Ir a qrfoto.events
         </a>
     </footer>
 </body>

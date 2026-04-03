@@ -134,7 +134,7 @@ export default function PlansManagementPage() {
           <div className="col-span-full py-24 text-center border-2 border-dashed border-white/5 rounded-[3rem] bg-zinc-950/20 backdrop-blur-3xl">
             <CreditCard className="w-16 h-16 text-white/10 mx-auto mb-6" />
             <h3 className="text-2xl font-black uppercase italic text-white/40 mb-2">Sin actividad financiera</h3>
-            <p className="text-sm text-white/20 mb-8 max-w-sm mx-auto">Comienza definiendo tu primer plan para que las agencias puedan suscribirse a Veltrix.</p>
+            <p className="text-sm text-white/20 mb-8 max-w-sm mx-auto">Comienza definiendo tu primer plan para que las agencias puedan suscribirse a QRFoto.</p>
           </div>
         ) : (
           plans.map((plan: any) => (

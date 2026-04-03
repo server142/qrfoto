@@ -1,4 +1,4 @@
-# Veltrix Events
+# QRFoto Events
 
 A production-ready SaaS platform for live collaborative event galleries. Built for hosts and guests to seamlessly capture and display memories in real-time.
 
@@ -26,7 +26,7 @@ This will start MySQL, Redis, MinIO, and n8n automatically:
 ```bash
 docker-compose up -d
 ```
-The MySQL database `veltrix_events` schema will be initialized securely with setup files from the `database/init.sql`.
+The MySQL database `qrfoto_events` schema will be initialized securely with setup files from the `database/init.sql`.
 
 ### 4. Start the Backend
 ```bash
