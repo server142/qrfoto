@@ -14,7 +14,7 @@ import {
   DialogDescription
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
-import { Plus, Calendar, QrCode, ExternalLink, Trash2, Settings, Image as ImageIcon, Loader2, Printer, Download, Power, CheckCircle, Star } from "lucide-react";
+import { Plus, Calendar, QrCode, ExternalLink, Trash2, Settings, Image as ImageIcon, Loader2, Printer, Download, Power, CheckCircle, Star, Share2 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
@@ -160,6 +160,24 @@ export default function EventsPage() {
     }
   };
 
+  const handleShare = async (event: any) => {
+    const url = `${getBaseUrl()}/event/${event.slug}`;
+    if (typeof navigator !== 'undefined' && (navigator as any).share) {
+      try {
+        await (navigator as any).share({
+          title: event.name,
+          text: `¡Únete a la galería de ${event.name} en QRFoto!`,
+          url: url
+        });
+      } catch (err) {
+        console.log("Share failed or cancelled");
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+      alert(t.nav?.change_lang === 'English' ? "Link copied to clipboard!" : "¡Enlace copiado al portapapeles!");
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-zinc-950/50 p-6 sm:p-10 rounded-[2.5rem] border border-white/5 gap-6 sm:gap-0">
@@ -273,14 +291,20 @@ export default function EventsPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 relative z-10">
-                    <Link href={`/event/${event.slug}/slideshow`} target="_blank" className="col-span-2">
+                    <Link href={`/event/${event.slug}/slideshow`} target="_blank" className="flex-1">
                       <Button
                         disabled={event.status !== 'Active'}
-                        className="w-full bg-white text-black hover:bg-zinc-200 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[10px] h-12 gap-2 shadow-lg transition-all"
+                        className="w-full bg-white text-black hover:bg-zinc-200 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[9px] h-12 gap-1.5 shadow-lg transition-all"
                       >
-                        <ExternalLink className="w-3.5 h-3.5" /> {t.events.live_view}
+                        <ExternalLink className="w-3 h-3" /> {t.events.live_view}
                       </Button>
                     </Link>
+                    <Button
+                      onClick={() => handleShare(event)}
+                      className="flex-1 bg-purple-600 text-white hover:bg-purple-500 rounded-2xl font-black uppercase tracking-widest text-[9px] h-12 gap-1.5 shadow-lg transition-all"
+                    >
+                      <Share2 className="w-3 h-3" /> {(t as any).events?.share_btn || "Compartir"}
+                    </Button>
                     <Link href={`/event/${event.slug}/card`} target="_blank" className="flex-1">
                       <Button className="w-full bg-white/5 hover:bg-white/10 text-white/80 rounded-2xl text-[10px] h-12 font-bold uppercase border border-white/5">
                         <Printer className="w-3.5 h-3.5 mr-1" /> {t.events.print}
