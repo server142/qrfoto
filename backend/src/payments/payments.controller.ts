@@ -16,7 +16,7 @@ export class PaymentsController {
 
   @Post('checkout')
   @UseGuards(JwtAuthGuard)
-  async checkout(@Body() body: { planId: string }, @Request() req: any) {
+  async checkout(@Body() body: { planId: string, currency?: string }, @Request() req: any) {
     const userId = req.user.userId;
     const plan = await this.planRepo.findOne({ where: { id: body.planId } });
     if (!plan) throw new HttpException('Plan not found', HttpStatus.NOT_FOUND);
@@ -39,11 +39,18 @@ export class PaymentsController {
     }
 
     try {
+      const currency = body.currency || 'mxn';
+      let chargeAmount = plan.price;
+      if (currency === 'usd') {
+        chargeAmount = Math.round(plan.price / 20); // Exchange rate fallback
+      }
+
       const session = await this.stripeService.createCheckoutSession(
         plan.id,
         userId,
-        plan.price * 100, // Price in cents
-        plan.name
+        chargeAmount * 100, // Price in cents
+        plan.name,
+        currency
       );
       return { url: session.url };
     } catch (err) {

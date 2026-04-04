@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -36,8 +35,31 @@ export default function RegisterPage() {
         const data = await res.json();
         if (data.access_token) {
           document.cookie = `token=${data.access_token}; path=/`;
+
+          // If they came from a Pricing card selection, auto-checkout
+          const query = new URLSearchParams(window.location.search);
+          const planParam = query.get("plan");
+          if (planParam) {
+            try {
+              const checkoutRes = await fetch(`${getApiUrl()}/payments/checkout`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${data.access_token}`
+                },
+                body: JSON.stringify({ planId: planParam, userId: "", currency: typeof localStorage !== 'undefined' && localStorage.getItem('qrfoto_lang') === 'en' ? 'usd' : 'mxn' }),
+              });
+              const checkoutData = await checkoutRes.json();
+              if (checkoutData.url) {
+                window.location.href = checkoutData.url;
+                return;
+              }
+            } catch (err) {
+              console.error("Auto-checkout failed", err);
+            }
+          }
         }
-        // Redirect to pricing so they choose a plan immediately
+        // Redirect to pricing if no specific plan was selected
         router.push("/pricing?registered=true");
       } else {
         const data = await res.json();

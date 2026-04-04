@@ -12,13 +12,13 @@ export class StripeService {
     });
   }
 
-  async createCheckoutSession(planId: string, userId: string, priceInCents: number, planName: string) {
+  async createCheckoutSession(planId: string, userId: string, priceInCents: number, planName: string, currency: string = 'mxn') {
     return await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: currency.toLowerCase(),
             product_data: {
               name: planName,
             },

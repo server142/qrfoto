@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { getApiUrl } from "@/lib/api";
 import { useTranslation } from "@/lib/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { PricingTable } from "@/components/PricingTable";
 import Link from "next/link";
 
 export default function LandingPage() {
@@ -56,7 +57,7 @@ export default function LandingPage() {
                 {t.login.cta}
               </Button>
             </Link>
-            <Link href="/pricing">
+            <Link href="/register">
               <Button className="bg-white text-black hover:bg-white/90 rounded-2xl px-6 h-11 font-black uppercase text-xs tracking-widest shadow-xl shadow-white/5">
                 {t.hero.cta}
               </Button>
@@ -125,7 +126,7 @@ export default function LandingPage() {
                   <ArrowRight className="w-6 h-6 text-purple-500 group-hover:translate-x-2 transition-transform" />
                 </Link>
                 <Link
-                  href="/pricing"
+                  href="/register"
                   onClick={() => setIsMenuOpen(false)}
                   className="text-2xl font-black uppercase italic text-purple-400 flex items-center justify-between group"
                 >
@@ -164,7 +165,7 @@ export default function LandingPage() {
               {t.hero.subtitle}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/pricing" className="w-full sm:w-auto">
+              <Link href="/register" className="w-full sm:w-auto">
                 <Button size="lg" className="h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-lg hover:opacity-90 w-full transition-all shadow-[0_0_40px_rgba(168,85,247,0.4)]">
                   {t.hero.cta}
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -209,7 +210,16 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Reviews Section */}
+      {/* Pricing Section */}
+      <section id="pricing" className="py-24 bg-black relative border-t border-white/5">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">{t.pricing.title}</h2>
+            <p className="text-white/60">{t.pricing.subtitle}</p>
+          </div>
+          <PricingTable />
+        </div>
+      </section>
       {reviews.length > 0 && (
         <section id="reviews" className="py-24 bg-zinc-950 relative border-t border-white/5">
           <div className="container mx-auto px-6">
