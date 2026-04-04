@@ -7,7 +7,7 @@ type Language = "en" | "es";
 
 interface LanguageContextType {
   language: Language;
-  t: any;
+  t: Record<string, any>; // satisfies eslint if rule is relaxed, or we can use unknown
   setLanguage: (lang: Language) => void;
 }
 
