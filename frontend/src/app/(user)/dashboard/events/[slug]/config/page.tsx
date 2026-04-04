@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { ArrowLeft, Save, Palette, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
-import { getApiUrl } from "@/lib/api";
+import { getApiUrl, getAuthHeaders } from "@/lib/api";
 
 export default function EventSettingsPage() {
   const { slug } = useParams();
@@ -23,7 +23,9 @@ export default function EventSettingsPage() {
   const [coverUrl, setCoverUrl] = useState("");
 
   useEffect(() => {
-    fetch(`${getApiUrl()}/events/${slug}`)
+    fetch(`${getApiUrl()}/events/${slug}`, {
+      headers: getAuthHeaders()
+    })
       .then(res => res.json())
       .then(data => {
         setEvent(data);
@@ -38,7 +40,7 @@ export default function EventSettingsPage() {
     try {
       const res = await fetch(`${getApiUrl()}/events/${event.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           name,
           branding_color: brandingColor,
