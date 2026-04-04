@@ -160,8 +160,12 @@ QRFoto Events • Memorias en Tiempo Real
     await archive.finalize();
   }
 
-  @Get('s3/:fileKey(*)')
-  async proxyMediaStream(@Param('fileKey') fileKey: string, @Res() res: any) {
+  @Get('s3/*')
+  async proxyMediaStream(@Req() req: any, @Res() res: any) {
+    // Fail-safe way to get the file key from the URL itself in case routing params fail
+    const urlParts = req.url.split('/s3/');
+    const fileKey = urlParts[urlParts.length - 1]?.split('?')[0];
+
     if (!fileKey) throw new BadRequestException('No file key provided');
 
     try {
