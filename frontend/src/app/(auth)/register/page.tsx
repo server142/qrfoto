@@ -33,6 +33,10 @@ export default function RegisterPage() {
       });
 
       if (res.ok) {
+        const data = await res.json();
+        if (data.access_token) {
+          document.cookie = `token=${data.access_token}; path=/`;
+        }
         // Redirect to pricing so they choose a plan immediately
         router.push("/pricing?registered=true");
       } else {
@@ -59,41 +63,41 @@ export default function RegisterPage() {
         className="w-full max-w-md relative z-10"
       >
         <div className="mb-8 flex flex-col items-center">
-            <div className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center mb-6 border border-white/10">
-                <UserPlus className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">Únete a QRFoto</h1>
-            <p className="text-white/40 mt-2">Crea tu cuenta SaaS y empieza a innovar.</p>
+          <div className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center mb-6 border border-white/10">
+            <UserPlus className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">Únete a QRFoto</h1>
+          <p className="text-white/40 mt-2">Crea tu cuenta SaaS y empieza a innovar.</p>
         </div>
 
         <Card className="bg-zinc-950 border-white/10 p-8 shadow-2xl shadow-purple-500/10 rounded-[2rem]">
           <form onSubmit={handleRegister} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label className="text-white/70 text-xs uppercase tracking-widest font-bold">Nombre</Label>
-                    <Input 
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        placeholder="Ej. Juan"
-                        className="bg-black/50 border-white/10 text-white h-12 focus:ring-purple-500/50"
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label className="text-white/70 text-xs uppercase tracking-widest font-bold">Apellido</Label>
-                    <Input 
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        placeholder="Ej. Pérez"
-                        className="bg-black/50 border-white/10 text-white h-12 focus:ring-purple-500/50"
-                        required
-                    />
-                </div>
+              <div className="space-y-2">
+                <Label className="text-white/70 text-xs uppercase tracking-widest font-bold">Nombre</Label>
+                <Input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Ej. Juan"
+                  className="bg-black/50 border-white/10 text-white h-12 focus:ring-purple-500/50"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-white/70 text-xs uppercase tracking-widest font-bold">Apellido</Label>
+                <Input
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Ej. Pérez"
+                  className="bg-black/50 border-white/10 text-white h-12 focus:ring-purple-500/50"
+                  required
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label className="text-white/70 text-xs uppercase tracking-widest font-bold">Email</Label>
-              <Input 
+              <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -105,7 +109,7 @@ export default function RegisterPage() {
 
             <div className="space-y-2">
               <Label className="text-white/70 text-xs uppercase tracking-widest font-bold">Contraseña</Label>
-              <Input 
+              <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -128,7 +132,7 @@ export default function RegisterPage() {
 
           <div className="mt-8 pt-8 border-t border-white/5 text-center">
             <Link href="/login" className="text-white/40 hover:text-white transition-colors text-sm flex items-center justify-center gap-2">
-                <ArrowLeft className="w-4 h-4" /> Ya tengo una cuenta
+              <ArrowLeft className="w-4 h-4" /> Ya tengo una cuenta
             </Link>
           </div>
         </Card>

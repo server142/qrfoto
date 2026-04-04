@@ -9,12 +9,12 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService
-  ) {}
+  ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findOneByEmail(email);
     if (!user) return null;
-    
+
     // Check if the password matches
     const isMatch = await bcrypt.compare(pass, user.password_hash);
     if (isMatch) {
@@ -50,6 +50,7 @@ export class AuthService {
     });
 
     const { password_hash: _pw, ...result } = newUser;
-    return result;
+    // Log in automatically after registration
+    return this.login(result);
   }
 }
