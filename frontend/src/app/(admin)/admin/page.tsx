@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Users, Activity, CreditCard, Image as ImageIcon, Loader2 } from "lucide-react";
