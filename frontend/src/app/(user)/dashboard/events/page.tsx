@@ -162,22 +162,29 @@ export default function EventsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center bg-zinc-950/50 p-8 rounded-[2rem] border border-white/5">
-        <div>
-          <h2 className="text-4xl font-black tracking-tight uppercase italic text-white flex items-center gap-4">
-            <Calendar className="w-8 h-8 text-purple-500" /> {t.events.title}
-          </h2>
-          <p className="text-white/40 mt-1 uppercase text-xs font-bold tracking-widest ml-12">{t.events.subtitle}</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-zinc-950/50 p-6 sm:p-10 rounded-[2.5rem] border border-white/5 gap-6 sm:gap-0">
+        <div className="space-y-2">
+          <div className="flex items-center gap-4 group">
+            <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/20 transition-colors group-hover:bg-purple-500/20">
+              <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tighter italic text-white leading-none">
+              Mis <span className="text-purple-500">Eventos</span>
+            </h2>
+          </div>
+          <p className="text-[10px] sm:text-xs text-white/40 uppercase font-black tracking-[0.2em] ml-16 sm:ml-20 italic">
+            {t.events.subtitle}
+          </p>
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger render={
-            <Button className="h-14 px-8 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-white/5 transition-all">
-              <Plus className="w-5 h-5 mr-2" />
+          <DialogTrigger asChild>
+            <Button className="w-full sm:w-auto h-14 px-8 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-white/5 transition-all active:scale-95 group">
+              <Plus className="w-5 h-5 mr-2 transition-transform group-hover:rotate-90" />
               {t.events.create_btn}
             </Button>
-          } />
-          <DialogContent className="bg-zinc-950 border-white/10 text-white rounded-[2rem] p-10 max-w-md shadow-2xl shadow-purple-600/5">
+          </DialogTrigger>
+          <DialogContent className="bg-zinc-950/95 backdrop-blur-xl border-white/10 text-white rounded-[2.5rem] p-8 sm:p-12 max-w-md shadow-2xl shadow-purple-600/5">
             <DialogHeader>
               <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">{t.events.create_dialog_title}</DialogTitle>
               <DialogDescription className="text-white/40 text-sm">{t.events.create_dialog_subtitle}</DialogDescription>
@@ -239,7 +246,7 @@ export default function EventsPage() {
                 <Card className="bg-zinc-950 border-white/10 p-8 flex flex-col hover:border-purple-500/30 transition-all group rounded-[2rem] shadow-2xl relative overflow-hidden h-full">
                   <div className="flex justify-between items-start mb-8 relative z-10">
                     <div>
-                      <h3 className="text-2xl font-black text-white group-hover:text-purple-400 transition-colors uppercase italic leading-none">{event.name}</h3>
+                      <h3 className="text-2xl font-black text-white group-hover:text-purple-400 transition-colors italic leading-none">{event.name}</h3>
                       <p className="text-[10px] text-white/30 mt-2 uppercase font-black tracking-[0.2em]">{new Date(event.event_date).toLocaleDateString()}</p>
                     </div>
                     <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
