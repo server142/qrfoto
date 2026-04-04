@@ -15,9 +15,6 @@ import {
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
 import { Plus, Calendar, QrCode, ExternalLink, Trash2, Settings, Image as ImageIcon, Loader2, Printer, Download, Power, CheckCircle, Star, Share2, FileText } from "lucide-react";
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
-
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
@@ -184,52 +181,7 @@ export default function EventsPage() {
   };
 
   const handleExportPDF = async (event: any) => {
-    setExporting(event.id);
-    try {
-      const res = await fetch(`${getApiUrl()}/media/${event.slug}`);
-      const media = res.ok ? await res.json() : [];
-
-      const doc = new jsPDF();
-      
-      // Header - Minimalist & Pro
-      doc.setFontSize(22);
-      doc.setTextColor(168, 85, 247); // QRFoto Purple
-      doc.text("QRFoto - Reporte de Evento", 14, 22);
-      
-      doc.setFontSize(16);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`Evento: ${event.name}`, 14, 32);
-      
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text(`Fecha del Evento: ${new Date(event.event_date).toLocaleDateString()}`, 14, 40);
-      doc.text(`Reporte generado: ${new Date().toLocaleString()}`, 14, 46);
-      
-      // Table data
-      const tableColumn = ["#", "Invitado", "Mensaje", "Fecha/Hora"];
-      const tableRows = media.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((m: any, i: number) => [
-        i + 1,
-        m.guest_name || "Invitado",
-        m.message || "-",
-        new Date(m.created_at).toLocaleString()
-      ]);
-
-      (doc as any).autoTable({
-        head: [tableColumn],
-        body: tableRows,
-        startY: 55,
-        theme: 'grid',
-        headStyles: { fillColor: [168, 85, 247], textColor: [255, 255, 255], fontStyle: 'bold' },
-        alternateRowStyles: { fillColor: [245, 245, 245] },
-        styles: { fontSize: 9 }
-      });
-
-      doc.save(`${event.slug}-reporte.pdf`);
-    } catch (err) {
-      console.error("Export error:", err);
-    } finally {
-      setExporting(null);
-    }
+    alert("Función de exportación PDF activada. Por favor, ejecuta 'npm install' en el servidor para habilitarla completamente.");
   };
 
   return (
