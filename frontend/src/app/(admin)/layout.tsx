@@ -93,6 +93,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               className="fixed inset-0 z-40 md:hidden bg-zinc-950/95 backdrop-blur-2xl p-8 pt-32"
             >
               <nav className="flex flex-col gap-8">
+                {navItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
