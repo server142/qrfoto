@@ -45,7 +45,8 @@ export const translations = {
       settings: "Settings",
       logout: "Log Out",
       portal_client: "Client Portal",
-      control_panel: "Control Panel"
+      control_panel: "Control Panel",
+      my_plan: "My Plan"
     },
     admin: {
       plans_title: "SaaS Plans Management",
@@ -208,7 +209,8 @@ export const translations = {
       settings: "Configuración",
       logout: "Cerrar Sesión",
       portal_client: "Portal de Cliente",
-      control_panel: "Panel de Control"
+      control_panel: "Panel de Control",
+      my_plan: "Mi Plan"
     },
     admin: {
       plans_title: "Gestión de Planes SaaS",

@@ -16,7 +16,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
   const navItems = [
     { label: t.dashboard.title, icon: Home, href: "/dashboard" },
     { label: t.dashboard.events, icon: Calendar, href: "/dashboard/events" },
-    { label: t.dashboard.settings, icon: Settings, href: "#" },
+    { label: t.dashboard.my_plan, icon: Settings, href: "/dashboard/plan" },
   ];
 
   return (
