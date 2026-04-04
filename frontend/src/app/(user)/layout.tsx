@@ -165,4 +165,3 @@ export default function UserLayout({ children }: { children: ReactNode }) {
   );
 }
 
-import { ArrowRight } from "lucide-react";
