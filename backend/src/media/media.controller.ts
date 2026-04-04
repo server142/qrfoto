@@ -181,7 +181,12 @@ QRFoto Events • Memorias en Tiempo Real
       res.setHeader('Content-Type', contentType);
       res.setHeader('Cache-Control', 'public, max-age=31536000');
 
-      stream.pipe(res);
+      if (typeof stream.transformToByteArray === 'function') {
+        const byteArray = await stream.transformToByteArray();
+        res.send(Buffer.from(byteArray));
+      } else {
+        stream.pipe(res);
+      }
     } catch (err) {
       console.error(`[MediaProxy] Error streaming file ${fileKey}:`, err.message);
       res.status(404).send('File not found');
