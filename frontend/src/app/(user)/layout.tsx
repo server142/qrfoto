@@ -1,11 +1,12 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Home, Calendar, Settings, LogOut, Menu, X, Image as ImageIcon } from "lucide-react";
+import { Home, Calendar, Settings, LogOut, Menu, X, Image as ImageIcon, ArrowRight } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
+import { getApiUrl } from "@/lib/api";
 
 import { useTranslation } from "@/lib/LanguageContext";
 
@@ -13,6 +14,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
     { label: t.dashboard.title, icon: Home, href: "/dashboard" },
@@ -39,9 +41,9 @@ export default function UserLayout({ children }: { children: ReactNode }) {
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     fetchUser();
-  });
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white flex">
