@@ -38,7 +38,8 @@ export default function SlideshowPage() {
         setLoading(false);
 
         // REAL-TIME SETUP
-        const socketUrl = getApiUrl().replace('/api', '');
+        const parsedUrl = new URL(getApiUrl(), window.location.origin);
+        const socketUrl = parsedUrl.origin;
 
         socket = io(socketUrl, {
           transports: ['websocket'],
