@@ -11,12 +11,13 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { getApiUrl } from "@/lib/api";
 
 export default function UsersManagementPage() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/users")
+    fetch(`${getApiUrl()}/users`)
       .then((res) => res.json())
       .then((data) => setUsers(data));
   }, []);
