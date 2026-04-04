@@ -27,7 +27,9 @@ export default function PricingPage() {
           >
             <Sparkles className="w-3.5 h-3.5" /> {t.pricing.badge}
           </motion.div>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic">{t.pricing.title}</h1>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter italic text-white leading-tight">
+            Escoge tu plan <span className="text-purple-500">QRFoto</span>
+          </h1>
           <p className="text-white/50 text-xl max-w-2xl mx-auto">
             {t.pricing.subtitle}
           </p>

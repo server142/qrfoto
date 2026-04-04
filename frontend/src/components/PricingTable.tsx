@@ -102,19 +102,19 @@ export function PricingTable({
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.1 }}
                     >
-                        <Card className={`relative h-full bg-zinc-950 border-white/10 p-8 flex flex-col transition-all ${isActive ? 'border-green-500 ring-2 ring-green-500/50 scale-105 z-10 shadow-2xl shadow-green-500/10' : plan.type === 'Annual' ? 'border-purple-500 ring-1 ring-purple-500/50 hover:border-purple-500' : 'hover:border-purple-500/50'}`}>
+                        <Card className={`relative h-full bg-zinc-950 border-white/10 p-8 flex flex-col transition-all duration-500 overflow-visible ${isActive ? 'border-green-500 ring-[6px] ring-green-500/10 scale-105 z-10 shadow-2xl shadow-green-500/20' : plan.type === 'Annual' ? 'border-purple-500 ring-1 ring-purple-500/30 hover:border-purple-500' : 'hover:border-purple-500/50'}`}>
                             {isActive ? (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[10px] font-black px-6 py-1.5 uppercase tracking-widest rounded-full shadow-xl">
+                                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[9px] font-black px-6 py-2 uppercase tracking-[0.2em] rounded-full shadow-xl shadow-green-500/40 z-30 whitespace-nowrap border-4 border-black">
                                     {(t.pricing as any).current_plan || 'Plan Actual'}
                                 </div>
                             ) : plan.type === 'Annual' ? (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-[10px] font-black px-4 py-1.5 uppercase tracking-widest rounded-full shadow-xl">
+                                <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-[9px] font-black px-6 py-2 uppercase tracking-[0.2em] rounded-full shadow-xl shadow-purple-500/40 z-30 whitespace-nowrap border-4 border-black">
                                     {t.pricing.popular}
                                 </div>
                             ) : null}
 
                             <div className="mb-10 text-center md:text-left mt-2">
-                                <h3 className="text-xl font-bold uppercase tracking-widest text-white/60 mb-2">{plan.name}</h3>
+                                <h3 className="text-xl font-bold tracking-widest text-white/60 mb-2">{plan.name}</h3>
                                 <div className="flex items-baseline justify-center md:justify-start gap-1">
                                     <span className="text-5xl font-black text-white">{symbol}{displayPrice}</span>
                                     <span className="text-white/40 uppercase text-xs font-bold tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
