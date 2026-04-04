@@ -11,13 +11,37 @@ import { useTranslation } from "@/lib/LanguageContext";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const navItems = [
     { label: t.dashboard.title, icon: Home, href: "/dashboard" },
     { label: t.dashboard.events, icon: Calendar, href: "/dashboard/events" },
     { label: t.dashboard.my_plan, icon: Settings, href: "/dashboard/plan" },
   ];
+
+  const fetchUser = async () => {
+    try {
+      const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+      if (!token) return;
+
+      const res = await fetch(`${getApiUrl()}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+      }
+    } catch (err) {
+      console.error("Error fetching user:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useState(() => {
+    fetchUser();
+  });
 
   return (
     <div className="min-h-screen bg-black text-white flex">
@@ -40,6 +64,15 @@ export default function UserLayout({ children }: { children: ReactNode }) {
               <item.icon className="w-4 h-4" /> {item.label}
             </Link>
           ))}
+
+          {user?.role === 'SuperAdmin' && (
+            <Link
+              href="/admin"
+              className="flex items-center gap-3 px-4 py-3 text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/10 rounded-xl transition-all font-black uppercase text-[10px] tracking-widest"
+            >
+              <Settings className="w-4 h-4" /> {t.dashboard.admin_panel || "Admin Panel"}
+            </Link>
+          )}
         </nav>
 
         <div className="mt-auto border-t border-white/10 pt-4">
@@ -69,7 +102,13 @@ export default function UserLayout({ children }: { children: ReactNode }) {
               </Button>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-xs font-black text-white shadow-lg shadow-purple-600/20">U</div>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-xs font-black text-white shadow-lg shadow-purple-600/20 mr-2">
+              {user?.role === 'SuperAdmin' ? 'A' : (user?.first_name?.[0] || 'U')}
+            </div>
+            <div className="hidden sm:block text-left">
+               <p className="text-[10px] font-black uppercase tracking-tighter leading-none">{user?.first_name || 'Usuario'}</p>
+               <p className="text-[8px] text-white/40 uppercase font-bold tracking-widest mt-1">{user?.role || 'Guest'}</p>
+            </div>
           </div>
         </header>
 

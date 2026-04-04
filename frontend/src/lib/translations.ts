@@ -46,7 +46,8 @@ export const translations = {
       logout: "Log Out",
       portal_client: "Client Portal",
       control_panel: "Control Panel",
-      my_plan: "My Plan"
+      my_plan: "My Plan",
+      admin_panel: "Admin Panel"
     },
     admin: {
       plans_title: "SaaS Plans Management",
@@ -73,6 +74,7 @@ export const translations = {
       income_charts: "Income Charts",
       users: "Users Management",
       settings: "Global Settings",
+      user_dashboard: "User Dashboard",
       reviews_title: "Platform Reviews",
       reviews_subtitle: "Manage what your users say on the landing page.",
       approve: "Approve",
@@ -211,7 +213,8 @@ export const translations = {
       logout: "Cerrar Sesión",
       portal_client: "Portal de Cliente",
       control_panel: "Panel de Control",
-      my_plan: "Mi Plan"
+      my_plan: "Mi Plan",
+      admin_panel: "Panel Admin"
     },
     admin: {
       plans_title: "Gestión de Planes SaaS",
@@ -238,6 +241,7 @@ export const translations = {
       income_charts: "Graficas de Ingresos",
       users: "Gestión de Usuarios",
       settings: "Ajustes Globales",
+      user_dashboard: "Volver a Usuario",
       reviews_title: "Reseñas de la Plataforma",
       reviews_subtitle: "Administra qué reseñas se muestran en la pantalla inicial.",
       approve: "Aprobar",
