@@ -1,6 +1,7 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User, UserRole } from './entities/user.entity';
+import { Subscription } from '../subscriptions/entities/subscription.entity';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import * as bcrypt from 'bcrypt';
@@ -8,7 +9,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User, Subscription])],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

@@ -18,13 +18,21 @@ export function PricingTable({
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [purchasing, setPurchasing] = useState<string | null>(null);
+    const [activePlanId, setActivePlanId] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
-        fetch(`${getApiUrl()}/plans`)
-            .then((res) => res.json())
-            .then((data) => {
-                setPlans(data);
+        const token = typeof document !== 'undefined' ? document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : null;
+
+        Promise.all([
+            fetch(`${getApiUrl()}/plans`).then(res => res.json()),
+            token ? fetch(`${getApiUrl()}/users/me`, { headers: { Authorization: `Bearer ${token}` } }).then(res => res.ok ? res.json() : null).catch(() => null) : Promise.resolve(null)
+        ])
+            .then(([plansData, userData]) => {
+                setPlans(plansData);
+                if (userData && userData.activePlan) {
+                    setActivePlanId(userData.activePlan.id);
+                }
                 setLoading(false);
             })
             .catch((err) => console.error(err));
@@ -84,6 +92,8 @@ export function PricingTable({
                 const currency = language === 'en' ? 'USD' : 'MXN';
                 const symbol = '$';
 
+                const isActive = activePlanId === plan.id;
+
                 return (
                     <motion.div
                         key={plan.id}
@@ -92,14 +102,18 @@ export function PricingTable({
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.1 }}
                     >
-                        <Card className={`relative h-full bg-zinc-950 border-white/10 p-8 flex flex-col hover:border-purple-500/50 transition-all ${plan.type === 'Annual' ? 'border-purple-500 ring-1 ring-purple-500/50' : ''}`}>
-                            {plan.type === 'Annual' && (
+                        <Card className={`relative h-full bg-zinc-950 border-white/10 p-8 flex flex-col transition-all ${isActive ? 'border-green-500 ring-2 ring-green-500/50 scale-105 z-10 shadow-2xl shadow-green-500/10' : plan.type === 'Annual' ? 'border-purple-500 ring-1 ring-purple-500/50 hover:border-purple-500' : 'hover:border-purple-500/50'}`}>
+                            {isActive ? (
+                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[10px] font-black px-6 py-1.5 uppercase tracking-widest rounded-full shadow-xl">
+                                    {(t.pricing as any).current_plan || 'Plan Actual'}
+                                </div>
+                            ) : plan.type === 'Annual' ? (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-[10px] font-black px-4 py-1.5 uppercase tracking-widest rounded-full shadow-xl">
                                     {t.pricing.popular}
                                 </div>
-                            )}
+                            ) : null}
 
-                            <div className="mb-10 text-center md:text-left">
+                            <div className="mb-10 text-center md:text-left mt-2">
                                 <h3 className="text-xl font-bold uppercase tracking-widest text-white/60 mb-2">{plan.name}</h3>
                                 <div className="flex items-baseline justify-center md:justify-start gap-1">
                                     <span className="text-5xl font-black text-white">{symbol}{displayPrice}</span>
@@ -117,8 +131,8 @@ export function PricingTable({
                                     t.pricing.branding
                                 ].map((feat, j) => (
                                     <li key={j} className="flex items-center gap-3 text-sm text-white/70">
-                                        <div className="w-5 h-5 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20 shrink-0">
-                                            <Check className="w-3 h-3 text-purple-400" />
+                                        <div className={`w-5 h-5 rounded-full flex items-center justify-center border shrink-0 ${isActive ? 'bg-green-500/10 border-green-500/20' : 'bg-purple-500/10 border-purple-500/20'}`}>
+                                            <Check className={`w-3 h-3 ${isActive ? 'text-green-400' : 'text-purple-400'}`} />
                                         </div>
                                         <span>{feat}</span>
                                     </li>
@@ -127,10 +141,13 @@ export function PricingTable({
 
                             <Button
                                 onClick={() => handleSubscribe(plan.id)}
-                                disabled={purchasing !== null}
-                                className={`w-full h-14 rounded-[1.2rem] font-black uppercase tracking-widest text-sm transition-all shadow-xl shadow-black/50 ${plan.type === 'Annual' ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-white text-black hover:bg-white/90'}`}
+                                disabled={purchasing !== null || isActive}
+                                className={`w-full h-14 rounded-[1.2rem] font-black uppercase tracking-widest text-sm transition-all shadow-xl shadow-black/50 ${isActive ? 'bg-green-500/10 text-green-500 hover:bg-green-500/10 cursor-default opacity-100' :
+                                        plan.type === 'Annual' ? 'bg-purple-600 hover:bg-purple-500 text-white' :
+                                            'bg-white text-black hover:bg-white/90'
+                                    }`}
                             >
-                                {purchasing === plan.id ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t.pricing.subscribe}
+                                {purchasing === plan.id ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : isActive ? ((t.pricing as any).current_plan || 'Plan Actual') : t.pricing.subscribe}
                             </Button>
                         </Card>
                     </motion.div>
