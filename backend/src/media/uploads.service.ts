@@ -89,12 +89,16 @@ export class UploadsService {
   }
 
   /**
-   * Returns a direct public URL — no signature, no expiry, works from any device.
-   * Format: http://PUBLIC_IP:9000/bucket-name/key
+   * Returns a secure proxy URL to load images bypassing Mixed Content (HTTP vs HTTPS)
+   * Format: /api/media/s3/event_id/file.jpg
    */
   getPublicUrl(fileKey: string): string | null {
     if (!fileKey) return null;
-    return `${this.publicBaseUrl}/${this.bucketName}/${fileKey}`;
+    // We relative path so the frontend / backend URL config controls the domain properly
+    const apiUrl = this.configService.get<string>('FRONTEND_URL', '').includes('localhost')
+      ? 'http://localhost:3001/api'
+      : 'https://api.qrfoto.com.mx/api';
+    return `${apiUrl}/media/s3/${fileKey}`;
   }
 
   async getFileStream(fileKey: string): Promise<any> {

@@ -159,4 +159,32 @@ QRFoto Events • Memorias en Tiempo Real
 
     await archive.finalize();
   }
+
+  @Get('s3/*')
+  async proxyMediaStream(@Req() req: any, @Res() res: any) {
+    const fileKey = req.params[0];
+    if (!fileKey) throw new BadRequestException('No file key provided');
+
+    try {
+      const stream = await this.uploadsService.getFileStream(fileKey);
+
+      // Attempt to guess mime type from extension
+      const ext = fileKey.split('.').pop()?.toLowerCase();
+      let contentType = 'application/octet-stream';
+      if (ext === 'jpg' || ext === 'jpeg') contentType = 'image/jpeg';
+      else if (ext === 'png') contentType = 'image/png';
+      else if (ext === 'gif') contentType = 'image/gif';
+      else if (ext === 'webp') contentType = 'image/webp';
+      else if (ext === 'mp4') contentType = 'video/mp4';
+      else if (ext === 'webm') contentType = 'video/webm';
+
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Cache-Control', 'public, max-age=31536000');
+
+      stream.pipe(res);
+    } catch (err) {
+      console.error(`[MediaProxy] Error streaming file ${fileKey}:`, err.message);
+      res.status(404).send('File not found');
+    }
+  }
 }
