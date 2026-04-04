@@ -181,7 +181,52 @@ export default function EventsPage() {
   };
 
   const handleExportPDF = async (event: any) => {
-    alert("Función de exportación PDF activada. Por favor, ejecuta 'npm install' en el servidor para habilitarla completamente.");
+    setExporting(event.id);
+    try {
+      // Dynamic imports - SAFEST way to avoid server crashes
+      const { jsPDF } = await import("jspdf");
+      await import("jspdf-autotable");
+
+      const res = await fetch(`${getApiUrl()}/media/${event.slug}`);
+      const media = res.ok ? await res.json() : [];
+
+      const doc = new jsPDF();
+      
+      doc.setFontSize(22);
+      doc.setTextColor(168, 85, 247);
+      doc.text("QRFoto - Reporte de Evento", 14, 22);
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Evento: ${event.name}`, 14, 32);
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Fecha: ${new Date(event.event_date).toLocaleDateString()}`, 14, 40);
+      doc.text(`Generado: ${new Date().toLocaleString()}`, 14, 46);
+      
+      const tableColumn = ["#", "Invitado", "Mensaje", "Fecha/Hora"];
+      const tableRows = media.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((m: any, i: number) => [
+        i + 1,
+        m.guest_name || "Invitado",
+        m.message || "-",
+        new Date(m.created_at).toLocaleString()
+      ]);
+
+      (doc as any).autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 55,
+        theme: 'grid',
+        headStyles: { fillColor: [168, 85, 247], textColor: [255, 255, 255] },
+        styles: { fontSize: 9 }
+      });
+
+      doc.save(`${event.slug}-reporte.pdf`);
+    } catch (err) {
+      console.error("Export error:", err);
+      alert("Error al generar PDF. Por favor, asegúrate de haber ejecutado 'npm install jspdf jspdf-autotable' en el servidor.");
+    } finally {
+      setExporting(null);
+    }
   };
 
   return (
