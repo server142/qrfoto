@@ -93,34 +93,33 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               className="fixed inset-0 z-40 md:hidden bg-zinc-950/95 backdrop-blur-2xl p-8 pt-32"
             >
               <nav className="flex flex-col gap-8">
-                {navItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center justify-between text-4xl font-black uppercase italic text-white/90 hover:text-purple-400 transition-all border-b border-white/5 pb-4 group ${
+                    className={`flex items-center justify-between text-2xl font-black italic text-white/90 hover:text-purple-400 transition-all border-b border-white/5 pb-4 group ${
                         item.variant === "user" ? "text-purple-400" : ""
                     }`}
                   >
                     <div className="flex items-center gap-6">
-                      <item.icon className="w-8 h-8 text-purple-600" />
+                      <item.icon className="w-6 h-6 text-purple-600" />
                       <span>{item.label}</span>
                     </div>
-                    <ArrowRight className="w-8 h-8 opacity-0 group-hover:opacity-100 transition-all" />
+                    <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition-all" />
                   </Link>
                 ))}
 
-                <div className="mt-8 flex flex-col gap-10">
-                  <div className="flex items-center justify-between bg-white/5 p-6 rounded-[2rem] border border-white/5">
+                <div className="mt-8 flex flex-col gap-8">
+                  <div className="flex items-center justify-between bg-white/5 p-6 rounded-[1.5rem] border border-white/5">
                     <span className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">{t.nav.change_lang}</span>
                     <LanguageSwitcher />
                   </div>
 
                   <Link
                     href="/login"
-                    className="flex items-center gap-6 text-4xl font-black uppercase italic text-red-500/80 hover:text-red-500 transition-all"
+                    className="flex items-center gap-4 text-2xl font-black italic text-red-500/80 hover:text-red-500 transition-all"
                   >
-                    <LogOut className="w-8 h-8" /> {t.dashboard.logout}
+                    <LogOut className="w-6 h-6" /> {t.dashboard.logout}
                   </Link>
                 </div>
               </nav>
