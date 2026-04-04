@@ -41,6 +41,14 @@ export default function GuestUploadPage() {
   const [mediaLoading, setMediaLoading] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
+  // Upload state (Restored)
+  const [uploading, setUploading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [message, setMessage] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const fetchMedia = async () => {
     try {
       const res = await fetch(`${getApiUrl()}/media/${slug}`);
