@@ -14,7 +14,10 @@ import {
   DialogDescription
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
-import { Plus, Calendar, QrCode, ExternalLink, Trash2, Settings, Image as ImageIcon, Loader2, Printer, Download, Power, CheckCircle, Star, Share2 } from "lucide-react";
+import { Plus, Calendar, QrCode, ExternalLink, Trash2, Settings, Image as ImageIcon, Loader2, Printer, Download, Power, CheckCircle, Star, Share2, FileText } from "lucide-react";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
@@ -39,6 +42,8 @@ export default function EventsPage() {
   const [comment, setComment] = useState("");
   const [isFinishing, setIsFinishing] = useState(false);
   const [finishError, setFinishError] = useState("");
+  const [exporting, setExporting] = useState<string | null>(null);
+
 
   // Helper to get token from cookies
   const getToken = () => {
@@ -178,6 +183,55 @@ export default function EventsPage() {
     }
   };
 
+  const handleExportPDF = async (event: any) => {
+    setExporting(event.id);
+    try {
+      const res = await fetch(`${getApiUrl()}/media/${event.slug}`);
+      const media = res.ok ? await res.json() : [];
+
+      const doc = new jsPDF();
+      
+      // Header - Minimalist & Pro
+      doc.setFontSize(22);
+      doc.setTextColor(168, 85, 247); // QRFoto Purple
+      doc.text("QRFoto - Reporte de Evento", 14, 22);
+      
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Evento: ${event.name}`, 14, 32);
+      
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Fecha del Evento: ${new Date(event.event_date).toLocaleDateString()}`, 14, 40);
+      doc.text(`Reporte generado: ${new Date().toLocaleString()}`, 14, 46);
+      
+      // Table data
+      const tableColumn = ["#", "Invitado", "Mensaje", "Fecha/Hora"];
+      const tableRows = media.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((m: any, i: number) => [
+        i + 1,
+        m.guest_name || "Invitado",
+        m.message || "-",
+        new Date(m.created_at).toLocaleString()
+      ]);
+
+      (doc as any).autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 55,
+        theme: 'grid',
+        headStyles: { fillColor: [168, 85, 247], textColor: [255, 255, 255], fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        styles: { fontSize: 9 }
+      });
+
+      doc.save(`${event.slug}-reporte.pdf`);
+    } catch (err) {
+      console.error("Export error:", err);
+    } finally {
+      setExporting(null);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-zinc-950/50 p-6 sm:p-10 rounded-[2.5rem] border border-white/5 gap-6 sm:gap-0">
@@ -296,7 +350,7 @@ export default function EventsPage() {
                         disabled={event.status !== 'Active'}
                         className="w-full bg-white text-black hover:bg-zinc-200 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[9px] h-12 gap-1.5 shadow-lg transition-all"
                       >
-                        <ExternalLink className="w-3 h-3" /> {t.events.live_view}
+                        <ExternalLink className="w-3 h-3" /> PRESENTACIÓN
                       </Button>
                     </Link>
                     <Button
@@ -316,7 +370,16 @@ export default function EventsPage() {
                       }}
                       className="flex-1 bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 rounded-2xl text-[10px] h-12 font-bold uppercase border border-purple-500/10"
                     >
-                      <Download className="w-3.5 h-3.5 mr-1" /> ZIP
+                      <Download className="w-3.5 h-3.5 mr-1" /> DESCARGAR
+                    </Button>
+
+                    <Button
+                      onClick={() => handleExportPDF(event)}
+                      disabled={exporting === event.id}
+                      className="flex-1 bg-white/5 hover:bg-white/10 text-white/80 rounded-2xl text-[10px] h-12 font-bold uppercase border border-white/5"
+                    >
+                      {exporting === event.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 mr-1" />}
+                      EXPORTAR
                     </Button>
 
                     <Button
@@ -324,7 +387,7 @@ export default function EventsPage() {
                       className={`flex-1 rounded-2xl text-[10px] h-12 font-bold uppercase border ${event.status === 'Active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/10 hover:bg-orange-500/20' : 'bg-green-500/10 text-green-400 border-green-500/10 hover:bg-green-500/20'}`}
                     >
                       {event.status === 'Active' ? <Power className="w-3.5 h-3.5 mr-1" /> : <CheckCircle className="w-3.5 h-3.5 mr-1" />}
-                      {event.status === 'Active' ? t.events.finish_btn : t.events.activate_btn}
+                      {event.status === 'Active' ? "FINALIZAR" : t.events.activate_btn}
                     </Button>
 
                     <Link href={`/dashboard/events/${event.id}/config`} className="flex-1">
