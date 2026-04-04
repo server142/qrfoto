@@ -10,6 +10,7 @@ import { PlansModule } from './plans/plans.module';
 import { MediaModule } from './media/media.module';
 import { PaymentsModule } from './payments/payments.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { ReviewsModule } from './reviews/reviews.module';
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
         host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
+        port: configService.get<number>('DB_PORT', 3306),
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASS'),
         database: configService.get<string>('DB_NAME'),
@@ -35,6 +36,7 @@ import { ReviewsModule } from './reviews/reviews.module';
     MediaModule,
     PaymentsModule,
     ReviewsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
