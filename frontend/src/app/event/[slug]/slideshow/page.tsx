@@ -19,6 +19,7 @@ export default function SlideshowPage() {
   const [version, setVersion] = useState(0); // Contador monotónico: fuerza re-ejecución aunque el índice no cambie
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState<any>(null);
+  const [qrOpen, setQrOpen] = useState(false);
 
   useEffect(() => {
     let socket: any;
@@ -139,7 +140,6 @@ export default function SlideshowPage() {
     </div>
   );
 
-  const [qrOpen, setQrOpen] = useState(false);
   const currentMedia = media[currentIndex];
 
   return (
