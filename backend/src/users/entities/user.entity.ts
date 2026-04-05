@@ -34,7 +34,7 @@ export class User {
   @Column({ nullable: true })
   preferred_language: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   reset_password_token: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
