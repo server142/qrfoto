@@ -313,7 +313,7 @@ export default function EventsPage() {
             <p className="text-zinc-400 uppercase text-xs font-black tracking-[0.3em]">{t.events.syncing}</p>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 max-w-7xl">
             {events.length === 0 ? (
               <div className="col-span-full py-40 text-center border-4 border-dashed border-zinc-100 rounded-[3rem] bg-white shadow-xl shadow-zinc-100/50">
                 <Calendar className="w-24 h-24 text-zinc-100 mx-auto mb-8" />
@@ -330,30 +330,30 @@ export default function EventsPage() {
                   key={event.id}
                   className="group"
                 >
-                  <Card className="bg-white border-zinc-100 p-8 flex flex-col hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 rounded-[3.5rem] shadow-xl shadow-zinc-100 relative overflow-hidden h-full">
+                  <Card className="bg-white border-zinc-100 p-10 sm:p-12 flex flex-col hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 rounded-[3.5rem] shadow-xl shadow-zinc-100 relative overflow-hidden h-full">
                     <div className="flex justify-between items-start mb-8 relative z-10">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-2">
                           <div className={`w-2 h-2 rounded-full ${event.status === 'Active' ? 'bg-green-500 animate-pulse' : 'bg-red-400'}`} />
                           <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{event.status === 'Active' ? t.events.status_active : t.events.status_finished}</span>
                         </div>
-                        <h3 className="text-2xl font-black text-zinc-900 group-hover:text-purple-600 transition-colors italic leading-tight tracking-tighter">{event.name}</h3>
+                        <h3 className="text-3xl font-black text-zinc-900 group-hover:text-purple-600 transition-colors italic leading-tight tracking-tighter">{event.name}</h3>
                         <p className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">{new Date(event.event_date).toLocaleDateString(t.language === 'en' ? 'en-US' : 'es-MX', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                       </div>
-                      <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center border border-zinc-100 group-hover:bg-purple-50 group-hover:border-purple-100 transition-colors">
-                        <QrCode className="w-6 h-6 text-zinc-300 group-hover:text-purple-600 transition-colors" />
+                      <div className="w-14 h-14 bg-zinc-50 rounded-2xl flex items-center justify-center border border-zinc-100 group-hover:bg-purple-50 group-hover:border-purple-100 transition-colors">
+                        <QrCode className="w-7 h-7 text-zinc-300 group-hover:text-purple-600 transition-colors" />
                       </div>
                     </div>
 
                     <div className="flex-1 space-y-6 mb-10 relative z-10">
-                      <div className="bg-white p-6 rounded-[3rem] flex flex-col items-center justify-center border-2 border-zinc-50 group-hover:border-purple-100 transition-all shadow-sm relative group/qr">
+                      <div className="bg-white p-8 rounded-[3.5rem] flex flex-col items-center justify-center border-2 border-zinc-50 group-hover:border-purple-100 transition-all shadow-sm relative group/qr">
                         <QRCodeSVG
                           value={
                             window.location.hostname === 'localhost' && localConfig?.frontendUrl
                               ? `${localConfig.frontendUrl}/event/${event.slug}`
                               : `${getBaseUrl()}/event/${event.slug}`
                           }
-                          size={180}
+                          size={220}
                           level="H"
                         />
                         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm opacity-0 group-hover/qr:opacity-100 transition-opacity flex flex-col items-center justify-center p-6 text-center">
@@ -363,18 +363,18 @@ export default function EventsPage() {
                       </div>
                       <Button
                         onClick={() => window.location.href = `${getApiUrl()}/media/${event.slug}/download`}
-                        className="w-full h-12 bg-white border border-dashed border-purple-200 text-purple-600 hover:bg-purple-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2 group/zip transition-all hover:scale-[1.02] mt-4"
+                        className="w-full h-14 bg-white border border-dashed border-purple-200 text-purple-600 hover:bg-purple-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2 group/zip transition-all hover:scale-[1.02] mt-4"
                       >
                         <Download className="w-4 h-4 transition-transform group-hover/zip:-translate-y-1" />
                         {t.events.bulk_download_btn}
                       </Button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 relative z-10">
+                    <div className="grid grid-cols-2 gap-6 relative z-10">
                       <Link href={`/event/${event.slug}/slideshow`} target="_blank" className="col-span-2">
                         <Button
                           disabled={event.status !== 'Active'}
-                          className="w-full h-14 bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-zinc-200 transition-all hover:scale-[1.02]"
+                          className="w-full h-16 bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-zinc-200 transition-all hover:scale-[1.02]"
                         >
                           <Activity className="w-4 h-4" /> {t.events.presentation}
                         </Button>
@@ -382,32 +382,32 @@ export default function EventsPage() {
 
                       <Button
                         onClick={() => handleShare(event)}
-                        className="bg-purple-600 text-white hover:bg-purple-700 rounded-2xl font-black uppercase tracking-widest text-[10px] h-14 gap-2 transition-all shadow-lg shadow-purple-600/10"
+                        className="bg-purple-600 text-white hover:bg-purple-700 rounded-2xl font-black uppercase tracking-widest text-[10px] h-16 gap-2 transition-all shadow-lg shadow-purple-600/10"
                       >
                         <Share2 className="w-4 h-4" /> {t.events.share}
                       </Button>
 
                       <Link href={`/event/${event.slug}/card`} target="_blank">
-                        <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-100 rounded-2xl text-[10px] h-14 font-black uppercase transition-all">
+                        <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all">
                           <Printer className="w-4 h-4 mr-2" /> {t.events.print}
                         </Button>
                       </Link>
 
                       <Button
                         onClick={() => setFinishingEvent({ ...event, isReactivating: event.status !== 'Active' })}
-                        className={`col-span-1 rounded-2xl text-[10px] h-14 font-black uppercase border transition-all ${event.status === 'Active' ? 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100' : 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'}`}
+                        className={`col-span-1 rounded-2xl text-[10px] h-16 font-black uppercase border transition-all ${event.status === 'Active' ? 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100' : 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'}`}
                       >
                         {event.status === 'Active' ? <Power className="w-4 h-4 mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                         {event.status === 'Active' ? t.events.finalize : t.events.activate}
                       </Button>
 
                       <Link href={`/dashboard/events/${event.id}/config`}>
-                        <Button className="w-full bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 rounded-2xl text-[10px] h-14 font-black uppercase transition-all">
+                        <Button className="w-full bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all">
                           <Settings className="w-4 h-4 mr-2" /> {t.events.settings}
                         </Button>
                       </Link>
 
-                      <Button onClick={() => handleDelete(event.id)} className="col-span-2 bg-red-50 hover:bg-red-100 text-red-500 border border-red-100 rounded-2xl text-[10px] h-14 font-black uppercase transition-all opacity-40 hover:opacity-100">
+                      <Button onClick={() => handleDelete(event.id)} className="col-span-2 bg-red-50 hover:bg-red-100 text-red-500 border border-red-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all opacity-40 hover:opacity-100">
                         <Trash2 className="w-4 h-4 mr-2" /> {t.events.delete}
                       </Button>
                     </div>
