@@ -74,13 +74,48 @@ export class UploadsService {
   }
 
   async uploadFile(file: Express.Multer.File, folder: string = 'general'): Promise<string> {
+    let finalBuffer = file.buffer;
+    const isImage = file.mimetype.startsWith('image/') && !file.mimetype.includes('gif');
+
+    if (isImage) {
+      try {
+        const sharp = require('sharp');
+        const path = require('path');
+        const watermarkPath = path.join(__dirname, '..', 'assets', 'watermark.png');
+        
+        // Redimensionar marca de agua al 15% del ancho de la imagen original
+        const metadata = await sharp(file.buffer).metadata();
+        const watermarkWidth = Math.round((metadata.width || 1000) * 0.20); // 20% del ancho
+        
+        const watermark = await sharp(watermarkPath)
+          .resize(watermarkWidth)
+          .toBuffer();
+
+        finalBuffer = await sharp(file.buffer)
+          .composite([
+            { 
+              input: watermark, 
+              gravity: 'southeast', // Esquina inferior derecha
+              blend: 'over',
+              // opacity: 0.8 // Opcional
+            }
+          ])
+          .toBuffer();
+          
+        console.log(`[QRFoto-Media] 💧 Watermark applied to ${file.originalname}`);
+      } catch (err) {
+        console.error(`[QRFoto-Media] ⚠️ Could not apply watermark:`, err.message);
+        // Fallback to original buffer if sharp fails
+      }
+    }
+
     const fileKey = `${folder}/${uuidv4()}-${file.originalname}`;
 
     await this.s3Client.send(
       new S3.PutObjectCommand({
         Bucket: this.bucketName,
         Key: fileKey,
-        Body: file.buffer,
+        Body: finalBuffer,
         ContentType: file.mimetype,
       }),
     );

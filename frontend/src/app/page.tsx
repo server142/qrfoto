@@ -69,15 +69,17 @@ export default function LandingPage() {
             <a href="#precios" className="hover:text-purple-600 transition-colors uppercase">Precios</a>
           </div>
 
-          <div className="flex items-center gap-4">
-            <LanguageSwitcher />
-            <Link href="/login" className="hidden md:block text-xs font-black uppercase tracking-widest text-zinc-900 hover:text-purple-600">Entrar</Link>
-            <Link href="/register">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-8 h-12 text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20">
-                Crear Evento Gratis
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden min-[400px]:block">
+                <LanguageSwitcher />
+            </div>
+            <Link href="/login" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-900 border border-zinc-200 px-3 py-2 rounded-full hover:bg-zinc-50 transition-colors">Entrar</Link>
+            <Link href="/register" className="hidden min-[500px]:block">
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-4 sm:px-8 h-10 sm:h-12 text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20">
+                    Crear Evento
                 </Button>
             </Link>
-            <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
@@ -103,14 +105,14 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl md:text-7xl leading-[1.1] font-black tracking-tighter mb-12 uppercase italic text-zinc-900"
+              className="text-3xl min-[400px]:text-4xl md:text-7xl leading-[1.1] font-black tracking-tighter mb-12 uppercase italic text-zinc-900 break-words"
             >
               Convierte tu evento en <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-300% animate-gradient pb-4">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-300% animate-gradient pb-2 sm:pb-4 inline-block">
                 una máquina viral
               </span>
-              <span className="inline-block ml-4 text-purple-600">
-                <Camera className="w-12 h-12 md:w-20 md:h-20 inline align-middle animate-bounce" />
+              <span className="inline-block ml-2 sm:ml-4 text-purple-600">
+                <Camera className="w-8 h-8 sm:w-12 sm:h-12 md:w-20 md:h-20 inline align-middle animate-bounce" />
               </span>
             </motion.h1>
 
@@ -242,14 +244,14 @@ export default function LandingPage() {
                 initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="flex items-center gap-8 p-12 rounded-[3.5rem] bg-[#F8F9FA] border border-zinc-50 hover:bg-white hover:shadow-2xl transition-all duration-500"
+                className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 p-8 sm:p-12 rounded-[2.5rem] sm:rounded-[3.5rem] bg-[#F8F9FA] border border-zinc-50 hover:bg-white hover:shadow-2xl transition-all duration-500 text-center sm:text-left"
               >
-                <div className="w-20 h-20 rounded-[2rem] bg-white shadow-xl flex items-center justify-center shrink-0">
-                    <benefit.icon className="w-10 h-10 text-purple-600" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] sm:rounded-[2rem] bg-white shadow-xl flex items-center justify-center shrink-0">
+                    <benefit.icon className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" />
                 </div>
                 <div>
-                    <h4 className="text-3xl font-black uppercase tracking-tighter italic mb-4">{benefit.title}</h4>
-                    <p className="text-zinc-500 font-medium text-lg leading-tight">{benefit.desc}</p>
+                    <h4 className="text-2xl sm:text-3xl font-black uppercase tracking-tighter italic mb-2 sm:mb-4">{benefit.title}</h4>
+                    <p className="text-zinc-500 font-medium text-base sm:text-lg leading-tight">{benefit.desc}</p>
                 </div>
               </motion.div>
             ))}

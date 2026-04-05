@@ -135,24 +135,24 @@ export function PricingTable({
                         transition={{ delay: i * 0.1 }}
                         className="relative group"
                     >
-                        <Card className={`relative h-full bg-white border-zinc-100 p-10 flex flex-col transition-all duration-500 rounded-[3rem] shadow-[0_40px_100px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.08)] hover:-translate-y-2 group-hover:border-purple-200 overflow-hidden ${isActive ? 'ring-4 ring-green-500/20 border-green-500 scale-105 z-10' : ''}`}>
+                        <Card className={`relative h-full bg-white border-zinc-100 p-6 sm:p-10 flex flex-col transition-all duration-500 rounded-[2rem] sm:rounded-[3rem] shadow-[0_40px_100px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.08)] hover:-translate-y-2 group-hover:border-purple-200 overflow-hidden ${isActive ? 'ring-4 ring-green-500/20 border-green-500 scale-105 z-10' : ''}`}>
                             {isActive ? (
-                                <div className="absolute top-0 right-0 p-8">
-                                    <ShieldCheck className="w-6 h-6 text-green-500" />
+                                <div className="absolute top-0 right-0 p-4 sm:p-8">
+                                    <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
                                 </div>
                             ) : null}
 
                             {!isActive && (plan.type === 'Annual' || plan.price > 50) ? (
-                                <div className="absolute top-0 right-0 p-8">
-                                    <Sparkles className="w-6 h-6 text-purple-600 animate-pulse" />
+                                <div className="absolute top-0 right-0 p-4 sm:p-8">
+                                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 animate-pulse" />
                                 </div>
                             ) : null}
 
                             <div className="mb-12 text-left">
                                 <h3 className="text-2xl font-black tracking-tighter text-zinc-400 mb-4 italic uppercase">{plan.name}</h3>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-6xl font-black text-zinc-900 tracking-tighter">{symbol}{displayPrice}</span>
-                                    <span className="text-zinc-400 uppercase text-xs font-black tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
+                                <div className="flex items-baseline gap-2 flex-wrap">
+                                    <span className="text-4xl min-[400px]:text-5xl sm:text-6xl font-black text-zinc-900 tracking-tighter">{symbol}{displayPrice}</span>
+                                    <span className="text-zinc-400 uppercase text-[10px] sm:text-xs font-black tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
                                 </div>
                             </div>
 
