@@ -18,7 +18,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("qrfoto_lang") as Language;
-    if (saved) setLanguageState(saved);
+    if (saved) {
+      setLanguageState(saved);
+    } else {
+      const browserLang = navigator.language.split('-')[0];
+      const defaultLang: Language = browserLang === 'en' ? 'en' : 'es';
+      setLanguageState(defaultLang);
+      localStorage.setItem("qrfoto_lang", defaultLang);
+    }
   }, []);
 
   const setLanguage = (lang: Language) => {

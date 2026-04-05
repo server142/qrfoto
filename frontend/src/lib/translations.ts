@@ -165,6 +165,14 @@ export const translations = {
         cancel: "Cancel",
         wrong_password: "Invalid password."
       }
+    },
+    slideshow: {
+      syncing: "Syncing Gallery...",
+      disabled_title: "Slideshow suspended",
+      disabled_desc: "This service has been temporarily disabled by the administrator.",
+      ready_title: "Gallery Ready",
+      ready_desc: "Scan the QR code and start sharing your moments!",
+      guest: "Guest"
     }
   },
   es: {
@@ -333,6 +341,14 @@ export const translations = {
         cancel: "Cancelar",
         wrong_password: "Contraseña incorrecta."
       }
+    },
+    slideshow: {
+      syncing: "Sincronizando Galería...",
+      disabled_title: "Slideshow suspendido",
+      disabled_desc: "Este servicio ha sido temporalmente deshabilitado por el administrador.",
+      ready_title: "Galería Lista",
+      ready_desc: "¡Escanea el código QR y empieza a compartir tus momentos!",
+      guest: "Invitado"
     }
   }
 };

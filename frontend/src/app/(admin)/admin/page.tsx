@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Users, Activity, CreditCard, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Users, Activity, CreditCard, Image as ImageIcon, Loader2, Zap } from "lucide-react";
 import { useTranslation } from "@/lib/LanguageContext";
 import { getApiUrl } from "@/lib/api";
 
@@ -92,9 +92,8 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full inline-block mb-1 ${
-                      event.status === 'Active' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
-                  }`}>
+                  <div className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full inline-block mb-1 ${event.status === 'Active' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+                    }`}>
                     {event.status}
                   </div>
                   <p className="text-[10px] text-white/30 font-bold">
@@ -106,14 +105,18 @@ export default function AdminDashboard() {
           </div>
         </Card>
 
-        <Card className="bg-zinc-950 border-white/10 p-6 flex flex-col items-center justify-center text-center relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent pointer-events-none" />
-          <Activity className="w-16 h-16 text-purple-500/20 mx-auto mb-6 transition-transform group-hover:scale-110" />
-          <h3 className="text-lg font-black uppercase italic text-white/80 tracking-tighter">{t.admin.income_charts}</h3>
-          <p className="text-[10px] text-white/40 mt-4 max-w-[200px] mx-auto font-bold uppercase tracking-widest leading-relaxed">
-            {t.language === 'es' 
-              ? 'Conectaremos las gráficas visuales una vez tengamos registros de pagos Stripe.' 
-              : 'Stripe visual charts will be connected once payment logs start flowing.'}
+        <Card className="bg-zinc-950 border-purple-500/20 p-6 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-transparent pointer-events-none" />
+          <Zap className="w-12 h-12 text-purple-500 mx-auto mb-4 animate-pulse" />
+          <h3 className="text-sm font-black uppercase italic text-white/80 tracking-tighter">Automatizaciones</h3>
+          <div className="flex items-center gap-2 mt-2 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">
+            <span className="w-2 h-2 rounded-full bg-green-500" />
+            <span className="text-[10px] text-green-400 font-black uppercase tracking-widest leading-none">n8n Live</span>
+          </div>
+          <p className="text-[9px] text-white/30 mt-4 max-w-[180px] mx-auto font-bold uppercase tracking-widest leading-relaxed">
+            {t.language === 'es'
+              ? 'Workflows de recordatorios y zips automáticos activos.'
+              : 'Automated reminders and zip workflows are online.'}
           </p>
         </Card>
       </div>

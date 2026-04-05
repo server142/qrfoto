@@ -8,9 +8,11 @@ import { io } from "socket.io-client";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
 import { QRCodeSVG } from "qrcode.react";
 import { Logo } from "@/components/Logo";
+import { useTranslation } from "@/lib/LanguageContext";
 
 export default function SlideshowPage() {
   const { slug } = useParams();
+  const { t } = useTranslation();
   const [media, setMedia] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [version, setVersion] = useState(0); // Contador monotónico: fuerza re-ejecución aunque el índice no cambie
@@ -108,7 +110,7 @@ export default function SlideshowPage() {
   if (loading) return (
     <div className="h-screen bg-black flex flex-col items-center justify-center text-white">
       <Loader2 className="w-12 h-12 animate-spin text-purple-600 mb-4" />
-      <p className="tracking-widest uppercase text-xs opacity-50 font-black">Sincronizando Galería...</p>
+      <p className="tracking-widest uppercase text-xs opacity-50 font-black">{t.slideshow.syncing}</p>
     </div>
   );
 
@@ -118,9 +120,9 @@ export default function SlideshowPage() {
       <div className="w-32 h-32 rounded-full border-4 border-dashed border-red-500/20 flex items-center justify-center mb-8 relative z-10">
         <QrCode className="w-12 h-12 text-white/20" />
       </div>
-      <h1 className="text-6xl font-black mb-4 uppercase tracking-tighter italic relative z-10 text-white/80">{event?.name}</h1>
+      <h1 className="text-6xl font-black mb-4 uppercase tracking-tighter italic relative z-10 text-white/80">{t.slideshow.disabled_title}</h1>
       <p className="text-xl text-white/40 max-w-xl font-medium tracking-tight relative z-10">
-        El servicio de slideshow ha sido temporalmente suspendido por el administrador del sistema.
+        {t.slideshow.disabled_desc}
       </p>
     </div>
   );
@@ -131,8 +133,8 @@ export default function SlideshowPage() {
       <div className="w-32 h-32 rounded-full border-4 border-dashed border-white/10 flex items-center justify-center mb-8 relative z-10">
         <Camera className="w-12 h-12 text-white/20 animate-pulse" />
       </div>
-      <h1 className="text-6xl font-black mb-4 uppercase tracking-tighter italic relative z-10" style={{ color: event?.branding_color }}>{event?.name}</h1>
-      <p className="text-xl text-white/40 max-w-xl font-medium tracking-tight relative z-10">La galería está lista. ¡Escanea el código QR y empieza a compartir tus momentos!</p>
+      <h1 className="text-6xl font-black mb-4 uppercase tracking-tighter italic relative z-10" style={{ color: event?.branding_color }}>{t.slideshow.ready_title}</h1>
+      <p className="text-xl text-white/40 max-w-xl font-medium tracking-tight relative z-10">{t.slideshow.ready_desc}</p>
     </div>
   );
 

@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ArrowRight, 
-  QrCode, 
-  Zap, 
-  Shield, 
-  Menu, 
-  X, 
-  Share2, 
-  Camera, 
-  Heart, 
-  Users, 
-  CheckCircle2, 
+import {
+  ArrowRight,
+  QrCode,
+  Zap,
+  Shield,
+  Menu,
+  X,
+  Share2,
+  Camera,
+  Heart,
+  Users,
+  CheckCircle2,
   Sparkles,
   PlayCircle,
   Star,
@@ -71,22 +71,24 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
-            <div className="hidden lg:block">
-                <LanguageSwitcher />
+            <Link href="/login" className="text-xs sm:text-sm font-black uppercase tracking-widest text-zinc-900 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white border-2 border-zinc-100 hover:border-purple-600 hover:text-purple-600 transition-all shadow-lg hover:shadow-purple-600/10 active:scale-95">
+              {t.login.cta}
+            </Link>
+
+            <div className="scale-90 sm:scale-100">
+              <LanguageSwitcher />
             </div>
-            <Link href="/login" className="text-xs sm:text-sm font-black uppercase tracking-widest text-zinc-900 px-8 py-3.5 rounded-full bg-white border-2 border-zinc-100 hover:border-purple-600 hover:text-purple-600 transition-all shadow-lg hover:shadow-purple-600/10 active:scale-95">
-                Entrar
-            </Link>
+
             <Link href="/register" className="hidden lg:block">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-8 h-12 text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
-                    Crear Evento Gratis
-                </Button>
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-8 h-12 text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
+                {t.hero.cta}
+              </Button>
             </Link>
-            <button 
-                className="lg:hidden p-3 hover:bg-zinc-100 rounded-2xl transition-colors relative z-50 text-purple-600" 
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+            <button
+              className="lg:hidden p-3 hover:bg-zinc-100 rounded-2xl transition-colors relative z-50 text-purple-600"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-                {isMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+              {isMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
             </button>
           </div>
 
@@ -101,36 +103,36 @@ export default function LandingPage() {
                 className="fixed inset-0 bg-white z-40 lg:hidden flex flex-col p-8 pt-24"
               >
                 <div className="space-y-8 flex-1">
-                    {[
-                        { href: "#como-funciona", label: "Cómo funciona" },
-                        { href: "#beneficios", label: "Beneficios" },
-                        { href: "#precios", label: "Precios" }
-                    ].map((link) => (
-                        <a 
-                            key={link.href}
-                            href={link.href} 
-                            onClick={() => setIsMenuOpen(false)}
-                            className="block text-4xl font-black uppercase italic tracking-tighter text-zinc-900 border-b border-zinc-100 pb-4"
-                        >
-                            {link.label}
-                        </a>
-                    ))}
-                    <div className="pt-8">
-                        <LanguageSwitcher />
-                    </div>
+                  {[
+                    { href: "#como-funciona", label: "Cómo funciona" },
+                    { href: "#beneficios", label: "Beneficios" },
+                    { href: "#precios", label: "Precios" }
+                  ].map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block text-4xl font-black uppercase italic tracking-tighter text-zinc-900 border-b border-zinc-100 pb-4"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                  <div className="pt-8">
+                    <LanguageSwitcher />
+                  </div>
                 </div>
-                
+
                 <div className="space-y-4">
-                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>
-                        <Button variant="ghost" className="w-full h-16 rounded-3xl font-black uppercase tracking-widest text-zinc-400 text-xs">
-                            Ya tengo cuenta - Entrar
-                        </Button>
-                    </Link>
-                    <Link href="/register" onClick={() => setIsMenuOpen(false)}>
-                        <Button className="w-full h-20 rounded-[2.5rem] bg-purple-600 hover:bg-purple-700 text-white text-lg font-black uppercase tracking-tighter shadow-2xl shadow-purple-600/30">
-                            CREAR MI EVENTO GRATIS
-                        </Button>
-                    </Link>
+                  <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full h-16 rounded-3xl font-black uppercase tracking-widest text-zinc-400 text-xs">
+                      Ya tengo cuenta - Entrar
+                    </Button>
+                  </Link>
+                  <Link href="/register" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full h-20 rounded-[2.5rem] bg-purple-600 hover:bg-purple-700 text-white text-lg font-black uppercase tracking-tighter shadow-2xl shadow-purple-600/30">
+                      CREAR MI EVENTO GRATIS
+                    </Button>
+                  </Link>
                 </div>
               </motion.div>
             )}
@@ -145,90 +147,90 @@ export default function LandingPage() {
         <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-indigo-50 rounded-full blur-[150px] opacity-40 -z-10" />
 
         <div className="container mx-auto px-6 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-50 text-purple-600 text-[10px] font-black uppercase tracking-[0.2em] mb-12 shadow-sm"
-            >
-              <Sparkles className="w-3.5 h-3.5" /> ACCESO GRATUITO POR TIEMPO LIMITADO
-            </motion.div>
-            
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl min-[400px]:text-5xl md:text-8xl lg:text-[7.5rem] leading-[0.95] font-black tracking-tighter mb-12 uppercase italic text-zinc-900 break-words"
-            >
-              Convierte tu evento en <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-300% animate-gradient pb-2 sm:pb-4 inline-block">
-                una máquina viral
-              </span>
-              <span className="inline-block ml-2 sm:ml-4 text-purple-600">
-                <Camera className="w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 inline align-middle animate-bounce" />
-              </span>
-            </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-50 text-purple-600 text-[10px] font-black uppercase tracking-[0.2em] mb-12 shadow-sm"
+          >
+            <Sparkles className="w-3.5 h-3.5" /> ACCESO GRATUITO POR TIEMPO LIMITADO
+          </motion.div>
 
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl md:text-2xl text-zinc-500 font-medium max-w-3xl mx-auto mb-16 leading-tight"
-            >
-              Tus invitados suben fotos en tiempo real. Tú obtienes recuerdos y <br />
-              <b>contenido sin esfuerzo</b> para que nadie se pierda los mejores momentos.
-            </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl min-[400px]:text-5xl md:text-8xl lg:text-[7.5rem] leading-[0.95] font-black tracking-tighter mb-12 uppercase italic text-zinc-900 break-words"
+          >
+            Convierte tu evento en <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-300% animate-gradient pb-2 sm:pb-4 inline-block">
+              una máquina viral
+            </span>
+            <span className="inline-block ml-2 sm:ml-4 text-purple-600">
+              <Camera className="w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 inline align-middle animate-bounce" />
+            </span>
+          </motion.h1>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-6"
-            >
-              <Link href="/register">
-                <Button size="lg" className="h-20 px-8 sm:px-12 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-lg sm:text-xl font-black uppercase tracking-tighter shadow-2xl shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 group">
-                  CREAR MI EVENTO GRATIS <ArrowRight className="ml-2 w-6 h-6 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </Link>
-              <Button size="lg" variant="ghost" className="h-16 sm:h-20 px-10 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center gap-3 active:scale-95 transition-all">
-                <PlayCircle className="w-5 h-5 text-purple-600" /> VER CÓMO FUNCIONA
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-xl md:text-2xl text-zinc-500 font-medium max-w-3xl mx-auto mb-16 leading-tight"
+          >
+            Tus invitados suben fotos en tiempo real. Tú obtienes recuerdos y <br />
+            <b>contenido sin esfuerzo</b> para que nadie se pierda los mejores momentos.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+          >
+            <Link href="/register">
+              <Button size="lg" className="h-20 px-8 sm:px-12 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-lg sm:text-xl font-black uppercase tracking-tighter shadow-2xl shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 group">
+                CREAR MI EVENTO GRATIS <ArrowRight className="ml-2 w-6 h-6 transition-transform group-hover:translate-x-1" />
               </Button>
+            </Link>
+            <Button size="lg" variant="ghost" className="h-16 sm:h-20 px-10 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center gap-3 active:scale-95 transition-all">
+              <PlayCircle className="w-5 h-5 text-purple-600" /> VER CÓMO FUNCIONA
+            </Button>
+          </motion.div>
+
+          {/* Floating Elements for "Hook" */}
+          <div className="absolute top-1/4 left-10 hidden xl:block">
+            <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="bg-white p-6 rounded-[2.5rem] shadow-2xl shadow-purple-600/10 -rotate-12 border border-zinc-100 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center">
+                <Heart className="w-6 h-6 text-purple-600 fill-current" />
+              </div>
+              <div className="text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Bodas</p>
+                <p className="text-sm font-black italic uppercase tracking-tighter">100% Emotivo</p>
+              </div>
             </motion.div>
+          </div>
 
-            {/* Floating Elements for "Hook" */}
-            <div className="absolute top-1/4 left-10 hidden xl:block">
-                <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="bg-white p-6 rounded-[2.5rem] shadow-2xl shadow-purple-600/10 -rotate-12 border border-zinc-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center">
-                        <Heart className="w-6 h-6 text-purple-600 fill-current" />
-                    </div>
-                    <div className="text-left">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Bodas</p>
-                        <p className="text-sm font-black italic uppercase tracking-tighter">100% Emotivo</p>
-                    </div>
-                </motion.div>
-            </div>
+          <div className="absolute top-1/3 right-10 hidden xl:block">
+            <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }} className="bg-white p-6 rounded-[2.5rem] shadow-2xl shadow-indigo-600/10 rotate-12 border border-zinc-100 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center">
+                <Zap className="w-6 h-6 text-indigo-600 fill-current" />
+              </div>
+              <div className="text-left">
+                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Antros</p>
+                <p className="text-sm font-black italic uppercase tracking-tighter">Viralidad Pura</p>
+              </div>
+            </motion.div>
+          </div>
 
-            <div className="absolute top-1/3 right-10 hidden xl:block">
-                <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }} className="bg-white p-6 rounded-[2.5rem] shadow-2xl shadow-indigo-600/10 rotate-12 border border-zinc-100 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center">
-                        <Zap className="w-6 h-6 text-indigo-600 fill-current" />
-                    </div>
-                    <div className="text-left">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Antros</p>
-                        <p className="text-sm font-black italic uppercase tracking-tighter">Viralidad Pura</p>
-                    </div>
-                </motion.div>
-            </div>
-
-            <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
             className="relative w-full max-w-6xl mx-auto rounded-[3rem] overflow-hidden mt-16 shadow-[0_50px_100px_rgba(0,0,0,0.1)] group"
           >
-            <img 
-              src="/qrfoto_final_hero_mockup_1775351002426.png" 
-              alt="QRFoto Mockup Dashboard y App" 
+            <img
+              src="/qrfoto_final_hero_mockup_1775351002426.png"
+              alt="QRFoto Mockup Dashboard y App"
               className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[3rem]" />
@@ -241,7 +243,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-12">
             {useCases.map((useCase, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -250,7 +252,7 @@ export default function LandingPage() {
                 className="group cursor-default"
               >
                 <div className={`${useCase.bg} w-20 h-20 rounded-3xl flex items-center justify-center mb-8 transform transition-transform group-hover:scale-110 group-hover:rotate-3 shadow-sm`}>
-                    <useCase.icon className={`w-10 h-10 ${useCase.color}`} />
+                  <useCase.icon className={`w-10 h-10 ${useCase.color}`} />
                 </div>
                 <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter italic">{useCase.title}</h3>
                 <p className="text-zinc-500 font-medium leading-snug">{useCase.desc}</p>
@@ -274,7 +276,7 @@ export default function LandingPage() {
               { step: "02", title: "Suben sus fotos", desc: "Los invitados seleccionan o toman fotos desde su propio móvil al instante.", icon: Camera },
               { step: "03", title: "¡Magia en Vivo!", desc: "Todo aparece al instante en la galería privada y en tu pantalla central.", icon: Zap }
             ].map((item, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -312,7 +314,7 @@ export default function LandingPage() {
               { title: "Personalización", desc: "Configura colores, logotipos y mensajes de bienvenida para que coincidan con tu estilo.", icon: Sparkles },
               { title: "Privacidad", desc: "Tú decides quién puede ver o subir fotos. Galerías protegidas y seguras.", icon: Users }
             ].map((benefit, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -320,11 +322,11 @@ export default function LandingPage() {
                 className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 p-8 sm:p-12 rounded-[2.5rem] sm:rounded-[3.5rem] bg-[#F8F9FA] border border-zinc-50 hover:bg-white hover:shadow-2xl transition-all duration-500 text-center sm:text-left"
               >
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] sm:rounded-[2rem] bg-white shadow-xl flex items-center justify-center shrink-0">
-                    <benefit.icon className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" />
+                  <benefit.icon className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" />
                 </div>
                 <div>
-                    <h4 className="text-2xl sm:text-3xl font-black uppercase tracking-tighter italic mb-2 sm:mb-4">{benefit.title}</h4>
-                    <p className="text-zinc-500 font-medium text-base sm:text-lg leading-tight">{benefit.desc}</p>
+                  <h4 className="text-2xl sm:text-3xl font-black uppercase tracking-tighter italic mb-2 sm:mb-4">{benefit.title}</h4>
+                  <p className="text-zinc-500 font-medium text-base sm:text-lg leading-tight">{benefit.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -347,7 +349,7 @@ export default function LandingPage() {
             ].map((testi, i) => (
               <div key={i} className="bg-white p-12 rounded-[3.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] border border-zinc-50 flex flex-col items-center text-center">
                 <div className="flex gap-1 mb-8">
-                  {[1,2,3,4,5].map(s => <Star key={s} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
+                  {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
                 </div>
                 <p className="text-xl font-medium text-zinc-900 mb-10 leading-snug italic">"{testi.text}"</p>
                 <div className="flex items-center flex-col gap-4">
@@ -381,7 +383,7 @@ export default function LandingPage() {
             >
               <Sparkles className="w-4 h-4" /> PRECIOS TRANSPARENTES
             </motion.div>
-            
+
             <h2 className="text-5xl md:text-[6rem] leading-[0.9] font-black tracking-tighter uppercase italic text-zinc-900">
               Escoge el plan <br /> <span className="text-purple-600">para tu éxito.</span>
             </h2>
@@ -394,22 +396,22 @@ export default function LandingPage() {
 
           <div className="mt-32">
             <div className="bg-zinc-900 rounded-[5rem] p-16 md:p-32 text-white relative overflow-hidden text-center shadow-3xl shadow-purple-900/10">
-                <div className="absolute top-12 right-12 rotate-12 hidden md:block">
-                    <div className="bg-yellow-400 text-black px-10 py-3 font-black uppercase text-sm rounded-full shadow-2xl animate-pulse">
-                        Acceso Instantáneo
-                    </div>
+              <div className="absolute top-12 right-12 rotate-12 hidden md:block">
+                <div className="bg-yellow-400 text-black px-10 py-3 font-black uppercase text-sm rounded-full shadow-2xl animate-pulse">
+                  Acceso Instantáneo
                 </div>
+              </div>
 
-                <h2 className="text-5xl md:text-[7rem] leading-none font-black mb-12 tracking-tighter uppercase italic">¿Listo para empezar?</h2>
-                <p className="text-white/80 text-2xl font-medium mb-16 max-w-3xl mx-auto leading-tight">
+              <h2 className="text-5xl md:text-[7rem] leading-none font-black mb-12 tracking-tighter uppercase italic">¿Listo para empezar?</h2>
+              <p className="text-white/80 text-2xl font-medium mb-16 max-w-3xl mx-auto leading-tight">
                 Empieza hoy mismo y configura tu evento en menos de <br /><b>30 segundos.</b>
-                </p>
-                
-                <Link href="/register">
+              </p>
+
+              <Link href="/register">
                 <Button size="lg" className="h-24 px-10 sm:px-20 bg-white text-black hover:bg-zinc-100 rounded-full text-lg sm:text-3xl font-black uppercase tracking-tighter shadow-2xl transition-all hover:scale-105 active:scale-95 border-none">
-                    REGISTRARME GRATIS
+                  REGISTRARME GRATIS
                 </Button>
-                </Link>
+              </Link>
             </div>
           </div>
         </div>
@@ -420,18 +422,18 @@ export default function LandingPage() {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-16">
             <div className="space-y-6 text-center md:text-left">
-                <Logo size="lg" />
-                <p className="text-zinc-500 font-medium max-w-md text-xl leading-snug">La plataforma definitiva para convertir tus eventos <br /> en experiencias digitales masivas.</p>
+              <Logo size="lg" />
+              <p className="text-zinc-500 font-medium max-w-md text-xl leading-snug">La plataforma definitiva para convertir tus eventos <br /> en experiencias digitales masivas.</p>
             </div>
             <div className="flex flex-wrap justify-center gap-16 text-xs font-black uppercase tracking-widest text-zinc-400">
-                <a href="#" className="hover:text-purple-600 transition-colors">Términos</a>
-                <a href="#" className="hover:text-purple-600 transition-colors">Privacidad</a>
-                <a href="#" className="hover:text-purple-600 transition-colors">Cookies</a>
+              <a href="#" className="hover:text-purple-600 transition-colors">Términos</a>
+              <a href="#" className="hover:text-purple-600 transition-colors">Privacidad</a>
+              <a href="#" className="hover:text-purple-600 transition-colors">Cookies</a>
             </div>
           </div>
           <div className="mt-24 pt-12 border-t border-zinc-50 text-center">
             <p className="text-zinc-200 text-[10px] font-black uppercase tracking-[0.4em]">
-                © 2026 QRFoto International Group. Todos los derechos reservados.
+              © 2026 QRFoto International Group. Todos los derechos reservados.
             </p>
           </div>
         </div>
