@@ -134,7 +134,14 @@ export const translations = {
       activate_btn: "Activate Event",
       finish_confirm: "Are you sure? This will disable the public gallery.",
       status_active: "Active",
-      status_finished: "Ended"
+      status_finished: "Ended",
+      presentation: "Presentation",
+      share: "Share",
+      settings: "Settings",
+      finalize: "Finalize",
+      activate: "Activate",
+      placeholder_event_name: "Ex. Wedding of Ana & Diego",
+      start_here: "Start here"
     },
     user_dashboard: {
       title: "My Dashboard",
@@ -310,7 +317,14 @@ export const translations = {
       activate_btn: "Activar Evento",
       finish_confirm: "¿Estás seguro? Esto desactivará la galería pública.",
       status_active: "Activo",
-      status_finished: "Finalizado"
+      status_finished: "Finalizado",
+      presentation: "Presentación",
+      share: "Compartir",
+      settings: "Ajustes",
+      finalize: "Finalizar",
+      activate: "Activar",
+      placeholder_event_name: "Ej. Boda de Ana & Diego",
+      start_here: "Empieza aquí"
     },
     user_dashboard: {
       title: "Mi Dashboard",

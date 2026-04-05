@@ -192,7 +192,7 @@ export default function EventsPage() {
       }
     } else {
       navigator.clipboard.writeText(url);
-      alert(t.nav?.change_lang === 'English' ? "Link copied to clipboard!" : "¡Enlace copiado al portapapeles!");
+      alert(t.language === 'en' ? "Link copied to clipboard!" : "¡Enlace copiado al portapapeles!");
     }
   };
 
@@ -248,7 +248,7 @@ export default function EventsPage() {
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
         <div>
           <h2 className="text-4xl font-black tracking-tighter italic text-zinc-900 leading-none">
-            Mis <span className="text-purple-600">Eventos</span>
+            {t.language === 'en' ? 'My ' : 'Mis '} <span className="text-purple-600">{t.language === 'en' ? 'Events' : 'Eventos'}</span>
           </h2>
           <p className="text-zinc-400 font-bold text-sm mt-3 uppercase tracking-widest">{t.events.subtitle}</p>
         </div>
@@ -274,7 +274,7 @@ export default function EventsPage() {
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Ej. Boda de Ana & Diego"
+                  placeholder={t.events.placeholder_event_name}
                   className="bg-zinc-50 border-zinc-100 text-zinc-900 h-14 rounded-2xl focus:ring-purple-600/20 font-bold"
                   required
                 />
@@ -319,7 +319,7 @@ export default function EventsPage() {
                 <Calendar className="w-24 h-24 text-zinc-100 mx-auto mb-8" />
                 <h3 className="text-3xl font-black uppercase italic text-zinc-300 tracking-tighter">{t.events.no_events}</h3>
                 <p className="text-zinc-400 text-sm mt-3 font-bold max-w-sm mx-auto">{t.events.no_events_desc}</p>
-                <Button variant="ghost" onClick={() => setOpen(true)} className="mt-8 text-purple-600 font-black uppercase tracking-widest text-xs hover:bg-purple-50">Empieza aquí <ChevronRight className="w-4 h-4 ml-1" /></Button>
+                <Button variant="ghost" onClick={() => setOpen(true)} className="mt-8 text-purple-600 font-black uppercase tracking-widest text-xs hover:bg-purple-50">{t.events.start_here} <ChevronRight className="w-4 h-4 ml-1" /></Button>
               </div>
             ) : (
               events.map((event: any, idx: number) => (
@@ -335,10 +335,10 @@ export default function EventsPage() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-2">
                           <div className={`w-2 h-2 rounded-full ${event.status === 'Active' ? 'bg-green-500 animate-pulse' : 'bg-red-400'}`} />
-                          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{event.status === 'Active' ? 'En Vivo' : 'Finalizado'}</span>
+                          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{event.status === 'Active' ? t.events.status_active : t.events.status_finished}</span>
                         </div>
                         <h3 className="text-2xl font-black text-zinc-900 group-hover:text-purple-600 transition-colors italic leading-tight tracking-tighter">{event.name}</h3>
-                        <p className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">{new Date(event.event_date).toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                        <p className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">{new Date(event.event_date).toLocaleDateString(t.language === 'en' ? 'en-US' : 'es-MX', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                       </div>
                       <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center border border-zinc-100 group-hover:bg-purple-50 group-hover:border-purple-100 transition-colors">
                         <QrCode className="w-6 h-6 text-zinc-300 group-hover:text-purple-600 transition-colors" />
@@ -376,7 +376,7 @@ export default function EventsPage() {
                           disabled={event.status !== 'Active'}
                           className="w-full h-14 bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-zinc-200 transition-all hover:scale-[1.02]"
                         >
-                          <Activity className="w-4 h-4" /> Lanzar Presentación
+                          <Activity className="w-4 h-4" /> {t.events.presentation}
                         </Button>
                       </Link>
 
@@ -384,7 +384,7 @@ export default function EventsPage() {
                         onClick={() => handleShare(event)}
                         className="bg-purple-600 text-white hover:bg-purple-700 rounded-2xl font-black uppercase tracking-widest text-[10px] h-14 gap-2 transition-all shadow-lg shadow-purple-600/10"
                       >
-                        <Share2 className="w-4 h-4" /> Compartir
+                        <Share2 className="w-4 h-4" /> {t.events.share}
                       </Button>
 
                       <Link href={`/event/${event.slug}/card`} target="_blank">
@@ -398,17 +398,17 @@ export default function EventsPage() {
                         className={`col-span-1 rounded-2xl text-[10px] h-14 font-black uppercase border transition-all ${event.status === 'Active' ? 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100' : 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'}`}
                       >
                         {event.status === 'Active' ? <Power className="w-4 h-4 mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
-                        {event.status === 'Active' ? "Finalizar" : "Activar"}
+                        {event.status === 'Active' ? t.events.finalize : t.events.activate}
                       </Button>
 
                       <Link href={`/dashboard/events/${event.id}/config`}>
                         <Button className="w-full bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 rounded-2xl text-[10px] h-14 font-black uppercase transition-all">
-                          <Settings className="w-4 h-4 mr-2" /> Ajustes
+                          <Settings className="w-4 h-4 mr-2" /> {t.events.settings}
                         </Button>
                       </Link>
 
                       <Button onClick={() => handleDelete(event.id)} className="col-span-2 bg-red-50 hover:bg-red-100 text-red-500 border border-red-100 rounded-2xl text-[10px] h-14 font-black uppercase transition-all opacity-40 hover:opacity-100">
-                        <Trash2 className="w-4 h-4 mr-2" /> Eliminar Evento Permanente
+                        <Trash2 className="w-4 h-4 mr-2" /> {t.events.delete}
                       </Button>
                     </div>
 
@@ -429,7 +429,7 @@ export default function EventsPage() {
               {finishingEvent?.isReactivating ? <CheckCircle className="text-green-600 w-8 h-8" /> : <Power className="text-orange-600 w-8 h-8" />}
             </div>
             <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-center">
-              {finishingEvent?.isReactivating ? "Reactivar Evento" : "Finalizar Evento"}
+              {finishingEvent?.isReactivating ? t.events.activate : t.events.finalize}
             </DialogTitle>
             <DialogDescription className="text-zinc-400 font-medium text-center">
               {t.user_dashboard.finish_modal.subtitle}
