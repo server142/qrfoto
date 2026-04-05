@@ -130,16 +130,16 @@ export default function UserLayout({ children }: { children: ReactNode }) {
 
       <main className="flex-1 md:ml-72 flex flex-col min-h-screen">
         {/* Modern Navbar */}
-        <header className="h-20 bg-white/50 backdrop-blur-xl border-b border-zinc-100 flex items-center px-8 sticky top-0 z-40 justify-between">
-          <div className="flex items-center gap-6">
+        <header className="h-16 sm:h-20 bg-white/50 backdrop-blur-xl border-b border-zinc-100 flex items-center px-4 sm:px-8 sticky top-0 z-40 justify-between">
+          <div className="flex items-center gap-2 sm:gap-6">
              <div className="md:hidden">
               <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="text-zinc-600 hover:bg-zinc-100 rounded-xl"
+                    className="text-zinc-600 hover:bg-zinc-100 rounded-xl w-10 h-10"
                 >
-                    <Menu className="w-6 h-6" />
+                    <Menu className="w-5 h-5" />
                 </Button>
              </div>
              <div className="hidden lg:flex items-center bg-zinc-100 rounded-full px-4 h-10 border border-zinc-100 group focus-within:bg-white focus-within:ring-2 focus-within:ring-purple-600/10 transition-all">
@@ -160,15 +160,17 @@ export default function UserLayout({ children }: { children: ReactNode }) {
                 </div>
             </div>
 
-            <div className="h-8 w-px bg-zinc-100" />
+            <div className="h-6 sm:h-8 w-px bg-zinc-100" />
             
-            <div className="flex items-center gap-4">
-              <LanguageSwitcher />
-              <div className="flex items-center gap-3 bg-zinc-950 text-white rounded-full pl-2 pr-5 h-12 shadow-xl shadow-zinc-300 border-none group hover:scale-105 transition-all cursor-pointer">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-400 to-pink-500 overflow-hidden border-2 border-white/20">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="scale-75 sm:scale-100 transform origin-right">
+                <LanguageSwitcher />
+              </div>
+              <div className="flex items-center gap-2 sm:gap-3 bg-zinc-950 text-white rounded-full pl-2 pr-2 sm:pr-5 h-10 sm:h-12 shadow-xl shadow-zinc-300 border-none group hover:scale-105 transition-all cursor-pointer overflow-hidden min-w-[40px] sm:min-w-0">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-purple-400 to-pink-500 overflow-hidden border-2 border-white/20 flex-shrink-0">
                     <div className="w-full h-full flex items-center justify-center font-black text-[10px]">{user?.first_name?.[0]}</div>
                 </div>
-                <span className="text-xs font-black uppercase tracking-widest">{user?.first_name || 'Admin'}</span>
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest hidden min-[400px]:inline">{user?.first_name || 'Admin'}</span>
               </div>
             </div>
           </div>
@@ -222,7 +224,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
           )}
         </AnimatePresence>
 
-        <div className="p-6 md:p-10 max-w-7xl">
+        <div className="p-4 sm:p-6 md:p-10 max-w-7xl">
           {children}
         </div>
       </main>

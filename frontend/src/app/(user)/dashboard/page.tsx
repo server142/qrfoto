@@ -62,27 +62,28 @@ export default function UserDashboard() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex justify-between items-center bg-zinc-950/50 p-8 rounded-[2rem] border border-white/5">
-        <div>
-          <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">{t.user_dashboard.title}</h2>
-          <p className="text-white/40 mt-1 uppercase text-[10px] font-bold tracking-widest">{t.user_dashboard.subtitle}</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-zinc-950/50 p-6 sm:p-8 rounded-[2rem] border border-white/5 gap-6 sm:gap-4 overflow-hidden relative">
+        <div className="relative z-10 w-full sm:w-auto">
+          <h2 className="text-2xl sm:text-4xl font-black uppercase italic tracking-tighter text-white leading-none mb-2">{t.user_dashboard.title}</h2>
+          <p className="text-white/40 uppercase text-[10px] font-bold tracking-widest">{t.user_dashboard.subtitle}</p>
         </div>
-        <Link href="/dashboard/events">
-          <Button className="h-14 px-8 bg-purple-600 hover:bg-purple-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-purple-600/10 transition-all active:scale-95">
-            <Plus className="w-5 h-5 mr-3" />
+        <Link href="/dashboard/events" className="w-full sm:w-auto relative z-10">
+          <Button className="w-full sm:w-auto h-12 sm:h-14 px-6 sm:px-8 bg-purple-600 hover:bg-purple-500 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-xl shadow-purple-600/10 transition-all active:scale-95">
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-3" />
             {t.user_dashboard.new_event}
           </Button>
         </Link>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/5 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         {stats.map((stat, i) => (
-          <Card key={i} className="bg-zinc-950 border-white/10 p-8 flex flex-col justify-between hover:border-white/20 transition-all rounded-[2rem] shadow-2xl overflow-hidden relative group">
-            <div className="flex justify-between items-start mb-6 relative z-10">
-              <h3 className="text-[10px] uppercase tracking-widest font-black text-white/40">{stat.title}</h3>
-              <stat.icon className={`w-6 h-6 ${stat.color} group-hover:scale-110 transition-transform`} />
+          <Card key={i} className="bg-zinc-950 border-white/10 p-6 sm:p-8 flex flex-col justify-between hover:border-white/20 transition-all rounded-[2rem] shadow-2xl overflow-hidden relative group min-h-[140px] sm:min-h-0">
+            <div className="flex justify-between items-start mb-4 sm:mb-6 relative z-10">
+              <h3 className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-white/40">{stat.title}</h3>
+              <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.color} group-hover:scale-110 transition-transform`} />
             </div>
-            <p className="text-4xl font-black text-white relative z-10">{stat.value}</p>
+            <p className="text-3xl sm:text-4xl font-black text-white relative z-10">{stat.value}</p>
             {/* Decoration */}
             <div className={`absolute -right-4 -bottom-4 w-20 h-20 bg-gradient-to-br from-white/5 to-transparent rounded-full group-hover:scale-150 transition-transform duration-700`} />
           </Card>
