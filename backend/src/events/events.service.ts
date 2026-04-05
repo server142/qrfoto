@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Event } from './entities/event.entity';
@@ -27,7 +27,7 @@ export class EventsService {
                     });
 
                     if (activeEvents >= plan.max_events) {
-                        throw new Error(`Plan limit reached: You can only have ${plan.max_events} active events.`);
+                        throw new BadRequestException(`Has alcanzado el límite de tu plan: Solo puedes tener ${plan.max_events} eventos activos simultáneamente.`);
                     }
                 }
             }

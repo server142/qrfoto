@@ -58,6 +58,7 @@ export default function EventsPage() {
   const [comment, setComment] = useState("");
   const [isFinishing, setIsFinishing] = useState(false);
   const [finishError, setFinishError] = useState("");
+  const [createError, setCreateError] = useState("");
   const [exporting, setExporting] = useState<string | null>(null);
 
   const getToken = () => {
@@ -112,10 +113,14 @@ export default function EventsPage() {
       });
       if (res.ok) {
         setOpen(false);
+        setCreateError("");
         setName("");
         setDescription("");
         setDate("");
         await fetchEvents();
+      } else {
+        const data = await res.json();
+        setCreateError(data.message || "Error al crear el evento");
       }
     } catch (error) {
       console.error("Error creating event:", error);
@@ -298,6 +303,17 @@ export default function EventsPage() {
                   className="bg-zinc-50 border-zinc-100 text-zinc-900 h-14 rounded-2xl focus:ring-purple-600/20 font-bold"
                 />
               </div>
+
+              {createError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-[10px] font-black uppercase tracking-widest text-center"
+                >
+                  {createError}
+                </motion.div>
+              )}
+
               <Button disabled={isCreating} type="submit" className="w-full h-16 bg-purple-600 text-white rounded-full font-black uppercase tracking-widest transition-all shadow-xl shadow-purple-600/20 text-lg sm:text-base">
                 {isCreating ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : t.events.submit_create}
               </Button>
