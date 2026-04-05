@@ -17,7 +17,8 @@ import {
   Sparkles,
   PlayCircle,
   Star,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ArrowUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getApiUrl } from "@/lib/api";
@@ -73,19 +74,19 @@ export default function LandingPage() {
             <div className="hidden lg:block">
                 <LanguageSwitcher />
             </div>
-            <Link href="/login" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-900 px-5 py-2.5 rounded-full bg-white border border-zinc-200 hover:border-purple-200 hover:text-purple-600 transition-all shadow-sm hover:shadow-md active:scale-95">
+            <Link href="/login" className="text-xs sm:text-sm font-black uppercase tracking-widest text-zinc-900 px-8 py-3.5 rounded-full bg-white border-2 border-zinc-100 hover:border-purple-600 hover:text-purple-600 transition-all shadow-lg hover:shadow-purple-600/10 active:scale-95">
                 Entrar
             </Link>
-            <Link href="/register" className="hidden min-[600px]:block">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6 h-10 text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
-                    Crear Evento
+            <Link href="/register" className="hidden lg:block">
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-8 h-12 text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
+                    Crear Evento Gratis
                 </Button>
             </Link>
             <button 
-                className="lg:hidden p-2 hover:bg-zinc-100 rounded-xl transition-colors relative z-50" 
+                className="lg:hidden p-3 hover:bg-zinc-100 rounded-2xl transition-colors relative z-50 text-purple-600" 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-                {isMenuOpen ? <X className="w-6 h-6 text-purple-600" /> : <Menu className="w-6 h-6" />}
+                {isMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
             </button>
           </div>
 
@@ -156,14 +157,14 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-3xl min-[400px]:text-4xl md:text-7xl leading-[1.1] font-black tracking-tighter mb-12 uppercase italic text-zinc-900 break-words"
+              className="text-4xl min-[400px]:text-5xl md:text-8xl lg:text-[7.5rem] leading-[0.95] font-black tracking-tighter mb-12 uppercase italic text-zinc-900 break-words"
             >
               Convierte tu evento en <br />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-300% animate-gradient pb-2 sm:pb-4 inline-block">
                 una máquina viral
               </span>
               <span className="inline-block ml-2 sm:ml-4 text-purple-600">
-                <Camera className="w-8 h-8 sm:w-12 sm:h-12 md:w-20 md:h-20 inline align-middle animate-bounce" />
+                <Camera className="w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 inline align-middle animate-bounce" />
               </span>
             </motion.h1>
 
@@ -298,14 +299,10 @@ export default function LandingPage() {
       {/* Benefits */}
       <section id="beneficios" className="py-24 bg-white">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-10">
-            <h2 className="text-5xl md:text-6xl font-black max-w-2xl leading-[0.9] italic tracking-tighter uppercase">
+          <div className="flex flex-col lg:flex-row items-end justify-between mb-24 gap-10">
+            <h2 className="text-5xl md:text-7xl font-black max-w-3xl leading-[0.9] italic tracking-tighter uppercase">
               No es solo una galería, <br /> <span className="text-purple-600">es el alma de tu fiesta.</span>
             </h2>
-            <div className="flex items-center gap-2 px-8 py-4 bg-purple-50 rounded-full text-purple-600 font-black uppercase text-xs tracking-widest animate-bounce">
-              <Sparkles className="w-4 h-4" />
-              SaaS de Alto Nivel
-            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-10">
@@ -439,6 +436,21 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Scroll to Top Floating Button */}
+      <AnimatePresence>
+        {scrolled && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0, y: 20 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-10 right-10 z-50 p-4 bg-purple-600 text-white rounded-2xl shadow-2xl shadow-purple-600/40 hover:bg-purple-700 hover:scale-110 active:scale-95 transition-all"
+          >
+            <ArrowUp className="w-6 h-6" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

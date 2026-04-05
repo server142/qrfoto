@@ -224,23 +224,23 @@ export default function SlideshowPage() {
         </div>
       </div>
 
-      {/* QR Code Overlay (Bottom Right) */}
-      <div className="absolute bottom-12 right-12 z-50 flex flex-col items-center gap-3">
+      {/* QR Code Overlay (Bottom Right - Small & Discreet) */}
+      <div className="absolute bottom-6 right-6 z-50 flex flex-col items-center gap-2 group hover:scale-110 transition-transform">
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white p-3 rounded-[2rem] shadow-2xl border-4"
+          className="bg-white p-2 rounded-[1.5rem] shadow-2xl border-2"
           style={{ borderColor: event.branding_color }}
         >
           <QRCodeSVG
             value={`${process.env.NEXT_PUBLIC_FRONTEND_URL ?? getBaseUrl()}/event/${slug}`}
-            size={140}
+            size={90}
             level="L"
           />
         </motion.div>
-        <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 flex items-center gap-2">
-          <QrCode className="w-3 h-3 text-white/40" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Escanea y comparte</p>
+        <div className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-2">
+          <QrCode className="w-2.5 h-2.5 text-white/40" />
+          <p className="text-[8px] font-black uppercase tracking-widest text-white/50">Escanear</p>
         </div>
       </div>
 
