@@ -265,7 +265,7 @@ export default function EventsPage() {
               {t.events.create_btn}
             </Button>
           } />
-          <DialogContent className="bg-white border-zinc-100 text-zinc-900 rounded-[3rem] p-10 max-w-md shadow-3xl">
+          <DialogContent className="bg-white border-zinc-100 text-zinc-900 rounded-[3rem] p-10 max-w-md shadow-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mb-6">
                 <Box className="text-purple-600 w-8 h-8" />
@@ -305,13 +305,9 @@ export default function EventsPage() {
               </div>
 
               {createError && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-[10px] font-black uppercase tracking-widest text-center"
-                >
+                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-[10px] font-bold uppercase tracking-wider text-center">
                   {createError}
-                </motion.div>
+                </div>
               )}
 
               <Button disabled={isCreating} type="submit" className="w-full h-16 bg-purple-600 text-white rounded-full font-black uppercase tracking-widest transition-all shadow-xl shadow-purple-600/20 text-lg sm:text-base">
