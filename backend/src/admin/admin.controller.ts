@@ -55,6 +55,15 @@ export class AdminController {
     };
   }
 
+  // Public endpoint — only exposes safe settings (no API keys)
+  @Get('public-settings')
+  async getPublicSettings() {
+    const settings = await this.settingsRepo.findOne({ where: { id: 'main' } });
+    return {
+      isSlideshowEnabled: settings?.isSlideshowEnabled ?? true,
+    };
+  }
+
   @Get('settings')
   @UseGuards(JwtAuthGuard)
   async getSettings() {

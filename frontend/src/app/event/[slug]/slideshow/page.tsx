@@ -36,8 +36,8 @@ export default function SlideshowPage() {
 
         setEvent(evData);
 
-        // CHECK IF SLIDESHOW IS ENABLED
-        const settingsRes = await fetch(`${getApiUrl()}/admin/settings`);
+        // CHECK IF SLIDESHOW IS ENABLED (public endpoint — no auth needed)
+        const settingsRes = await fetch(`${getApiUrl()}/admin/public-settings`);
         const settingsData = await settingsRes.json();
 
         if (settingsData && settingsData.isSlideshowEnabled === false) {
