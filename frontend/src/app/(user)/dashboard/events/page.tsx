@@ -14,21 +14,21 @@ import {
   DialogDescription
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
-import { 
-  Plus, 
-  Calendar, 
-  QrCode, 
-  ExternalLink, 
-  Trash2, 
-  Settings, 
-  Image as ImageIcon, 
-  Loader2, 
-  Printer, 
-  Download, 
-  Power, 
-  CheckCircle, 
-  Star, 
-  Share2, 
+import {
+  Plus,
+  Calendar,
+  QrCode,
+  ExternalLink,
+  Trash2,
+  Settings,
+  Image as ImageIcon,
+  Loader2,
+  Printer,
+  Download,
+  Power,
+  CheckCircle,
+  Star,
+  Share2,
   FileText,
   ChevronRight,
   MoreVertical,
@@ -216,7 +216,7 @@ export default function EventsPage() {
       doc.setTextColor(100, 100, 100);
       doc.text(`Fecha: ${new Date(event.event_date).toLocaleDateString()}`, 14, 40);
       doc.text(`Generado: ${new Date().toLocaleString()}`, 14, 46);
-      
+
       const tableColumn = ["#", "Invitado", "Mensaje", "Fecha/Hora"];
       const tableRows = media.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((m: any, i: number) => [
         i + 1,
@@ -254,17 +254,17 @@ export default function EventsPage() {
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
+          <DialogTrigger render={
             <Button className="h-16 px-10 bg-zinc-900 text-white hover:bg-zinc-800 rounded-full font-black uppercase tracking-widest text-sm shadow-2xl shadow-zinc-200 transition-all active:scale-95 group">
               <Plus className="w-5 h-5 mr-3 transition-transform group-hover:rotate-90" />
               {t.events.create_btn}
             </Button>
-          </DialogTrigger>
+          } />
           <DialogContent className="bg-white border-zinc-100 text-zinc-900 rounded-[3rem] p-10 max-w-md shadow-3xl">
             <DialogHeader>
-                <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mb-6">
-                    <Box className="text-purple-600 w-8 h-8" />
-                </div>
+              <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mb-6">
+                <Box className="text-purple-600 w-8 h-8" />
+              </div>
               <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">{t.events.create_dialog_title}</DialogTitle>
               <DialogDescription className="text-zinc-400 font-medium">{t.events.create_dialog_subtitle}</DialogDescription>
             </DialogHeader>
@@ -323,19 +323,19 @@ export default function EventsPage() {
               </div>
             ) : (
               events.map((event: any, idx: number) => (
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    transition={{ delay: idx * 0.05 }}
-                    key={event.id}
-                    className="group"
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  key={event.id}
+                  className="group"
                 >
                   <Card className="bg-white border-zinc-100 p-8 flex flex-col hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 rounded-[3.5rem] shadow-xl shadow-zinc-100 relative overflow-hidden h-full">
                     <div className="flex justify-between items-start mb-8 relative z-10">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-2">
-                            <div className={`w-2 h-2 rounded-full ${event.status === 'Active' ? 'bg-green-500 animate-pulse' : 'bg-red-400'}`} />
-                            <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{event.status === 'Active' ? 'En Vivo' : 'Finalizado'}</span>
+                          <div className={`w-2 h-2 rounded-full ${event.status === 'Active' ? 'bg-green-500 animate-pulse' : 'bg-red-400'}`} />
+                          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{event.status === 'Active' ? 'En Vivo' : 'Finalizado'}</span>
                         </div>
                         <h3 className="text-2xl font-black text-zinc-900 group-hover:text-purple-600 transition-colors italic leading-tight tracking-tighter">{event.name}</h3>
                         <p className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">{new Date(event.event_date).toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
@@ -357,10 +357,17 @@ export default function EventsPage() {
                           level="H"
                         />
                         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm opacity-0 group-hover/qr:opacity-100 transition-opacity flex flex-col items-center justify-center p-6 text-center">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Slug Único</p>
-                            <span className="text-sm font-black text-purple-600 bg-purple-50 px-4 py-2 rounded-full border border-purple-100">/{event.slug}</span>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Slug Único</p>
+                          <span className="text-sm font-black text-purple-600 bg-purple-50 px-4 py-2 rounded-full border border-purple-100">/{event.slug}</span>
                         </div>
                       </div>
+                      <Button
+                        onClick={() => window.open(`${getApiUrl()}/media/${event.slug}/download`, '_blank')}
+                        className="w-full h-12 bg-white border border-dashed border-purple-200 text-purple-600 hover:bg-purple-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2 group/zip transition-all hover:scale-[1.02] mt-4"
+                      >
+                        <Download className="w-4 h-4 transition-transform group-hover/zip:-translate-y-1" />
+                        {t.events.bulk_download_btn}
+                      </Button>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 relative z-10">
@@ -419,7 +426,7 @@ export default function EventsPage() {
         <DialogContent className="bg-white border-zinc-100 text-zinc-900 rounded-[3rem] p-10 max-w-sm shadow-3xl">
           <DialogHeader>
             <div className={`w-16 h-16 ${finishingEvent?.isReactivating ? 'bg-green-50' : 'bg-orange-50'} rounded-2xl flex items-center justify-center mb-6 mx-auto`}>
-                 {finishingEvent?.isReactivating ? <CheckCircle className="text-green-600 w-8 h-8" /> : <Power className="text-orange-600 w-8 h-8" />}
+              {finishingEvent?.isReactivating ? <CheckCircle className="text-green-600 w-8 h-8" /> : <Power className="text-orange-600 w-8 h-8" />}
             </div>
             <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-center">
               {finishingEvent?.isReactivating ? "Reactivar Evento" : "Finalizar Evento"}

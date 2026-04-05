@@ -39,16 +39,13 @@ export class PaymentsController {
     }
 
     try {
-      const currency = body.currency || 'mxn';
-      let chargeAmount = plan.price;
-      if (currency === 'usd') {
-        chargeAmount = Math.round(plan.price / 20); // Exchange rate fallback
-      }
+      const currency = plan.currency?.toLowerCase() || 'mxn';
+      const chargeAmount = plan.price;
 
       const session = await this.stripeService.createCheckoutSession(
         plan.id,
         userId,
-        chargeAmount * 100, // Price in cents
+        Math.round(chargeAmount * 100), // Price in cents
         plan.name,
         currency
       );

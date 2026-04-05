@@ -39,6 +39,12 @@ export class Plan {
   @Column({ default: true })
   has_custom_branding: boolean;
 
+  @Column({ default: 'MXN' })
+  currency: string;
+
+  @Column({ default: 'monthly' })
+  periodicity: string;
+
   @CreateDateColumn()
   created_at: Date;
 }

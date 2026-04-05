@@ -11,14 +11,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
 import { QRCodeSVG } from "qrcode.react";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger 
+  DialogTrigger
 } from "@/components/ui/dialog";
 import { Logo } from "@/components/Logo";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const STORAGE_KEY = "qrfoto_guest_identity";
 
@@ -83,7 +84,7 @@ export default function GuestUploadPage() {
       try {
         const parsed = JSON.parse(stored) as GuestIdentity;
         if (parsed.name) setIdentity(parsed);
-      } catch {}
+      } catch { }
     }
 
     return () => clearInterval(interval);
@@ -191,110 +192,121 @@ export default function GuestUploadPage() {
       <div className="relative z-10 p-4 sm:p-6 flex flex-col min-h-screen max-w-lg mx-auto pb-24">
         {/* Header */}
         <header className="flex flex-col items-center text-center mt-4 sm:mt-6 mb-10 relative">
-           <motion.div 
-             initial={{ y: -20, opacity: 0 }}
-             animate={{ y: 0, opacity: 1 }}
-             className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 mb-6 cursor-pointer active:scale-95 transition-transform"
-           >
-             <div className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ backgroundColor: event.branding_color }} />
-             <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.2em] italic">Live Gallery</p>
-           </motion.div>
-          
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 mb-6 cursor-pointer active:scale-95 transition-transform"
+          >
+            <div className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ backgroundColor: event.branding_color }} />
+            <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.2em] italic">Live Gallery</p>
+          </motion.div>
+
           <h1 className="text-3xl sm:text-4xl font-black italic tracking-tighter mb-2 uppercase leading-none drop-shadow-2xl">{event.name}</h1>
           <p className="text-white/30 text-[10px] font-black uppercase tracking-widest bg-white/5 px-4 py-1 rounded-full border border-white/5">{new Date(event.event_date).toLocaleDateString()}</p>
 
           <div className="absolute top-0 right-0 flex gap-2">
-            <button 
-                onClick={() => handleShare(`Galería: ${event.name}`, `¡Mira las fotos de ${event.name} en tiempo real!`, window.location.href)}
-                className="p-3 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all hover:scale-110 active:scale-90"
+            <button
+              onClick={() => handleShare(`Galería: ${event.name}`, `¡Mira las fotos de ${event.name} en tiempo real!`, window.location.href)}
+              className="p-3 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all hover:scale-110 active:scale-90"
             >
-                <Share2 className="w-5 h-5 text-purple-400" />
+              <Share2 className="w-5 h-5 text-purple-400" />
             </button>
             <Dialog>
-                <DialogTrigger asChild>
+              <DialogTrigger render={
                 <button className="p-3 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all hover:scale-110 active:scale-90">
-                    <QrCode className="w-5 h-5 text-purple-400" />
+                  <QrCode className="w-5 h-5 text-purple-400" />
                 </button>
-                </DialogTrigger>
-                <DialogContent className="bg-zinc-950/95 backdrop-blur-3xl border-white/10 text-white rounded-[3.5rem] p-12 max-w-[340px] mx-auto shadow-2xl">
+              } />
+              <DialogContent className="bg-zinc-950/95 backdrop-blur-3xl border-white/10 text-white rounded-[3.5rem] p-12 max-w-[340px] mx-auto shadow-2xl">
                 <div className="text-center space-y-8">
-                    <div className="space-y-2">
+                  <div className="space-y-2">
                     <h3 className="text-2xl font-black uppercase italic tracking-tighter leading-none">Compartir QR</h3>
                     <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest">Invita a más personas</p>
-                    </div>
-                    
-                    <div className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-purple-600/20 transform rotate-[-2deg] hover:rotate-0 transition-transform">
+                  </div>
+
+                  <div className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-purple-600/20 transform rotate-[-2deg] hover:rotate-0 transition-transform">
                     <QRCodeSVG value={`${getBaseUrl()}/event/${slug}`} size={220} />
-                    </div>
-                    
-                    <p className="text-white/40 text-[10px] font-black uppercase tracking-widest leading-loose">
+                  </div>
+
+                  <Button
+                    onClick={() => window.open(`${getApiUrl()}/media/${slug}/download`, '_blank')}
+                    className="w-full h-14 bg-white border border-dashed border-purple-200 text-purple-600 hover:bg-purple-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2 group/zip transition-all hover:scale-[1.05]"
+                  >
+                    <Download className="w-5 h-5 transition-transform group-hover/zip:-translate-y-1" />
+                    Descargar Todo (ZIP)
+                  </Button>
+
+                  <p className="text-white/40 text-[10px] font-black uppercase tracking-widest leading-loose">
                     Escanea directamente desde la pantalla de tu compañero
-                    </p>
+                  </p>
                 </div>
-                </DialogContent>
+              </DialogContent>
             </Dialog>
+            <div className="scale-90 origin-right">
+              <LanguageSwitcher />
+            </div>
           </div>
         </header>
 
         <main className="flex-1 flex flex-col">
           <AnimatePresence mode="wait">
-             {/* ── GALLERY FEED (Pro Visualization) ── */}
-             {!isUploadOpen && !isSuccess && (
-               <motion.div
-                 key="feed"
-                 initial={{ opacity: 0, y: 30 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, scale: 0.9 }}
-                 className="space-y-8"
-               >
-                 {media.length === 0 ? (
-                   <div className="flex flex-col items-center justify-center py-20 text-center">
-                     <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 opacity-20">
-                       <ImageIcon className="w-12 h-12" />
-                     </div>
-                     <p className="text-sm font-black italic tracking-widest uppercase mb-4 opacity-40">Aún no hay recuerdos</p>
-                     <Button 
-                       onClick={() => setIsUploadOpen(true)}
-                       className="bg-white text-black rounded-full px-8 h-12 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-white/5"
-                     >
-                       Sé el primero en participar
-                     </Button>
-                   </div>
-                 ) : (
-                   <div className="columns-2 gap-4 space-y-4 px-1">
-                     {media.map((item, index) => (
-                       <motion.div
-                         key={item.id}
-                         initial={{ opacity: 0, y: 40 }}
-                         animate={{ opacity: 1, y: 0 }}
-                         transition={{ delay: (index % 10) * 0.1 }}
-                         onClick={() => setSelectedMedia(item)}
-                         className="relative break-inside-avoid rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl group cursor-zoom-in active:scale-[0.98] transition-transform"
-                       >
-                         {item.file_type === 'video' ? (
-                           <div className="relative aspect-[3/4]">
-                             <video src={item.file_url} className="w-full h-full object-cover" muted playsInline />
-                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                <Loader2 className="w-6 h-6 text-white/40 animate-pulse" />
-                             </div>
-                           </div>
-                         ) : (
-                           <img 
-                             src={item.file_url} 
-                             className={`w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110`}
-                             loading="lazy" 
-                           />
-                         )}
-                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5">
-                            <p className="text-[10px] font-black text-white italic tracking-widest uppercase mb-1">{item.guest_name || 'Invitado'}</p>
-                            {item.message && <p className="text-[9px] text-white/60 line-clamp-2 italic font-medium">"{item.message}"</p>}
-                         </div>
-                       </motion.div>
-                     ))}
-                   </div>
-                 )}
-               </motion.div>
-             )}
+            {/* ── GALLERY FEED (Pro Visualization) ── */}
+            {!isUploadOpen && !isSuccess && (
+              <motion.div
+                key="feed"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="space-y-8"
+              >
+                {media.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 opacity-20">
+                      <ImageIcon className="w-12 h-12" />
+                    </div>
+                    <p className="text-sm font-black italic tracking-widest uppercase mb-4 opacity-40">Aún no hay recuerdos</p>
+                    <Button
+                      onClick={() => setIsUploadOpen(true)}
+                      className="bg-white text-black rounded-full px-8 h-12 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-white/5"
+                    >
+                      Sé el primero en participar
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="columns-2 gap-4 space-y-4 px-1">
+                    {media.map((item, index) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: (index % 10) * 0.1 }}
+                        onClick={() => setSelectedMedia(item)}
+                        className="relative break-inside-avoid rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl group cursor-zoom-in active:scale-[0.98] transition-transform"
+                      >
+                        {item.file_type === 'video' ? (
+                          <div className="relative aspect-[3/4]">
+                            <video src={item.file_url} className="w-full h-full object-cover" muted playsInline />
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                              <Loader2 className="w-6 h-6 text-white/40 animate-pulse" />
+                            </div>
+                          </div>
+                        ) : (
+                          <img
+                            src={item.file_url}
+                            className={`w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110`}
+                            loading="lazy"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5">
+                          <p className="text-[10px] font-black text-white italic tracking-widest uppercase mb-1">{item.guest_name || 'Invitado'}</p>
+                          {item.message && <p className="text-[9px] text-white/60 line-clamp-2 italic font-medium">"{item.message}"</p>}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
 
             {/* ── MODAL: LIGHTBOX PRO ── */}
             <AnimatePresence>
@@ -306,25 +318,25 @@ export default function GuestUploadPage() {
                   className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-3xl flex flex-col p-6"
                 >
                   <header className="flex justify-between items-center mb-8">
-                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-[1.2rem] flex items-center justify-center text-black font-black text-lg shadow-xl" style={{ backgroundColor: event.branding_color }}>
-                          {selectedMedia.guest_name?.charAt(0).toUpperCase() || 'U'}
-                        </div>
-                        <div>
-                           <p className="text-sm font-black italic uppercase tracking-widest">{selectedMedia.guest_name || 'Invitado'}</p>
-                           <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Publicado en {event.name}</p>
-                        </div>
-                     </div>
-                     <button 
-                       onClick={() => setSelectedMedia(null)}
-                       className="p-4 bg-white/5 rounded-full border border-white/10 hover:bg-white/10"
-                     >
-                       <X className="w-6 h-6" />
-                     </button>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-[1.2rem] flex items-center justify-center text-black font-black text-lg shadow-xl" style={{ backgroundColor: event.branding_color }}>
+                        {selectedMedia.guest_name?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                      <div>
+                        <p className="text-sm font-black italic uppercase tracking-widest">{selectedMedia.guest_name || 'Invitado'}</p>
+                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Publicado en {event.name}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setSelectedMedia(null)}
+                      className="p-4 bg-white/5 rounded-full border border-white/10 hover:bg-white/10"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
                   </header>
 
                   <div className="flex-1 flex flex-col items-center justify-center relative min-h-0">
-                    <motion.div 
+                    <motion.div
                       layoutId={`media-${selectedMedia.id}`}
                       className="w-full max-h-full rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)] border border-white/5"
                     >
@@ -345,21 +357,21 @@ export default function GuestUploadPage() {
                         </p>
                       </div>
                     )}
-                    
+
                     <div className="flex gap-4">
-                      <Button 
+                      <Button
                         onClick={() => handleDownload(selectedMedia.file_url, `QRFoto_${selectedMedia.id}`)}
                         className="flex-1 h-16 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-95 transition-all"
                       >
-                         <Download className="w-5 h-5" /> Guardar
+                        <Download className="w-5 h-5" /> Guardar
                       </Button>
-                      <Button 
+                      <Button
                         onClick={() => handleShare(`Foto de ${selectedMedia.guest_name}`, `Mira este momento en ${event.name}`, selectedMedia.file_url)}
                         className="flex-1 h-16 bg-purple-600 text-white hover:bg-purple-700 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-95 transition-all"
                       >
-                         <Share2 className="w-5 h-5" /> Compartir
+                        <Share2 className="w-5 h-5" /> Compartir
                       </Button>
-                      <Button 
+                      <Button
                         onClick={() => setSelectedMedia(null)}
                         className="flex-1 h-16 bg-white/5 border border-white/10 text-white rounded-2xl font-black uppercase tracking-widest text-xs"
                       >
@@ -381,7 +393,7 @@ export default function GuestUploadPage() {
                 className="space-y-6"
               >
                 <div className="text-center space-y-4 py-6">
-                   <div className="w-24 h-24 rounded-[2.8rem] p-1 mx-auto mb-6 border-4 border-white/10 overflow-hidden shadow-2xl shadow-purple-500/10 rotate-3">
+                  <div className="w-24 h-24 rounded-[2.8rem] p-1 mx-auto mb-6 border-4 border-white/10 overflow-hidden shadow-2xl shadow-purple-500/10 rotate-3">
                     {event.cover_image_url ? (
                       <img src={event.cover_image_url} className="w-full h-full object-cover rounded-[2.3rem]" />
                     ) : (
@@ -397,7 +409,7 @@ export default function GuestUploadPage() {
                 <div className="bg-zinc-900/60 backdrop-blur-3xl border border-white/10 p-8 rounded-[3.5rem] space-y-8 shadow-2xl">
                   <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 flex items-center gap-2 px-2">
-                       Tu Nombre <span className="text-red-500">*</span>
+                      Tu Nombre <span className="text-red-500">*</span>
                     </label>
                     <Input
                       placeholder="Pj. David M."
@@ -409,7 +421,7 @@ export default function GuestUploadPage() {
 
                   <div className="space-y-3">
                     <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 flex items-center gap-2 px-2">
-                       Correo <span className="text-white/20">(opcional)</span>
+                      Correo <span className="text-white/20">(opcional)</span>
                     </label>
                     <Input
                       type="email"
@@ -426,8 +438,8 @@ export default function GuestUploadPage() {
                 </div>
 
                 <div className="flex gap-4">
-                   <Button variant="ghost" onClick={() => setIsUploadOpen(false)} className="flex-1 h-16 rounded-3xl font-bold text-white/30 hover:text-white">Volver</Button>
-                   <Button
+                  <Button variant="ghost" onClick={() => setIsUploadOpen(false)} className="flex-1 h-16 rounded-3xl font-bold text-white/30 hover:text-white">Volver</Button>
+                  <Button
                     onClick={handleIdentitySubmit}
                     className="flex-[2] h-18 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all text-black hover:brightness-110"
                     style={{ backgroundColor: event.branding_color }}
@@ -468,23 +480,23 @@ export default function GuestUploadPage() {
                 className="fixed inset-0 z-50 bg-black/95 backdrop-blur-3xl p-6 flex flex-col overflow-y-auto"
               >
                 <div className="max-w-md mx-auto w-full pt-10">
-                   <header className="flex justify-between items-center mb-12">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-[1.2rem] flex items-center justify-center text-black text-lg font-black shadow-xl shadow-purple-500/10" style={{ backgroundColor: event.branding_color }}>
-                          {identity.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <p className="text-sm font-black italic uppercase tracking-[0.1em]">{identity.name}</p>
-                          <p className="text-[9px] text-white/30 uppercase font-bold tracking-[0.3em] mt-0.5">Subiendo Momento</p>
-                        </div>
+                  <header className="flex justify-between items-center mb-12">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-[1.2rem] flex items-center justify-center text-black text-lg font-black shadow-xl shadow-purple-500/10" style={{ backgroundColor: event.branding_color }}>
+                        {identity.name.charAt(0).toUpperCase()}
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => setIsUploadOpen(false)} className="rounded-2xl bg-white/5 w-12 h-12 border border-white/10 hover:bg-red-500/10 group">
-                        <X className="w-6 h-6 text-white group-hover:text-red-400 transition-colors" />
-                      </Button>
-                   </header>
+                      <div>
+                        <p className="text-sm font-black italic uppercase tracking-[0.1em]">{identity.name}</p>
+                        <p className="text-[9px] text-white/30 uppercase font-bold tracking-[0.3em] mt-0.5">Subiendo Momento</p>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setIsUploadOpen(false)} className="rounded-2xl bg-white/5 w-12 h-12 border border-white/10 hover:bg-red-500/10 group">
+                      <X className="w-6 h-6 text-white group-hover:text-red-400 transition-colors" />
+                    </Button>
+                  </header>
 
-                   {/* Upload Area */}
-                   <div
+                  {/* Upload Area */}
+                  <div
                     onClick={() => !previewUrl && fileInputRef.current?.click()}
                     className={`relative bg-zinc-900/60 border-2 border-dashed border-white/10 rounded-[3.5rem] flex flex-col items-center justify-center text-center transition-all overflow-hidden mb-10 ${previewUrl ? 'aspect-square sm:aspect-video border-solid border-white/20' : 'py-20 px-8 cursor-pointer hover:border-purple-500/40 active:scale-[0.98]'}`}
                   >
@@ -496,12 +508,12 @@ export default function GuestUploadPage() {
                           <img src={previewUrl} className="w-full h-full object-cover" />
                         )}
                         <div className="absolute top-4 right-4 flex gap-2">
-                           <button
-                             onClick={(e) => { e.stopPropagation(); setPreviewUrl(null); setSelectedFile(null); }}
-                             className="bg-red-500/80 backdrop-blur-md p-3 rounded-2xl shadow-xl hover:bg-red-500 transition-colors"
-                           >
-                             <X className="w-4 h-4 text-white" />
-                           </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setPreviewUrl(null); setSelectedFile(null); }}
+                            className="bg-red-500/80 backdrop-blur-md p-3 rounded-2xl shadow-xl hover:bg-red-500 transition-colors"
+                          >
+                            <X className="w-4 h-4 text-white" />
+                          </button>
                         </div>
                       </>
                     ) : (
@@ -511,7 +523,7 @@ export default function GuestUploadPage() {
                         </div>
                         <h2 className="text-2xl font-black uppercase italic tracking-tighter">Capturar Vida</h2>
                         <p className="text-white/30 text-xs mt-2 font-black tracking-widest leading-relaxed">
-                          Toca aquí para seleccionar <br/> una foto o video increíble
+                          Toca aquí para seleccionar <br /> una foto o video increíble
                         </p>
                       </>
                     )}
@@ -527,7 +539,7 @@ export default function GuestUploadPage() {
                   {/* Dedicatoria context */}
                   <div className="bg-zinc-900/40 p-8 rounded-[3rem] border border-white/5 shadow-2xl mb-12">
                     <label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 flex items-center gap-2 mb-4 px-2">
-                       Mensaje Público <span className="text-white/10">(Saludando...)</span>
+                      Mensaje Público <span className="text-white/10">(Saludando...)</span>
                     </label>
                     <textarea
                       placeholder="¡Felicidades a los novios! Los queremos mucho..."
@@ -556,11 +568,11 @@ export default function GuestUploadPage() {
         </main>
 
         <footer className="py-12 text-center">
-           <div className="flex items-center justify-center gap-4 mb-4 opacity-10">
-              <div className="h-px w-12 bg-white" />
-              <div className="w-1 h-1 rounded-full bg-white" />
-              <div className="h-px w-12 bg-white" />
-           </div>
+          <div className="flex items-center justify-center gap-4 mb-4 opacity-10">
+            <div className="h-px w-12 bg-white" />
+            <div className="w-1 h-1 rounded-full bg-white" />
+            <div className="h-px w-12 bg-white" />
+          </div>
           <div className="flex items-center justify-center mb-2">
             <Logo size="sm" isDark={true} className="opacity-40" />
           </div>
@@ -571,7 +583,7 @@ export default function GuestUploadPage() {
 
         {/* ── FAB PRO ── */}
         {!isUploadOpen && !isSuccess && (
-           <motion.button
+          <motion.button
             initial={{ scale: 0, rotate: -45, y: 100 }}
             animate={{ scale: 1, rotate: 0, y: 0 }}
             whileHover={{ scale: 1.1, rotate: 5 }}
@@ -579,10 +591,10 @@ export default function GuestUploadPage() {
             onClick={() => setIsUploadOpen(true)}
             className="fixed bottom-10 right-8 w-20 h-20 rounded-[2.2rem] flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-40 border-4 border-black group overflow-hidden"
             style={{ backgroundColor: event.branding_color }}
-           >
-             <div className="absolute inset-0 bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-             <Plus className="w-8 h-8 text-black group-hover:scale-125 transition-transform" />
-           </motion.button>
+          >
+            <div className="absolute inset-0 bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Plus className="w-8 h-8 text-black group-hover:scale-125 transition-transform" />
+          </motion.button>
         )}
       </div>
     </div>

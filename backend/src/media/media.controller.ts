@@ -48,17 +48,17 @@ export class MediaController {
       const userData = await this.usersService.getMe(event.userId);
       if (userData && userData.activePlan) {
         const plan = userData.activePlan;
-        
+
         // Calcular uso actual del usuario (todos sus eventos)
         const userEvents = await this.eventsService.findAll(event.userId);
         const eventIds = userEvents.map(e => e.id);
-        
-        const storageUsage = await this.mediaRepo.sum('size_bytes', { 
-            event_id: In(eventIds) 
+
+        const storageUsage = await this.mediaRepo.sum('size_bytes', {
+          event_id: In(eventIds)
         }) || 0;
-        
+
         const usageMb = storageUsage / (1024 * 1024);
-        
+
         if (usageMb >= plan.storage_limit_mb) {
           throw new BadRequestException(`Storage limit reached (${plan.storage_limit_mb}MB). Please upgrade your plan.`);
         }
@@ -118,16 +118,16 @@ export class MediaController {
   @Get(':slug/download')
   async downloadEventMedia(@Param('slug') slug: string, @Res() res: any) {
     const event = await this.eventsService.findOneBySlug(slug);
-    
+
     // Validación de Característica Premium (Bulk Download)
     if (event.userId) {
-        const userData = await this.usersService.getMe(event.userId);
-        if (userData && userData.activePlan) {
-            const plan = userData.activePlan;
-            if (plan.has_bulk_download === false) {
-                throw new BadRequestException('Bulk download is not available on your current plan. Please upgrade to Oro/Plata.');
-            }
+      const userData = await this.usersService.getMe(event.userId);
+      if (userData && userData.activePlan) {
+        const plan = userData.activePlan;
+        if (plan.has_bulk_download === false) {
+          throw new BadRequestException('Bulk download is not available on your current plan. Please upgrade to Oro/Plata.');
         }
+      }
     }
 
     const mediaItems = await this.mediaRepo.find({
@@ -165,10 +165,22 @@ export class MediaController {
       }
     }
 
+    // --- ADD PDF REPORT (Messages) ---
+    const { generateEventPdf } = require('./pdf-report');
+    try {
+      const pdfBuffer = await generateEventPdf(event.name, event.event_date.toString(), mediaItems);
+      archive.append(pdfBuffer, { name: 'REPORTE_DEDICATORIAS.pdf' });
+    } catch (err) {
+      console.error("Error generating PDF in zip:", err.message);
+    }
+
     // Add Player
     const { getPlayerHtml } = require('./player.template');
     const playerHtml = getPlayerHtml(event.name, mediaListData);
     archive.append(playerHtml, { name: 'REPRODUCTOR_QRFOTO.html' });
+
+    // Add JSON Data
+    archive.append(JSON.stringify(mediaListData, null, 2), { name: 'DATOS_EVENTO.json' });
 
     // Add Instructions
     const instructions = `

@@ -15,21 +15,23 @@ export function LanguageSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={(props) => (
-        <Button {...props} variant="ghost" className="h-10 px-4 gap-2 text-white/60 hover:text-white hover:bg-white/5 border border-white/5 rounded-2xl transition-all">
-          <Globe className="w-4 h-4 opacity-40" />
-          <span className="text-[10px] font-black uppercase tracking-widest">{language}</span>
-        </Button>
-      )} />
+      <DropdownMenuTrigger
+        render={
+          <Button variant="ghost" className="h-10 px-4 gap-2 text-white/60 hover:text-white hover:bg-white/5 border border-white/5 rounded-2xl transition-all">
+            <Globe className="w-4 h-4 opacity-70 text-purple-400" />
+            <span className="text-[10px] font-black uppercase tracking-widest">{language}</span>
+          </Button>
+        }
+      />
       <DropdownMenuContent className="bg-zinc-950 border-white/10 text-white min-w-[140px] rounded-2xl shadow-2xl p-2 mt-2">
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={() => setLanguage("es")}
           className={`flex items-center justify-between gap-4 h-11 px-4 focus:bg-white/5 cursor-pointer rounded-xl transition-colors ${language === 'es' ? 'bg-white/10 text-purple-400 font-bold' : ''}`}
         >
           <span className="text-xs uppercase font-black tracking-widest">Español</span>
           <span className="text-lg">🇪🇸</span>
         </DropdownMenuItem>
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={() => setLanguage("en")}
           className={`flex items-center justify-between gap-4 h-11 px-4 focus:bg-white/5 cursor-pointer rounded-xl transition-colors ${language === 'en' ? 'bg-white/10 text-purple-400 font-bold' : ''}`}
         >

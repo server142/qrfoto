@@ -33,6 +33,16 @@ export default function SlideshowPage() {
 
         setEvent(evData);
 
+        // CHECK IF SLIDESHOW IS ENABLED
+        const settingsRes = await fetch(`${getApiUrl()}/admin/settings`);
+        const settingsData = await settingsRes.json();
+
+        if (settingsData && settingsData.isSlideshowEnabled === false) {
+          setLoading(false);
+          setEvent({ ...evData, disabled: true });
+          return;
+        }
+
         const medRes = await fetch(`${getApiUrl()}/media/${slug}`);
         const medData = await medRes.json();
         setMedia(medData);
@@ -99,6 +109,19 @@ export default function SlideshowPage() {
     <div className="h-screen bg-black flex flex-col items-center justify-center text-white">
       <Loader2 className="w-12 h-12 animate-spin text-purple-600 mb-4" />
       <p className="tracking-widest uppercase text-xs opacity-50 font-black">Sincronizando Galería...</p>
+    </div>
+  );
+
+  if (event?.disabled) return (
+    <div className="h-screen bg-black flex flex-col items-center justify-center text-white p-10 text-center relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]" />
+      <div className="w-32 h-32 rounded-full border-4 border-dashed border-red-500/20 flex items-center justify-center mb-8 relative z-10">
+        <QrCode className="w-12 h-12 text-white/20" />
+      </div>
+      <h1 className="text-6xl font-black mb-4 uppercase tracking-tighter italic relative z-10 text-white/80">{event?.name}</h1>
+      <p className="text-xl text-white/40 max-w-xl font-medium tracking-tight relative z-10">
+        El servicio de slideshow ha sido temporalmente suspendido por el administrador del sistema.
+      </p>
     </div>
   );
 

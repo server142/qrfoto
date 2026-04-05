@@ -36,11 +36,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest ${
-                item.variant === "user" 
-                  ? "text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/10 mt-6" 
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest ${item.variant === "user"
+                  ? "text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/10 mt-6"
                   : "text-white/50 hover:bg-white/5 hover:text-white"
-              }`}
+                }`}
             >
               <item.icon className="w-4 h-4" /> {item.label}
             </Link>
@@ -48,7 +47,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <Link href="#" className="flex items-center gap-3 px-4 py-3 text-white/20 cursor-not-allowed rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest">
             <BarChart3 className="w-4 h-4" /> Analytics
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 text-white/20 cursor-not-allowed rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest">
+          <Link href="/admin/settings" className="flex items-center gap-3 px-4 py-3 text-white/50 hover:bg-white/5 hover:text-white rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest">
             <Settings className="w-4 h-4" /> {t.admin.settings}
           </Link>
         </nav>
@@ -67,7 +66,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </h1>
           <div className="flex items-center gap-4">
             <div className="hidden md:block">
-               <LanguageSwitcher />
+              <LanguageSwitcher />
             </div>
 
             <div className="md:hidden">
@@ -98,9 +97,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center justify-between text-2xl font-black italic text-white/90 hover:text-purple-400 transition-all border-b border-white/5 pb-4 group ${
-                        item.variant === "user" ? "text-purple-400" : ""
-                    }`}
+                    className={`flex items-center justify-between text-2xl font-black italic text-white/90 hover:text-purple-400 transition-all border-b border-white/5 pb-4 group ${item.variant === "user" ? "text-purple-400" : ""
+                      }`}
                   >
                     <div className="flex items-center gap-6">
                       <item.icon className="w-6 h-6 text-purple-600" />
