@@ -413,7 +413,7 @@ export default function EventsPage() {
                         {event.status === 'Active' ? t.events.finalize : t.events.activate}
                       </Button>
 
-                      <Link href={`/dashboard/events/${event.id}/config`}>
+                      <Link href={`/dashboard/events/${event.slug}/config`}>
                         <Button className="w-full bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all">
                           <Settings className="w-4 h-4 mr-2" /> {t.events.settings}
                         </Button>
