@@ -89,7 +89,7 @@ export function PricingTable({
     );
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-12 max-w-7xl mx-auto px-4 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 max-w-7xl mx-auto px-4 pb-20">
             {plans.map((plan: any, i) => {
                 const exchangeRate = language === 'en' ? 20 : 1;
                 const displayPrice = parseInt(plan.price) === 0 ? 0 : Math.round(plan.price / exchangeRate);
@@ -133,34 +133,34 @@ export function PricingTable({
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.1 }}
-                        className="relative group"
+                        className="relative group h-full"
                     >
-                        <Card className={`relative h-full bg-white border-zinc-100 p-10 sm:p-12 flex flex-col transition-all duration-500 rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.1)] hover:-translate-y-2 group-hover:border-purple-200 overflow-hidden ${isActive ? 'ring-4 ring-green-500/20 border-green-500 scale-[1.02] z-10' : ''}`}>
+                        <Card className={`relative h-full bg-white border-zinc-100 p-8 sm:p-10 flex flex-col transition-all duration-500 rounded-[3rem] shadow-[0_40px_100px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.1)] hover:-translate-y-1 group-hover:border-purple-200 overflow-hidden ${isActive ? 'ring-4 ring-green-500/10 border-green-500 scale-[1.01] z-10' : ''}`}>
                             {isActive ? (
-                                <div className="absolute top-0 right-0 p-8 sm:p-10">
-                                    <ShieldCheck className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
+                                <div className="absolute top-0 right-0 p-6">
+                                    <ShieldCheck className="w-6 h-6 text-green-500" />
                                 </div>
                             ) : null}
 
                             {!isActive && (plan.type === 'Annual' || plan.price > 50) ? (
-                                <div className="absolute top-0 right-0 p-8 sm:p-10">
-                                    <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600 animate-pulse" />
+                                <div className="absolute top-0 right-0 p-6">
+                                    <Sparkles className="w-6 h-6 text-purple-600 animate-pulse" />
                                 </div>
                             ) : null}
 
-                            <div className="mb-12 text-left">
-                                <h3 className="text-3xl font-black tracking-tighter text-zinc-300 mb-4 italic uppercase">{plan.name}</h3>
+                            <div className="mb-10 text-left">
+                                <h3 className="text-xl font-black tracking-tighter text-zinc-300 mb-2 italic uppercase">{plan.name}</h3>
                                 <div className="flex items-baseline gap-2 flex-wrap">
-                                    <span className="text-5xl sm:text-7xl font-black text-zinc-900 tracking-tighter leading-none">{symbol}{displayPrice}</span>
-                                    <span className="text-zinc-400 uppercase text-xs font-black tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
+                                    <span className="text-5xl sm:text-6xl font-black text-zinc-900 tracking-tighter leading-none">{symbol}{displayPrice}</span>
+                                    <span className="text-zinc-400 uppercase text-[10px] font-black tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
                                 </div>
                             </div>
 
-                            <ul className="space-y-6 mb-12 flex-1">
+                            <ul className="space-y-5 mb-10 flex-1">
                                 {features.map((feat, j) => (
-                                    <li key={j} className={`flex items-center gap-4 font-bold text-sm group/item ${feat.enabled ? 'text-zinc-600' : 'text-zinc-300 line-through decoration-zinc-200 opacity-60'}`}>
-                                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-colors ${!feat.enabled ? 'bg-zinc-50 text-zinc-300' : isActive ? 'bg-green-50 text-green-600' : 'bg-purple-50 text-purple-600'}`}>
-                                            {feat.enabled ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                                    <li key={j} className={`flex items-center gap-3 font-bold text-xs sm:text-sm group/item ${feat.enabled ? 'text-zinc-600' : 'text-zinc-300 line-through decoration-zinc-200 opacity-60'}`}>
+                                        <div className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 transition-colors ${!feat.enabled ? 'bg-zinc-50 text-zinc-300' : isActive ? 'bg-green-50 text-green-600' : 'bg-purple-50 text-purple-600'}`}>
+                                            {feat.enabled ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                                         </div>
                                         <span className={feat.enabled ? "group-hover/item:text-zinc-900 transition-colors" : ""}>{feat.label}</span>
                                     </li>
@@ -170,19 +170,19 @@ export function PricingTable({
                             <Button
                                 onClick={() => handleSubscribe(plan.id)}
                                 disabled={purchasing !== null || isActive}
-                                className={`w-full h-16 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-xl active:scale-95 text-center ${isActive ? 'bg-green-50 text-green-600 hover:bg-green-50 cursor-default shadow-none border-2 border-green-500' :
+                                className={`w-full h-14 rounded-full font-black uppercase tracking-widest text-[10px] sm:text-xs transition-all shadow-xl active:scale-95 text-center px-2 ${isActive ? 'bg-green-50 text-green-600 hover:bg-green-50 cursor-default shadow-none border-2 border-green-500' :
                                     plan.type === 'Annual' || plan.price > 50 ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-purple-600/30' :
                                         'bg-zinc-900 text-white hover:bg-zinc-800 shadow-zinc-900/20'
                                     }`}
                             >
                                 {purchasing === plan.id ? (
-                                    <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                                    <Loader2 className="w-5 h-5 animate-spin mx-auto" />
                                 ) : isActive ? (
                                     ((t.pricing as any).current_plan || 'Plan Actual')
                                 ) : (
-                                    <div className="flex items-center justify-center gap-2">
+                                    <div className="flex items-center justify-center gap-2 whitespace-nowrap">
                                         {t.pricing.subscribe}
-                                        <Zap className="w-4 h-4 fill-current" />
+                                        <Zap className="w-3.5 h-3.5 fill-current" />
                                     </div>
                                 )}
                             </Button>
