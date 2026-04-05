@@ -229,7 +229,7 @@ export default function GuestUploadPage() {
                   </div>
 
                   <Button
-                    onClick={() => window.open(`${getApiUrl()}/media/${slug}/download`, '_blank')}
+                    onClick={() => window.location.href = `${getApiUrl()}/media/${slug}/download`}
                     className="w-full h-14 bg-white border border-dashed border-purple-200 text-purple-600 hover:bg-purple-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2 group/zip transition-all hover:scale-[1.05]"
                   >
                     <Download className="w-5 h-5 transition-transform group-hover/zip:-translate-y-1" />

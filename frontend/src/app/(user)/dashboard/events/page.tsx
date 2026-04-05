@@ -362,7 +362,7 @@ export default function EventsPage() {
                         </div>
                       </div>
                       <Button
-                        onClick={() => window.open(`${getApiUrl()}/media/${event.slug}/download`, '_blank')}
+                        onClick={() => window.location.href = `${getApiUrl()}/media/${event.slug}/download`}
                         className="w-full h-12 bg-white border border-dashed border-purple-200 text-purple-600 hover:bg-purple-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2 group/zip transition-all hover:scale-[1.02] mt-4"
                       >
                         <Download className="w-4 h-4 transition-transform group-hover/zip:-translate-y-1" />

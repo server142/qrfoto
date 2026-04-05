@@ -138,7 +138,19 @@ export class MediaController {
     const archiver = require('archiver');
     const archive = archiver('zip', { zlib: { level: 9 } });
 
-    res.attachment(`${event.name.replace(/\s+/g, '_')}_Memories.zip`);
+    // Header management for mobile compatibility
+    const safeFilename = encodeURIComponent(event.name.replace(/[^a-zA-Z0-9]/g, '_')) + '_Memories.zip';
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"; filename*=UTF-8''${safeFilename}`);
+
+    // Error handling for the archiver
+    archive.on('error', (err: any) => {
+      console.error('[Archiver Error]', err);
+      if (!res.headersSent) {
+        res.status(500).send({ message: 'Error generating archive' });
+      }
+    });
+
     archive.pipe(res);
 
     const mediaListData: any[] = [];
@@ -146,7 +158,7 @@ export class MediaController {
     for (const item of mediaItems) {
       if (!item.file_url) continue;
 
-      const extension = item.file_url.split('.').pop();
+      const extension = item.file_url.split('.').pop() || 'jpg';
       const filename = `media_${item.id.substring(0, 8)}.${extension}`;
 
       try {
@@ -174,7 +186,7 @@ export class MediaController {
       console.error("Error generating PDF in zip:", err.message);
     }
 
-    // Add Player
+    // Add Player Data
     const { getPlayerHtml } = require('./player.template');
     const playerHtml = getPlayerHtml(event.name, mediaListData);
     archive.append(playerHtml, { name: 'REPRODUCTOR_QRFOTO.html' });
