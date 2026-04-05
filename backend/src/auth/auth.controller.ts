@@ -19,4 +19,14 @@ export class AuthController {
   async register(@Body() registerDto: Record<string, any>) {
     return this.authService.register(registerDto);
   }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
+    return this.authService.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body: any) {
+    return this.authService.resetPassword(body.token, body.password);
+  }
 }

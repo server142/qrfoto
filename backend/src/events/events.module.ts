@@ -6,9 +6,10 @@ import { EventsGateway } from './events.gateway';
 import { Event } from './entities/event.entity';
 import { AuthModule } from '../auth/auth.module';
 import { ReviewsModule } from '../reviews/reviews.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Event]), AuthModule, ReviewsModule],
+  imports: [TypeOrmModule.forFeature([Event]), AuthModule, ReviewsModule, UsersModule],
   controllers: [EventsController],
   providers: [EventsService, EventsGateway],
   exports: [EventsService, EventsGateway],

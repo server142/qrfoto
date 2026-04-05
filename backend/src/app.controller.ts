@@ -21,7 +21,7 @@ export class AppController {
     if (manualIp) {
         return {
             localIp: manualIp,
-            frontendUrl: `http://${manualIp}:3001`
+            frontendUrl: `http://${manualIp}:3000`
         };
     }
 
@@ -42,7 +42,7 @@ export class AppController {
 
     return {
         localIp,
-        frontendUrl: `http://${localIp}:3001`
+        frontendUrl: `http://${localIp}:3000`
     };
   }
 }

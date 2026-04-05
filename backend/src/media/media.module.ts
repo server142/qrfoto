@@ -4,11 +4,13 @@ import { Media } from './entities/media.entity';
 import { MediaController } from './media.controller';
 import { UploadsService } from './uploads.service';
 import { EventsModule } from '../events/events.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Media]),
-    EventsModule
+    EventsModule,
+    UsersModule
   ],
   controllers: [MediaController],
   providers: [UploadsService],

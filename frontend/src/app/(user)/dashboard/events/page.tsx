@@ -14,11 +14,30 @@ import {
   DialogDescription
 } from "@/components/ui/dialog";
 import { QRCodeSVG } from "qrcode.react";
-import { Plus, Calendar, QrCode, ExternalLink, Trash2, Settings, Image as ImageIcon, Loader2, Printer, Download, Power, CheckCircle, Star, Share2, FileText } from "lucide-react";
+import { 
+  Plus, 
+  Calendar, 
+  QrCode, 
+  ExternalLink, 
+  Trash2, 
+  Settings, 
+  Image as ImageIcon, 
+  Loader2, 
+  Printer, 
+  Download, 
+  Power, 
+  CheckCircle, 
+  Star, 
+  Share2, 
+  FileText,
+  ChevronRight,
+  MoreVertical,
+  Activity,
+  Box
+} from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
-
 import { useTranslation } from "@/lib/LanguageContext";
 
 export default function EventsPage() {
@@ -41,10 +60,8 @@ export default function EventsPage() {
   const [finishError, setFinishError] = useState("");
   const [exporting, setExporting] = useState<string | null>(null);
 
-
-  // Helper to get token from cookies
   const getToken = () => {
-    return document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+    return typeof document !== 'undefined' ? document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : null;
   };
 
   const fetchEvents = async () => {
@@ -68,7 +85,6 @@ export default function EventsPage() {
 
   useEffect(() => {
     fetchEvents();
-    // Fetch local network config
     fetch(`${getApiUrl()}/config`)
       .then(r => r.json())
       .then(d => setLocalConfig(d))
@@ -168,7 +184,7 @@ export default function EventsPage() {
       try {
         await (navigator as any).share({
           title: event.name,
-          text: `¡Únete a la galería de ${event.name} en QRFoto!`,
+          text: `¡Únete a la galería de ${event.name} de QRFoto!`,
           url: url
         });
       } catch (err) {
@@ -183,7 +199,6 @@ export default function EventsPage() {
   const handleExportPDF = async (event: any) => {
     setExporting(event.id);
     try {
-      // Dynamic imports - SAFEST way to avoid server crashes
       const { jsPDF } = await import("jspdf");
       await import("jspdf-autotable");
 
@@ -191,7 +206,6 @@ export default function EventsPage() {
       const media = res.ok ? await res.json() : [];
 
       const doc = new jsPDF();
-      
       doc.setFontSize(22);
       doc.setTextColor(168, 85, 247);
       doc.text("QRFoto - Reporte de Evento", 14, 22);
@@ -223,250 +237,246 @@ export default function EventsPage() {
       doc.save(`${event.slug}-reporte.pdf`);
     } catch (err) {
       console.error("Export error:", err);
-      alert("Error al generar PDF. Por favor, asegúrate de haber ejecutado 'npm install jspdf jspdf-autotable' en el servidor.");
+      alert("Error al generar PDF.");
     } finally {
       setExporting(null);
     }
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-zinc-950/50 p-6 sm:p-10 rounded-[2.5rem] border border-white/5 gap-6 sm:gap-0">
-        <div className="space-y-2">
-          <div className="flex items-center gap-4 group">
-            <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/20 transition-colors group-hover:bg-purple-500/20">
-              <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500" />
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tighter italic text-white leading-none">
-              Mis <span className="text-purple-500">Eventos</span>
-            </h2>
-          </div>
-          <p className="text-[10px] sm:text-xs text-white/40 uppercase font-black tracking-[0.2em] ml-16 sm:ml-20 italic">
-            {t.events.subtitle}
-          </p>
+    <div className="space-y-10">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <div>
+          <h2 className="text-4xl font-black tracking-tighter italic text-zinc-900 leading-none">
+            Mis <span className="text-purple-600">Eventos</span>
+          </h2>
+          <p className="text-zinc-400 font-bold text-sm mt-3 uppercase tracking-widest">{t.events.subtitle}</p>
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto h-14 px-8 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-white/5 transition-all active:scale-95 group">
-              <Plus className="w-5 h-5 mr-2 transition-transform group-hover:rotate-90" />
+            <Button className="h-16 px-10 bg-zinc-900 text-white hover:bg-zinc-800 rounded-full font-black uppercase tracking-widest text-sm shadow-2xl shadow-zinc-200 transition-all active:scale-95 group">
+              <Plus className="w-5 h-5 mr-3 transition-transform group-hover:rotate-90" />
               {t.events.create_btn}
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-zinc-950/95 backdrop-blur-xl border-white/10 text-white rounded-[2.5rem] p-8 sm:p-12 max-w-md shadow-2xl shadow-purple-600/5">
+          <DialogContent className="bg-white border-zinc-100 text-zinc-900 rounded-[3rem] p-10 max-w-md shadow-3xl">
             <DialogHeader>
+                <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mb-6">
+                    <Box className="text-purple-600 w-8 h-8" />
+                </div>
               <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2">{t.events.create_dialog_title}</DialogTitle>
-              <DialogDescription className="text-white/40 text-sm">{t.events.create_dialog_subtitle}</DialogDescription>
+              <DialogDescription className="text-zinc-400 font-medium">{t.events.create_dialog_subtitle}</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreate} className="space-y-6 pt-6">
               <div className="space-y-2">
-                <Label className="text-white/60 text-[10px] uppercase tracking-widest font-black">{t.events.event_name}</Label>
+                <Label className="text-zinc-400 text-[10px] uppercase tracking-[0.2em] font-black ml-1">{t.events.event_name}</Label>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ej. Boda de Ana & Diego"
-                  className="bg-black/40 border-white/5 text-white h-12 rounded-xl focus:border-purple-500/50"
+                  className="bg-zinc-50 border-zinc-100 text-zinc-900 h-14 rounded-2xl focus:ring-purple-600/20 font-bold"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-white/60 text-[10px] uppercase tracking-widest font-black">{t.events.event_date}</Label>
+                <Label className="text-zinc-400 text-[10px] uppercase tracking-[0.2em] font-black ml-1">{t.events.event_date}</Label>
                 <Input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="bg-black/40 border-white/5 text-white h-12 rounded-xl focus:border-purple-500/50 [color-scheme:dark]"
+                  className="bg-zinc-50 border-zinc-100 text-zinc-900 h-14 rounded-2xl focus:ring-purple-600/20 font-bold"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-white/60 text-[10px] uppercase tracking-widest font-black">{t.events.note}</Label>
+                <Label className="text-zinc-400 text-[10px] uppercase tracking-[0.2em] font-black ml-1">{t.events.note}</Label>
                 <Input
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder={t.events.placeholder_note}
-                  className="bg-black/40 border-white/5 text-white h-12 rounded-xl focus:border-purple-500/50"
+                  className="bg-zinc-50 border-zinc-100 text-zinc-900 h-14 rounded-2xl focus:ring-purple-600/20 font-bold"
                 />
               </div>
-              <Button disabled={isCreating} type="submit" className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-purple-600/10 transition-all">
-                {isCreating ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t.events.submit_create}
+              <Button disabled={isCreating} type="submit" className="w-full h-16 bg-purple-600 text-white rounded-full font-black uppercase tracking-widest transition-all shadow-xl shadow-purple-600/20 text-lg sm:text-base">
+                {isCreating ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : t.events.submit_create}
               </Button>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      {loading && events.length === 0 ? (
-        <div className="py-20 flex flex-col items-center justify-center">
-          <Loader2 className="w-10 h-10 animate-spin text-purple-600 mb-4" />
-          <p className="text-white/30 uppercase text-xs font-bold tracking-widest">{t.events.syncing}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events.length === 0 ? (
-            <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl bg-zinc-950/30">
-              <Calendar className="w-16 h-16 text-white/5 mx-auto mb-6" />
-              <h3 className="text-2xl font-black uppercase italic text-white/40">{t.events.no_events}</h3>
-              <p className="text-white/30 text-sm mt-2 font-medium">{t.events.no_events_desc}</p>
-            </div>
-          ) : (
-            events.map((event: any) => (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={event.id}>
-                <Card className="bg-zinc-950 border-white/10 p-8 flex flex-col hover:border-purple-500/30 transition-all group rounded-[2rem] shadow-2xl relative overflow-hidden h-full">
-                  <div className="flex justify-between items-start mb-8 relative z-10">
-                    <div>
-                      <h3 className="text-2xl font-black text-white group-hover:text-purple-400 transition-colors italic leading-none">{event.name}</h3>
-                      <p className="text-[10px] text-white/30 mt-2 uppercase font-black tracking-[0.2em]">{new Date(event.event_date).toLocaleDateString()}</p>
+      <AnimatePresence mode="wait">
+        {loading && events.length === 0 ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="py-40 flex flex-col items-center justify-center">
+            <Loader2 className="w-16 h-16 animate-spin text-purple-600 mb-6" />
+            <p className="text-zinc-400 uppercase text-xs font-black tracking-[0.3em]">{t.events.syncing}</p>
+          </motion.div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {events.length === 0 ? (
+              <div className="col-span-full py-40 text-center border-4 border-dashed border-zinc-100 rounded-[3rem] bg-white shadow-xl shadow-zinc-100/50">
+                <Calendar className="w-24 h-24 text-zinc-100 mx-auto mb-8" />
+                <h3 className="text-3xl font-black uppercase italic text-zinc-300 tracking-tighter">{t.events.no_events}</h3>
+                <p className="text-zinc-400 text-sm mt-3 font-bold max-w-sm mx-auto">{t.events.no_events_desc}</p>
+                <Button variant="ghost" onClick={() => setOpen(true)} className="mt-8 text-purple-600 font-black uppercase tracking-widest text-xs hover:bg-purple-50">Empieza aquí <ChevronRight className="w-4 h-4 ml-1" /></Button>
+              </div>
+            ) : (
+              events.map((event: any, idx: number) => (
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ delay: idx * 0.05 }}
+                    key={event.id}
+                    className="group"
+                >
+                  <Card className="bg-white border-zinc-100 p-8 flex flex-col hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 rounded-[3.5rem] shadow-xl shadow-zinc-100 relative overflow-hidden h-full">
+                    <div className="flex justify-between items-start mb-8 relative z-10">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className={`w-2 h-2 rounded-full ${event.status === 'Active' ? 'bg-green-500 animate-pulse' : 'bg-red-400'}`} />
+                            <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{event.status === 'Active' ? 'En Vivo' : 'Finalizado'}</span>
+                        </div>
+                        <h3 className="text-2xl font-black text-zinc-900 group-hover:text-purple-600 transition-colors italic leading-tight tracking-tighter">{event.name}</h3>
+                        <p className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">{new Date(event.event_date).toLocaleDateString('es-MX', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                      </div>
+                      <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center border border-zinc-100 group-hover:bg-purple-50 group-hover:border-purple-100 transition-colors">
+                        <QrCode className="w-6 h-6 text-zinc-300 group-hover:text-purple-600 transition-colors" />
+                      </div>
                     </div>
-                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                      <QrCode className="w-6 h-6 text-white/40" />
-                    </div>
-                  </div>
 
-                  <div className="flex-1 space-y-6 mb-8 relative z-10">
-                    <div className="bg-white p-5 rounded-[2.5rem] flex flex-col items-center justify-center shadow-2xl shadow-purple-600/10 scale-100 group-hover:scale-105 transition-transform">
-                      <QRCodeSVG
-                        value={
-                          window.location.hostname === 'localhost' && localConfig?.frontendUrl
-                            ? `${localConfig.frontendUrl}/event/${event.slug}`
-                            : `${getBaseUrl()}/event/${event.slug}`
-                        }
-                        size={160}
-                        level="H"
-                        includeMargin={false}
-                      />
-                      <p className="text-[9px] text-black/20 mt-4 font-mono font-bold tracking-tighter truncate w-full text-center">
-                        QRFOTO-EID-{event.slug.toUpperCase()}
-                      </p>
+                    <div className="flex-1 space-y-6 mb-10 relative z-10">
+                      <div className="bg-white p-6 rounded-[3rem] flex flex-col items-center justify-center border-2 border-zinc-50 group-hover:border-purple-100 transition-all shadow-sm relative group/qr">
+                        <QRCodeSVG
+                          value={
+                            window.location.hostname === 'localhost' && localConfig?.frontendUrl
+                              ? `${localConfig.frontendUrl}/event/${event.slug}`
+                              : `${getBaseUrl()}/event/${event.slug}`
+                          }
+                          size={180}
+                          level="H"
+                        />
+                        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm opacity-0 group-hover/qr:opacity-100 transition-opacity flex flex-col items-center justify-center p-6 text-center">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Slug Único</p>
+                            <span className="text-sm font-black text-purple-600 bg-purple-50 px-4 py-2 rounded-full border border-purple-100">/{event.slug}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-2 gap-3 relative z-10">
-                    <Link href={`/event/${event.slug}/slideshow`} target="_blank" className="flex-1">
+                    <div className="grid grid-cols-2 gap-4 relative z-10">
+                      <Link href={`/event/${event.slug}/slideshow`} target="_blank" className="col-span-2">
+                        <Button
+                          disabled={event.status !== 'Active'}
+                          className="w-full h-14 bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-zinc-200 transition-all hover:scale-[1.02]"
+                        >
+                          <Activity className="w-4 h-4" /> Lanzar Presentación
+                        </Button>
+                      </Link>
+
                       <Button
-                        disabled={event.status !== 'Active'}
-                        className="w-full bg-white text-black hover:bg-zinc-200 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[9px] h-12 gap-1.5 shadow-lg transition-all"
+                        onClick={() => handleShare(event)}
+                        className="bg-purple-600 text-white hover:bg-purple-700 rounded-2xl font-black uppercase tracking-widest text-[10px] h-14 gap-2 transition-all shadow-lg shadow-purple-600/10"
                       >
-                        <ExternalLink className="w-3 h-3" /> PRESENTACIÓN
+                        <Share2 className="w-4 h-4" /> Compartir
                       </Button>
-                    </Link>
-                    <Button
-                      onClick={() => handleShare(event)}
-                      className="flex-1 bg-purple-600 text-white hover:bg-purple-500 rounded-2xl font-black uppercase tracking-widest text-[9px] h-12 gap-1.5 shadow-lg transition-all"
-                    >
-                      <Share2 className="w-3 h-3" /> {(t as any).events?.share_btn || "Compartir"}
-                    </Button>
-                    <Link href={`/event/${event.slug}/card`} target="_blank" className="flex-1">
-                      <Button className="w-full bg-white/5 hover:bg-white/10 text-white/80 rounded-2xl text-[10px] h-12 font-bold uppercase border border-white/5">
-                        <Printer className="w-3.5 h-3.5 mr-1" /> {t.events.print}
+
+                      <Link href={`/event/${event.slug}/card`} target="_blank">
+                        <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-100 rounded-2xl text-[10px] h-14 font-black uppercase transition-all">
+                          <Printer className="w-4 h-4 mr-2" /> {t.events.print}
+                        </Button>
+                      </Link>
+
+                      <Button
+                        onClick={() => setFinishingEvent({ ...event, isReactivating: event.status !== 'Active' })}
+                        className={`col-span-1 rounded-2xl text-[10px] h-14 font-black uppercase border transition-all ${event.status === 'Active' ? 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100' : 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'}`}
+                      >
+                        {event.status === 'Active' ? <Power className="w-4 h-4 mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+                        {event.status === 'Active' ? "Finalizar" : "Activar"}
                       </Button>
-                    </Link>
-                    <Button
-                      onClick={async () => {
-                        window.open(`${getApiUrl()}/media/${event.slug}/download`, '_blank');
-                      }}
-                      className="flex-1 bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 rounded-2xl text-[10px] h-12 font-bold uppercase border border-purple-500/10"
-                    >
-                      <Download className="w-3.5 h-3.5 mr-1" /> DESCARGAR
-                    </Button>
 
-                    <Button
-                      onClick={() => handleExportPDF(event)}
-                      disabled={exporting === event.id}
-                      className="flex-1 bg-white/5 hover:bg-white/10 text-white/80 rounded-2xl text-[10px] h-12 font-bold uppercase border border-white/5"
-                    >
-                      {exporting === event.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 mr-1" />}
-                      EXPORTAR
-                    </Button>
+                      <Link href={`/dashboard/events/${event.id}/config`}>
+                        <Button className="w-full bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 rounded-2xl text-[10px] h-14 font-black uppercase transition-all">
+                          <Settings className="w-4 h-4 mr-2" /> Ajustes
+                        </Button>
+                      </Link>
 
-                    <Button
-                      onClick={() => setFinishingEvent({ ...event, isReactivating: event.status !== 'Active' })}
-                      className={`flex-1 rounded-2xl text-[10px] h-12 font-bold uppercase border ${event.status === 'Active' ? 'bg-orange-500/10 text-orange-400 border-orange-500/10 hover:bg-orange-500/20' : 'bg-green-500/10 text-green-400 border-green-500/10 hover:bg-green-500/20'}`}
-                    >
-                      {event.status === 'Active' ? <Power className="w-3.5 h-3.5 mr-1" /> : <CheckCircle className="w-3.5 h-3.5 mr-1" />}
-                      {event.status === 'Active' ? "FINALIZAR" : t.events.activate_btn}
-                    </Button>
-
-                    <Link href={`/dashboard/events/${event.id}/config`} className="flex-1">
-                      <Button className="w-full bg-white/5 hover:bg-white/10 text-white/80 rounded-2xl text-[10px] h-12 font-bold uppercase border border-white/5">
-                        <Settings className="w-3.5 h-3.5 mr-1" /> {t.events.edit}
+                      <Button onClick={() => handleDelete(event.id)} className="col-span-2 bg-red-50 hover:bg-red-100 text-red-500 border border-red-100 rounded-2xl text-[10px] h-14 font-black uppercase transition-all opacity-40 hover:opacity-100">
+                        <Trash2 className="w-4 h-4 mr-2" /> Eliminar Evento Permanente
                       </Button>
-                    </Link>
-                    <Button onClick={() => handleDelete(event.id)} className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-2xl text-[10px] h-12 font-bold uppercase border border-red-500/10">
-                      <Trash2 className="w-3.5 h-3.5 mr-1" /> {t.events.delete}
-                    </Button>
-                  </div>
+                    </div>
 
-                  {/* Bg decoration */}
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-600/10 to-transparent -rotate-45 translate-x-12 -translate-y-12" />
-                </Card>
-              </motion.div>
-            ))
-          )}
-        </div>
-      )}
+                    {/* Gradient hint */}
+                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-purple-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
+                  </Card>
+                </motion.div>
+              ))
+            )}
+          </div>
+        )}
+      </AnimatePresence>
 
       <Dialog open={!!finishingEvent} onOpenChange={(val) => { if (!val) setFinishingEvent(null); }}>
-        <DialogContent className="bg-zinc-950 border-white/10 text-white rounded-[2rem] p-10 max-w-sm shadow-2xl shadow-purple-600/5">
+        <DialogContent className="bg-white border-zinc-100 text-zinc-900 rounded-[3rem] p-10 max-w-sm shadow-3xl">
           <DialogHeader>
-            <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-center text-purple-500">
-              {finishingEvent?.isReactivating ? t.events.activate_btn : t.user_dashboard.finish_modal.title}
+            <div className={`w-16 h-16 ${finishingEvent?.isReactivating ? 'bg-green-50' : 'bg-orange-50'} rounded-2xl flex items-center justify-center mb-6 mx-auto`}>
+                 {finishingEvent?.isReactivating ? <CheckCircle className="text-green-600 w-8 h-8" /> : <Power className="text-orange-600 w-8 h-8" />}
+            </div>
+            <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-center">
+              {finishingEvent?.isReactivating ? "Reactivar Evento" : "Finalizar Evento"}
             </DialogTitle>
-            <DialogDescription className="text-white/40 text-sm text-center">
+            <DialogDescription className="text-zinc-400 font-medium text-center">
               {t.user_dashboard.finish_modal.subtitle}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={submitFinish} className="space-y-6 pt-6">
             <div className="space-y-2">
-              <Label className="text-white/60 text-[10px] uppercase tracking-widest font-black">{t.user_dashboard.finish_modal.password}</Label>
+              <Label className="text-zinc-400 text-[10px] uppercase tracking-widest font-black ml-1">{t.user_dashboard.finish_modal.password}</Label>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-black/40 border-white/5 text-white h-12 rounded-xl focus:border-purple-500/50"
+                className="bg-zinc-50 border-zinc-100 text-zinc-900 h-14 rounded-2xl focus:ring-purple-600/20 font-bold"
                 required
               />
-              {finishError && <p className="text-red-500 text-xs mt-1">{finishError}</p>}
+              {finishError && <p className="text-red-500 text-xs mt-1 font-bold">{finishError}</p>}
             </div>
 
             {!finishingEvent?.isReactivating && (
-              <div className="pt-4 border-t border-white/5 space-y-4">
-                <div className="text-center space-y-2">
-                  <Label className="text-white/90 text-sm font-black">{t.user_dashboard.finish_modal.rating_title}</Label>
-                  <p className="text-[10px] text-white/40 uppercase tracking-widest">{t.user_dashboard.finish_modal.rating_desc}</p>
+              <div className="pt-6 border-t border-zinc-100 space-y-6">
+                <div className="text-center">
+                  <Label className="text-zinc-900 text-sm font-black">{t.user_dashboard.finish_modal.rating_title}</Label>
                 </div>
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-center gap-3">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       type="button"
                       onClick={() => setRating(star)}
-                      className="focus:outline-none transition-transform hover:scale-110"
+                      className="focus:outline-none transition-transform hover:scale-125"
                     >
-                      <Star className={`w-8 h-8 ${rating >= star ? 'fill-yellow-500 text-yellow-500' : 'text-white/20'}`} />
+                      <Star className={`w-8 h-8 ${rating >= star ? 'fill-yellow-400 text-yellow-400' : 'text-zinc-100'}`} />
                     </button>
                   ))}
                 </div>
 
-                <div className="space-y-2 mt-4">
+                <div className="space-y-2">
                   <Input
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     placeholder={t.user_dashboard.finish_modal.comment_placeholder}
-                    className="bg-black/40 border-white/5 text-white h-12 rounded-xl focus:border-purple-500/50"
+                    className="bg-zinc-50 border-zinc-100 text-zinc-900 h-14 rounded-2xl focus:ring-purple-600/20 font-bold"
                   />
                 </div>
               </div>
             )}
 
-            <Button disabled={isFinishing} type="submit" className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-purple-600/10 transition-all mt-4">
-              {isFinishing ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : t.user_dashboard.finish_modal.submit}
+            <Button disabled={isFinishing} type="submit" className="w-full h-16 bg-purple-600 text-white rounded-full font-black uppercase tracking-widest text-sm shadow-xl shadow-purple-600/20 transition-all mt-4">
+              {isFinishing ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : t.user_dashboard.finish_modal.submit}
             </Button>
           </form>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }

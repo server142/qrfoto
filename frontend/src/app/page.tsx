@@ -2,273 +2,363 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, QrCode, MonitorPlay, Zap, Shield, Image as ImageIcon, Menu, X, Globe, Star } from "lucide-react";
+import { 
+  ArrowRight, 
+  QrCode, 
+  Zap, 
+  Shield, 
+  Menu, 
+  X, 
+  Share2, 
+  Camera, 
+  Heart, 
+  Users, 
+  CheckCircle2, 
+  Sparkles,
+  PlayCircle,
+  Star,
+  Image as ImageIcon
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getApiUrl } from "@/lib/api";
 import { useTranslation } from "@/lib/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PricingTable } from "@/components/PricingTable";
+import { Logo } from "@/components/Logo";
 import Link from "next/link";
 
 export default function LandingPage() {
   const { t, language } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    fetch(`${getApiUrl()}/reviews`)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) setReviews(data);
-      })
-      .catch(console.error);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const featuresList = [
-    { icon: QrCode, title: t.features.qr, desc: t.features.qr_desc },
-    { icon: Zap, title: t.features.realtime, desc: t.features.realtime_desc },
-    { icon: MonitorPlay, title: t.features.slideshow, desc: t.features.slideshow_desc },
-    { icon: Shield, title: t.features.secure, desc: t.features.secure_desc },
-    { icon: ImageIcon, title: t.features.quality, desc: t.features.quality_desc },
-    { icon: ArrowRight, title: t.features.automation, desc: t.features.automation_desc },
+  const fadeIn = {
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.6 }
+  };
+
+  const useCases = [
+    { title: "Bodas", desc: "Captura cada lágrima y risa sin perseguir a los invitados.", icon: Heart, color: "text-pink-500", bg: "bg-pink-50" },
+    { title: "Cumpleaños", desc: "El centro de atención con una galería en vivo dinámica.", icon: Sparkles, color: "text-purple-500", bg: "bg-purple-50" },
+    { title: "Antros / Bares", desc: "Contenido viral instantáneo para tus redes sociales.", icon: Camera, color: "text-blue-500", bg: "bg-blue-50" },
+    { title: "Eventos Corporativos", desc: "Networking visual y branding impecable.", icon: Users, color: "text-zinc-700", bg: "bg-zinc-100" }
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-purple-500/30">
+    <div className="min-h-screen bg-[#FDFDFD] text-zinc-900 selection:bg-purple-100 selection:text-purple-900 font-sans">
       {/* Navigation */}
-      <nav className="fixed w-full z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl">
-        <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-xl border-b border-zinc-100 py-4 shadow-sm" : "bg-transparent py-6"}`}>
+        <div className="container mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 uppercase italic tracking-tighter">
-              QRFoto
-            </span>
+            <Logo size="md" />
           </div>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8 text-[10px] uppercase font-black tracking-[0.2em] text-white/50">
-            <a href="#features" className="hover:text-white transition-colors">{t.nav.features}</a>
-            <Link href="/pricing" className="hover:text-white transition-colors">{t.nav.pricing}</Link>
-            <a href="#gallery" className="hover:text-white transition-colors">{t.nav.gallery}</a>
+          <div className="hidden md:flex items-center gap-12 text-xs font-black uppercase tracking-widest text-zinc-500">
+            <a href="#como-funciona" className="hover:text-purple-600 transition-colors uppercase">Cómo funciona</a>
+            <a href="#beneficios" className="hover:text-purple-600 transition-colors uppercase">Beneficios</a>
+            <a href="#precios" className="hover:text-purple-600 transition-colors uppercase">Precios</a>
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost" className="text-white hover:bg-white/10 uppercase font-black text-xs tracking-widest px-6">
-                {t.login.cta}
-              </Button>
-            </Link>
+          <div className="flex items-center gap-4">
+            <LanguageSwitcher />
+            <Link href="/login" className="hidden md:block text-xs font-black uppercase tracking-widest text-zinc-900 hover:text-purple-600">Entrar</Link>
             <Link href="/register">
-              <Button className="bg-white text-black hover:bg-white/90 rounded-2xl px-6 h-11 font-black uppercase text-xs tracking-widest shadow-xl shadow-white/5">
-                {t.hero.cta}
-              </Button>
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-8 h-12 text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20">
+                Crear Evento Gratis
+                </Button>
             </Link>
-            <div className="ml-2">
-              <LanguageSwitcher />
-            </div>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <div className="md:hidden flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white hover:bg-white/10 rounded-xl"
-            >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </Button>
+            <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
         </div>
-
-        {/* Mobile Menu Content */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-zinc-950 border-b border-white/10 overflow-hidden"
-            >
-              <div className="flex flex-col p-6 gap-6">
-                <a
-                  href="#features"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-2xl font-black uppercase italic text-white/40 hover:text-white flex items-center justify-between group transition-colors"
-                >
-                  <span>{t.nav.features}</span>
-                  <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
-                </a>
-                <Link
-                  href="/pricing"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-2xl font-black uppercase italic text-white/40 hover:text-white flex items-center justify-between group transition-colors"
-                >
-                  <span>{t.nav.pricing}</span>
-                  <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
-                </Link>
-                <a
-                  href="#gallery"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-2xl font-black uppercase italic text-white/40 hover:text-white flex items-center justify-between group transition-colors"
-                >
-                  <span>{t.nav.gallery}</span>
-                  <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
-                </a>
-
-                <div className="h-px bg-white/5 my-2" />
-
-                <Link
-                  href="/login"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-2xl font-black uppercase italic text-white flex items-center justify-between group"
-                >
-                  <span>{t.login.cta}</span>
-                  <ArrowRight className="w-6 h-6 text-purple-500 group-hover:translate-x-2 transition-transform" />
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-2xl font-black uppercase italic text-purple-400 flex items-center justify-between group"
-                >
-                  <span>{t.hero.cta}</span>
-                  <ArrowRight className="w-6 h-6 text-purple-400 group-hover:translate-x-2 transition-transform" />
-                </Link>
-
-                <div className="pt-6 border-t border-white/5 flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">{t.nav.change_lang}</span>
-                  <LanguageSwitcher />
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-black to-black" />
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
-              {t.hero.title}
-              <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
-                {t.hero.galleries}
+      <section className="relative pt-32 pb-20 md:pt-56 md:pb-32 overflow-hidden bg-white">
+        {/* Decoraciones sutiles */}
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-50 rounded-full blur-[120px] opacity-60 -z-10" />
+        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-indigo-50 rounded-full blur-[150px] opacity-40 -z-10" />
+
+        <div className="container mx-auto px-6 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-50 text-purple-600 text-[10px] font-black uppercase tracking-[0.2em] mb-12 shadow-sm"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> ACCESO GRATUITO POR TIEMPO LIMITADO
+            </motion.div>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-7xl leading-[1.1] font-black tracking-tighter mb-12 uppercase italic text-zinc-900"
+            >
+              Convierte tu evento en <br />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 bg-300% animate-gradient pb-4">
+                una máquina viral
               </span>
-            </h1>
-            <p className="text-lg md:text-xl text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed">
-              {t.hero.subtitle}
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button size="lg" className="h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-lg hover:opacity-90 w-full transition-all shadow-[0_0_40px_rgba(168,85,247,0.4)]">
-                  {t.hero.cta}
-                  <ArrowRight className="ml-2 w-5 h-5" />
+              <span className="inline-block ml-4 text-purple-600">
+                <Camera className="w-12 h-12 md:w-20 md:h-20 inline align-middle animate-bounce" />
+              </span>
+            </motion.h1>
+
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-xl md:text-2xl text-zinc-500 font-medium max-w-3xl mx-auto mb-16 leading-tight"
+            >
+              Tus invitados suben fotos en tiempo real. Tú obtienes recuerdos y <br />
+              <b>contenido sin esfuerzo</b> para que nadie se pierda los mejores momentos.
+            </motion.p>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-6"
+            >
+              <Link href="/register">
+                <Button size="lg" className="h-20 px-12 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-xl font-black uppercase tracking-tighter shadow-2xl shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 group">
+                  CREAR MI EVENTO GRATIS <ArrowRight className="ml-2 w-6 h-6 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Link href="/demo" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="h-14 px-8 rounded-full text-lg border-white/20 hover:bg-white/5 w-full">
-                  {t.hero.demo}
-                </Button>
-              </Link>
-            </div>
+              <Button size="lg" variant="ghost" className="h-20 px-10 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-widest text-xs flex items-center gap-3">
+                <PlayCircle className="w-5 h-5 text-purple-600" /> VER CÓMO FUNCIONA
+              </Button>
+            </motion.div>
+
+            <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="relative w-full max-w-6xl mx-auto rounded-[3rem] overflow-hidden mt-16 shadow-[0_50px_100px_rgba(0,0,0,0.1)] group"
+          >
+            <img 
+              src="/qrfoto_final_hero_mockup_1775351002426.png" 
+              alt="QRFoto Mockup Dashboard y App" 
+              className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-[3rem]" />
           </motion.div>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section id="features" className="py-24 bg-black relative border-t border-white/5">
+      {/* Categories / Use Cases */}
+      <section className="py-32 bg-[#FDFDFD]">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">{t.features.title}</h2>
-            <p className="text-white/60">{t.features.subtitle}</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuresList.map((Feature, i) => (
-              <motion.div
+          <div className="grid md:grid-cols-4 gap-12">
+            {useCases.map((useCase, i) => (
+              <motion.div 
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-8 rounded-3xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-colors"
+                transition={{ delay: i * 0.1 }}
+                className="group cursor-default"
               >
-                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-6 text-purple-400">
-                  <Feature.icon className="w-6 h-6" />
+                <div className={`${useCase.bg} w-20 h-20 rounded-3xl flex items-center justify-center mb-8 transform transition-transform group-hover:scale-110 group-hover:rotate-3 shadow-sm`}>
+                    <useCase.icon className={`w-10 h-10 ${useCase.color}`} />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{Feature.title}</h3>
-                <p className="text-white/60 leading-relaxed">{Feature.desc}</p>
+                <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter italic">{useCase.title}</h3>
+                <p className="text-zinc-500 font-medium leading-snug">{useCase.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-black relative border-t border-white/5">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">{t.pricing.title}</h2>
-            <p className="text-white/60">{t.pricing.subtitle}</p>
+      {/* Solution / Steps */}
+      <section id="como-funciona" className="py-24 md:py-32 bg-[#F8F9FA]">
+        <div className="container mx-auto px-6 text-center">
+          <div className="max-w-3xl mx-auto mb-20">
+            <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tighter uppercase italic">Experiencia sin fricción</h2>
+            <p className="text-2xl text-zinc-500 font-medium">Diseñado para que hasta tu tía abuela pueda participar. <br /><b>Sin apps, sin descargas, sin líos.</b></p>
           </div>
-          <PricingTable />
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { step: "01", title: "Escanean el QR", desc: "Coloca el código QR personalizado en mesas, pantallas o la entrada.", icon: QrCode },
+              { step: "02", title: "Suben sus fotos", desc: "Los invitados seleccionan o toman fotos desde su propio móvil al instante.", icon: Camera },
+              { step: "03", title: "¡Magia en Vivo!", desc: "Todo aparece al instante en la galería privada y en tu pantalla central.", icon: Zap }
+            ].map((item, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="p-12 bg-white rounded-[3rem] shadow-sm border border-zinc-100 group transition-all duration-300 text-left relative overflow-hidden"
+              >
+                <div className="text-[10rem] font-black text-zinc-50 absolute -right-10 -bottom-10 leading-none group-hover:text-purple-50 transition-colors pointer-events-none">
+                  {item.step}
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mb-10 text-purple-600 relative z-10 group-hover:scale-110 transition-transform">
+                  <item.icon className="w-10 h-10" />
+                </div>
+                <h3 className="text-3xl font-black mb-6 relative z-10 uppercase tracking-tight italic">{item.title}</h3>
+                <p className="text-zinc-500 leading-snug font-medium text-lg relative z-10">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
-      {reviews.length > 0 && (
-        <section id="reviews" className="py-24 bg-zinc-950 relative border-t border-white/5">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">{t.reviews.title}</h2>
-              <p className="text-white/60">{t.reviews.subtitle}</p>
-            </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {reviews.map((review, i) => (
-                <motion.div
-                  key={review.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="p-8 rounded-3xl bg-white/[0.02] border border-white/[0.05]"
-                >
-                  <div className="flex gap-1 mb-4">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} className={`w-5 h-5 ${review.rating >= star ? 'fill-yellow-500 text-yellow-500' : 'text-white/20'}`} />
-                    ))}
-                  </div>
-                  <p className="text-white/80 leading-relaxed mb-6 italic">"{review.comment}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-white uppercase">
-                      {review.user?.first_name?.charAt(0)}{review.user?.last_name?.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="font-bold text-sm">{review.user?.first_name} {review.user?.last_name}</p>
-                      <p className="text-[10px] text-white/40 uppercase tracking-widest">{review.event?.name || 'QRFoto Event'}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+      {/* Benefits */}
+      <section id="beneficios" className="py-24 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-10">
+            <h2 className="text-5xl md:text-6xl font-black max-w-2xl leading-[0.9] italic tracking-tighter uppercase">
+              No es solo una galería, <br /> <span className="text-purple-600">es el alma de tu fiesta.</span>
+            </h2>
+            <div className="flex items-center gap-2 px-8 py-4 bg-purple-50 rounded-full text-purple-600 font-black uppercase text-xs tracking-widest animate-bounce">
+              <Sparkles className="w-4 h-4" />
+              SaaS de Alto Nivel
             </div>
           </div>
-        </section>
-      )}
+
+          <div className="grid md:grid-cols-2 gap-10">
+            {[
+              { title: "Control Total", desc: "Modera qué fotos aparecen en pantalla en tiempo real desde tu propio panel móvil.", icon: Shield },
+              { title: "Descarga Masiva", desc: "Al terminar el evento, descarga todas las fotos en alta resolución con un solo clic.", icon: Zap },
+              { title: "Personalización", desc: "Configura colores, logotipos y mensajes de bienvenida para que coincidan con tu estilo.", icon: Sparkles },
+              { title: "Privacidad", desc: "Tú decides quién puede ver o subir fotos. Galerías protegidas y seguras.", icon: Users }
+            ].map((benefit, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="flex items-center gap-8 p-12 rounded-[3.5rem] bg-[#F8F9FA] border border-zinc-50 hover:bg-white hover:shadow-2xl transition-all duration-500"
+              >
+                <div className="w-20 h-20 rounded-[2rem] bg-white shadow-xl flex items-center justify-center shrink-0">
+                    <benefit.icon className="w-10 h-10 text-purple-600" />
+                </div>
+                <div>
+                    <h4 className="text-3xl font-black uppercase tracking-tighter italic mb-4">{benefit.title}</h4>
+                    <p className="text-zinc-500 font-medium text-lg leading-tight">{benefit.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Reviews */}
+      <section className="py-24 bg-white overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-24">
+            <h2 className="text-5xl font-black italic uppercase tracking-tighter">Experiencias Reales</h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-10">
+            {[
+              { name: "Laura", event: "Boda", text: "Increíble, conseguí 300 fotos que mis fotógrafos no captaron. Fue el alma de la boda." },
+              { name: "Marcos", event: "Cumpleaños", text: "A todos les encantó ver las fotos proyectadas en vivo. Súper fácil de usar." },
+              { name: "Andrea", event: "Evento Corp.", text: "La mejor forma de que todos compartan el contenido. Profesional y fluido." }
+            ].map((testi, i) => (
+              <div key={i} className="bg-white p-12 rounded-[3.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.03)] border border-zinc-50 flex flex-col items-center text-center">
+                <div className="flex gap-1 mb-8">
+                  {[1,2,3,4,5].map(s => <Star key={s} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
+                </div>
+                <p className="text-xl font-medium text-zinc-900 mb-10 leading-snug italic">"{testi.text}"</p>
+                <div className="flex items-center flex-col gap-4">
+                  <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center font-black text-purple-600 text-2xl uppercase">
+                    {testi.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h5 className="font-black text-lg uppercase tracking-tight leading-none">{testi.name}</h5>
+                    <p className="text-xs text-purple-400 uppercase font-black tracking-widest mt-1">{testi.event}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Table Section */}
+      <section id="precios" className="py-24 md:py-40 bg-[#FDFDFD] relative overflow-hidden">
+        {/* Decoración de fondo */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-100/50 blur-[150px] -z-10" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-50/50 blur-[150px] -z-10" />
+
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-24 space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white border border-zinc-100 shadow-sm text-purple-600 text-xs font-black uppercase tracking-[0.2em]"
+            >
+              <Sparkles className="w-4 h-4" /> PRECIOS TRANSPARENTES
+            </motion.div>
+            
+            <h2 className="text-5xl md:text-[6rem] leading-[0.9] font-black tracking-tighter uppercase italic text-zinc-900">
+              Escoge el plan <br /> <span className="text-purple-600">para tu éxito.</span>
+            </h2>
+            <p className="text-zinc-500 text-xl font-medium max-w-2xl mx-auto">
+              Invierte en experiencias virales. Sin costos ocultos, sin comisiones sorpresa.
+            </p>
+          </div>
+
+          <PricingTable />
+
+          <div className="mt-32">
+            <div className="bg-zinc-900 rounded-[5rem] p-16 md:p-32 text-white relative overflow-hidden text-center shadow-3xl shadow-purple-900/10">
+                <div className="absolute top-12 right-12 rotate-12 hidden md:block">
+                    <div className="bg-yellow-400 text-black px-10 py-3 font-black uppercase text-sm rounded-full shadow-2xl animate-pulse">
+                        Acceso Instantáneo
+                    </div>
+                </div>
+
+                <h2 className="text-5xl md:text-[7rem] leading-none font-black mb-12 tracking-tighter uppercase italic">¿Listo para empezar?</h2>
+                <p className="text-white/80 text-2xl font-medium mb-16 max-w-3xl mx-auto leading-tight">
+                Empieza hoy mismo y configura tu evento en menos de <br /><b>30 segundos.</b>
+                </p>
+                
+                <Link href="/register">
+                <Button size="lg" className="h-24 px-10 sm:px-20 bg-white text-black hover:bg-zinc-100 rounded-full text-lg sm:text-3xl font-black uppercase tracking-tighter shadow-2xl transition-all hover:scale-105 active:scale-95 border-none">
+                    REGISTRARME GRATIS
+                </Button>
+                </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-white/5 bg-black">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 uppercase italic tracking-tighter">
-            QRFoto
-          </span>
-          <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
-            © 2026 QRFoto Events. {language === 'es' ? 'Todos los derechos reservados' : 'All rights reserved'}.
-          </p>
+      <footer className="py-24 bg-white border-t border-zinc-100">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-16">
+            <div className="space-y-6 text-center md:text-left">
+                <Logo size="lg" />
+                <p className="text-zinc-500 font-medium max-w-md text-xl leading-snug">La plataforma definitiva para convertir tus eventos <br /> en experiencias digitales masivas.</p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-16 text-xs font-black uppercase tracking-widest text-zinc-400">
+                <a href="#" className="hover:text-purple-600 transition-colors">Términos</a>
+                <a href="#" className="hover:text-purple-600 transition-colors">Privacidad</a>
+                <a href="#" className="hover:text-purple-600 transition-colors">Cookies</a>
+            </div>
+          </div>
+          <div className="mt-24 pt-12 border-t border-zinc-50 text-center">
+            <p className="text-zinc-200 text-[10px] font-black uppercase tracking-[0.4em]">
+                © 2026 QRFoto International Group. Todos los derechos reservados.
+            </p>
+          </div>
         </div>
       </footer>
     </div>

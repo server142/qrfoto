@@ -3,12 +3,15 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../users/entities/user.entity';
+import { MailService } from '../common/mail.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private mailService: MailService
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -52,5 +55,45 @@ export class AuthService {
     const { password_hash: _pw, ...result } = newUser;
     // Log in automatically after registration
     return this.login(result);
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.usersService.findOneByEmail(email);
+    if (!user) {
+      // Por seguridad, no decimos si el usuario existe o no, pero retornamos éxito simulado
+      return { message: 'Si el correo existe, se enviará un enlace de recuperación.' };
+    }
+
+    const token = uuidv4();
+    const expires = new Date();
+    expires.setHours(expires.getHours() + 1); // Expira en 1 hora
+
+    await this.usersService.update(user.id, {
+      reset_password_token: token,
+      reset_password_expires: expires,
+    });
+
+    await this.mailService.sendResetPasswordEmail(user.email, token);
+
+    return { message: 'Si el correo existe, se enviará un enlace de recuperación.' };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const user = await this.usersService.findByToken(token);
+
+    if (!user || !user.reset_password_expires || new Date() > user.reset_password_expires) {
+      throw new BadRequestException('Token inválido o expirado.');
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    await this.usersService.update(user.id, {
+      password_hash: hashedPassword,
+      reset_password_token: null,
+      reset_password_expires: null,
+    });
+
+    return { message: 'Contraseña actualizada con éxito.' };
   }
 }

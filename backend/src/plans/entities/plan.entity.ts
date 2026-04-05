@@ -30,6 +30,15 @@ export class Plan {
   @Column({ default: 30 })
   event_duration_days: number;
 
+  @Column({ default: true })
+  has_custom_qr: boolean;
+
+  @Column({ default: true })
+  has_bulk_download: boolean;
+
+  @Column({ default: true })
+  has_custom_branding: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 }

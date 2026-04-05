@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { KeyRound, Mail, Loader2, Sparkles } from "lucide-react";
+import { KeyRound, Mail, Loader2, Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
 import { getApiUrl } from "@/lib/api";
+import { Logo } from "@/components/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -50,83 +51,100 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-6 relative overflow-hidden font-sans">
       {/* Background Decor */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-pink-600/10 blur-[120px] rounded-full" />
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-100/50 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-50/50 blur-[120px] rounded-full" />
       </div>
 
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
         className="w-full max-w-md relative z-10"
       >
-        <div className="mb-10 text-center space-y-2">
-            <motion.div 
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ repeat: Infinity, duration: 5 }}
-                className="inline-block"
-            >
-                <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                    <Sparkles className="w-8 h-8 text-purple-400" />
-                </div>
-            </motion.div>
-            <h1 className="text-4xl font-black italic tracking-tighter uppercase text-white">QRFoto Events</h1>
-            <p className="text-white/40 font-medium">Inicia sesión en tu portal de cliente</p>
+        <div className="mb-10 text-center space-y-4">
+            <Link href="/" className="inline-block transform hover:scale-105 transition-transform">
+                <Logo size="lg" />
+            </Link>
+            <div className="space-y-1">
+                <h1 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase italic leading-none">Bienvenido de nuevo</h1>
+                <p className="text-zinc-400 font-bold text-sm">Es hora de crear experiencias virales.</p>
+            </div>
         </div>
 
-        <div className="bg-zinc-950 border border-white/10 rounded-[2.5rem] p-10 shadow-3xl shadow-purple-500/5">
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2">
-              <Label className="text-white/60 text-[10px] uppercase tracking-widest font-black ml-1">Correo electrónico</Label>
-              <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+        <div className="bg-white border border-zinc-100 rounded-[3.5rem] p-10 md:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.05)] relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+             <ShieldCheck className="w-32 h-32 -mr-16 -mt-16 text-purple-600" />
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-8 relative z-10">
+            <div className="space-y-3">
+              <Label className="text-zinc-400 text-xs uppercase tracking-widest font-black ml-1">Correo electrónico</Label>
+              <div className="relative group">
+                  <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-300 group-focus-within:text-purple-600 transition-colors" />
                   <Input 
                     type="email" 
-                    placeholder="admin@qrfoto.com"
+                    placeholder="tucorreo@ejemplo.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="bg-black/40 border-white/5 text-white h-14 pl-12 focus:border-purple-500/50 rounded-2xl transition-all"
+                    className="bg-zinc-50 border-zinc-100 text-zinc-900 h-16 pl-14 pr-6 focus:ring-purple-600/20 rounded-2xl transition-all font-bold"
                   />
               </div>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center justify-between ml-1">
-                <Label className="text-white/60 text-[10px] uppercase tracking-widest font-black">Contraseña</Label>
-                <a href="#" className="text-[10px] text-purple-400 font-bold uppercase tracking-widest hover:text-purple-300">¿Perdiste la clave?</a>
+                <Label className="text-zinc-400 text-xs uppercase tracking-widest font-black">Contraseña</Label>
+                <Link href="/forgot-password" title="Recuperar Clave" className="text-[10px] text-purple-600 font-black uppercase tracking-widest hover:underline">¿Olvidaste tu clave?</Link>
               </div>
-              <div className="relative">
-                  <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+              <div className="relative group">
+                  <KeyRound className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-300 group-focus-within:text-purple-600 transition-colors" />
                   <Input 
                     type="password" 
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="bg-black/40 border-white/5 text-white h-14 pl-12 focus:border-purple-500/50 rounded-2xl transition-all"
+                    className="bg-zinc-50 border-zinc-100 text-zinc-900 h-16 pl-14 pr-6 focus:ring-purple-600/20 rounded-2xl transition-all font-bold"
                   />
               </div>
             </div>
 
             {error && (
-              <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs py-3 rounded-xl text-center font-bold">
+              <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="bg-red-50 border border-red-100 text-red-500 text-xs py-4 rounded-2xl text-center font-black uppercase tracking-tight">
                 {error}
               </motion.div>
             )}
 
-            <Button disabled={loading} type="submit" className="w-full h-14 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-white/5 active:scale-95 transition-all">
-              {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Entrar al Panel"}
+            <Button disabled={loading} type="submit" className="w-full h-16 bg-purple-600 text-white hover:bg-purple-700 rounded-full font-black uppercase tracking-normal sm:tracking-widest text-sm sm:text-lg shadow-2xl shadow-purple-600/30 active:scale-95 transition-all group">
+              {loading ? (
+                <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+              ) : (
+                <div className="flex items-center justify-center gap-2">
+                    Entrar al Panel
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              )}
             </Button>
 
-            <div className="pt-8 border-t border-white/5 text-center">
-               <Link href="/register" className="text-white/40 hover:text-white transition-colors text-xs font-medium">
-                  ¿No tienes cuenta? <span className="text-purple-400 font-black uppercase tracking-wider ml-1">Regístrate gratis</span>
+            <div className="pt-10 border-t border-zinc-100 text-center">
+               <Link href="/register" className="group">
+                  <p className="text-zinc-400 font-bold text-sm">
+                    ¿Aún no tienes cuenta? 
+                    <span className="text-purple-600 font-black uppercase tracking-wider ml-1 group-hover:underline">Regístrate GRATIS</span>
+                  </p>
                </Link>
             </div>
           </form>
+        </div>
+        
+        <div className="mt-12 text-center">
+            <p className="text-zinc-300 text-[10px] font-black uppercase tracking-[0.3em]">
+                Seguridad de grado bancario habilitada
+            </p>
         </div>
       </motion.div>
     </div>

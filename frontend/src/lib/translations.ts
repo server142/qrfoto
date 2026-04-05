@@ -97,8 +97,9 @@ export const translations = {
       custom_qr: "Custom QR",
       bulk_download: "Bulk Photo Download",
       branding: "Custom Branding",
-      secure_payments: "* All payments are securely processed via Stripe.",
-      current_plan: "Current Plan"
+      secure_payments: "* All payments are processed securely through Stripe.",
+      current_plan: "Current Plan",
+      unlimited: "Unlimited"
     },
     card: {
       share: "Share the Moments",
@@ -265,7 +266,8 @@ export const translations = {
       bulk_download: "Descarga masiva de fotos",
       branding: "Branding Personalizado",
       secure_payments: "* Todos los pagos son procesados de forma segura mediante Stripe.",
-      current_plan: "Plan Actual"
+      current_plan: "Plan Actual",
+      unlimited: "Ilimitadas"
     },
     card: {
       share: "Comparte estos Momentos",

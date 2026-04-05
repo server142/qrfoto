@@ -31,8 +31,14 @@ export class User {
   })
   role: UserRole;
 
-  @Column({ default: 'es', length: 5 })
+  @Column({ nullable: true })
   preferred_language: string;
+
+  @Column({ nullable: true })
+  reset_password_token: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  reset_password_expires: Date;
 
   @CreateDateColumn()
   created_at: Date;

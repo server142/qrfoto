@@ -37,6 +37,38 @@ export class UsersService {
 
   async create(userData: Partial<User>): Promise<User> {
     const newUser = this.usersRepository.create(userData);
-    return this.usersRepository.save(newUser);
+    const savedUser = await this.usersRepository.save(newUser);
+    
+    // Asignar plan FREE por defecto
+    try {
+      const plans = await this.subRepository.manager.query('SELECT id FROM plans WHERE type = "Free" OR name = "Free" LIMIT 1');
+      if (plans && plans.length > 0) {
+        const freePlanId = plans[0].id;
+        const sub = this.subRepository.create({
+          user_id: savedUser.id,
+          plan_id: freePlanId,
+          status: 'Active' as any,
+          starts_at: new Date(),
+          ends_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default 30 days
+        });
+        await this.subRepository.save(sub);
+        console.log(`Plan FREE asignado a ${savedUser.email}`);
+      }
+    } catch (err) {
+      console.error('No se pudo asignar plan por defecto:', err.message);
+    }
+
+    return savedUser;
+  }
+
+  async update(id: string, updateData: Partial<User>): Promise<User | null> {
+    await this.usersRepository.update(id, updateData);
+    return this.usersRepository.findOne({ where: { id } });
+  }
+
+  async findByToken(token: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { reset_password_token: token }
+    });
   }
 }

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera, Image as ImageIcon, CheckCircle2, MessageSquare,
-  User, Loader2, Send, X, Mail, ArrowRight, QrCode, Plus, Download
+  User, Loader2, Send, X, Mail, ArrowRight, QrCode, Plus, Download, Share2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger 
 } from "@/components/ui/dialog";
+import { Logo } from "@/components/Logo";
 
 const STORAGE_KEY = "qrfoto_guest_identity";
 
@@ -158,6 +159,20 @@ export default function GuestUploadPage() {
     }
   };
 
+  const handleShare = async (title: string, text: string, url: string) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text, url });
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      navigator.clipboard.writeText(url);
+      alert("Enlace copiado al portapapeles");
+    }
+  };
+
   if (loading) return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white p-6">
       <Loader2 className="w-10 h-10 animate-spin text-purple-600 mb-4" />
@@ -188,29 +203,37 @@ export default function GuestUploadPage() {
           <h1 className="text-3xl sm:text-4xl font-black italic tracking-tighter mb-2 uppercase leading-none drop-shadow-2xl">{event.name}</h1>
           <p className="text-white/30 text-[10px] font-black uppercase tracking-widest bg-white/5 px-4 py-1 rounded-full border border-white/5">{new Date(event.event_date).toLocaleDateString()}</p>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="absolute top-0 right-0 p-3 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all hover:scale-110 active:scale-90">
-                <QrCode className="w-5 h-5 text-purple-400" />
-              </button>
-            </DialogTrigger>
-            <DialogContent className="bg-zinc-950/95 backdrop-blur-3xl border-white/10 text-white rounded-[3.5rem] p-12 max-w-[340px] mx-auto shadow-2xl">
-              <div className="text-center space-y-8">
-                <div className="space-y-2">
-                   <h3 className="text-2xl font-black uppercase italic tracking-tighter leading-none">Compartir QR</h3>
-                   <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest">Invita a más personas</p>
+          <div className="absolute top-0 right-0 flex gap-2">
+            <button 
+                onClick={() => handleShare(`Galería: ${event.name}`, `¡Mira las fotos de ${event.name} en tiempo real!`, window.location.href)}
+                className="p-3 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all hover:scale-110 active:scale-90"
+            >
+                <Share2 className="w-5 h-5 text-purple-400" />
+            </button>
+            <Dialog>
+                <DialogTrigger asChild>
+                <button className="p-3 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all hover:scale-110 active:scale-90">
+                    <QrCode className="w-5 h-5 text-purple-400" />
+                </button>
+                </DialogTrigger>
+                <DialogContent className="bg-zinc-950/95 backdrop-blur-3xl border-white/10 text-white rounded-[3.5rem] p-12 max-w-[340px] mx-auto shadow-2xl">
+                <div className="text-center space-y-8">
+                    <div className="space-y-2">
+                    <h3 className="text-2xl font-black uppercase italic tracking-tighter leading-none">Compartir QR</h3>
+                    <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest">Invita a más personas</p>
+                    </div>
+                    
+                    <div className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-purple-600/20 transform rotate-[-2deg] hover:rotate-0 transition-transform">
+                    <QRCodeSVG value={`${getBaseUrl()}/event/${slug}`} size={220} />
+                    </div>
+                    
+                    <p className="text-white/40 text-[10px] font-black uppercase tracking-widest leading-loose">
+                    Escanea directamente desde la pantalla de tu compañero
+                    </p>
                 </div>
-                
-                <div className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-purple-600/20 transform rotate-[-2deg] hover:rotate-0 transition-transform">
-                  <QRCodeSVG value={`${getBaseUrl()}/event/${slug}`} size={220} />
-                </div>
-                
-                <p className="text-white/40 text-[10px] font-black uppercase tracking-widest leading-loose">
-                  Escanea directamente desde la pantalla de tu compañero
-                </p>
-              </div>
-            </DialogContent>
-          </Dialog>
+                </DialogContent>
+            </Dialog>
+          </div>
         </header>
 
         <main className="flex-1 flex flex-col">
@@ -328,7 +351,13 @@ export default function GuestUploadPage() {
                         onClick={() => handleDownload(selectedMedia.file_url, `QRFoto_${selectedMedia.id}`)}
                         className="flex-1 h-16 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-95 transition-all"
                       >
-                         <Download className="w-5 h-5" /> Guardar Foto
+                         <Download className="w-5 h-5" /> Guardar
+                      </Button>
+                      <Button 
+                        onClick={() => handleShare(`Foto de ${selectedMedia.guest_name}`, `Mira este momento en ${event.name}`, selectedMedia.file_url)}
+                        className="flex-1 h-16 bg-purple-600 text-white hover:bg-purple-700 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-95 transition-all"
+                      >
+                         <Share2 className="w-5 h-5" /> Compartir
                       </Button>
                       <Button 
                         onClick={() => setSelectedMedia(null)}
@@ -532,8 +561,11 @@ export default function GuestUploadPage() {
               <div className="w-1 h-1 rounded-full bg-white" />
               <div className="h-px w-12 bg-white" />
            </div>
-          <p className="text-[10px] text-white/10 uppercase tracking-[0.5em] font-black italic">
-            QRFoto High End Events
+          <div className="flex items-center justify-center mb-2">
+            <Logo size="sm" isDark={true} className="opacity-40" />
+          </div>
+          <p className="text-[10px] text-white/5 uppercase tracking-[0.5em] font-black italic">
+            High End Events
           </p>
         </footer>
 

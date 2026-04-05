@@ -13,10 +13,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadsService } from './uploads.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Media, MediaType } from './entities/media.entity';
 import { EventsService } from '../events/events.service';
 import { EventsGateway } from '../events/events.gateway';
+import { UsersService } from '../users/users.service';
 
 @Controller('api/media')
 export class MediaController {
@@ -24,6 +25,7 @@ export class MediaController {
     private readonly uploadsService: UploadsService,
     private readonly eventsService: EventsService,
     private readonly eventsGateway: EventsGateway,
+    private readonly usersService: UsersService,
     @InjectRepository(Media) private readonly mediaRepo: Repository<Media>
   ) { }
 
@@ -40,6 +42,28 @@ export class MediaController {
 
     const event = await this.eventsService.findOneBySlug(slug);
     if (!event) throw new BadRequestException('Event invalid');
+
+    // Validación de ALMACENAMIENTO (Guardia de Almacenamiento)
+    if (event.userId && file) {
+      const userData = await this.usersService.getMe(event.userId);
+      if (userData && userData.activePlan) {
+        const plan = userData.activePlan;
+        
+        // Calcular uso actual del usuario (todos sus eventos)
+        const userEvents = await this.eventsService.findAll(event.userId);
+        const eventIds = userEvents.map(e => e.id);
+        
+        const storageUsage = await this.mediaRepo.sum('size_bytes', { 
+            event_id: In(eventIds) 
+        }) || 0;
+        
+        const usageMb = storageUsage / (1024 * 1024);
+        
+        if (usageMb >= plan.storage_limit_mb) {
+          throw new BadRequestException(`Storage limit reached (${plan.storage_limit_mb}MB). Please upgrade your plan.`);
+        }
+      }
+    }
 
     let fileKey: string | null = null;
     if (file) {
@@ -94,6 +118,18 @@ export class MediaController {
   @Get(':slug/download')
   async downloadEventMedia(@Param('slug') slug: string, @Res() res: any) {
     const event = await this.eventsService.findOneBySlug(slug);
+    
+    // Validación de Característica Premium (Bulk Download)
+    if (event.userId) {
+        const userData = await this.usersService.getMe(event.userId);
+        if (userData && userData.activePlan) {
+            const plan = userData.activePlan;
+            if (plan.has_bulk_download === false) {
+                throw new BadRequestException('Bulk download is not available on your current plan. Please upgrade to Oro/Plata.');
+            }
+        }
+    }
+
     const mediaItems = await this.mediaRepo.find({
       where: { event_id: event.id, status: 'Active' },
       order: { created_at: 'ASC' },

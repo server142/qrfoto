@@ -7,6 +7,7 @@ import { Loader2, Camera, User, MessageSquareQuote, QrCode } from "lucide-react"
 import { io } from "socket.io-client";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
 import { QRCodeSVG } from "qrcode.react";
+import { Logo } from "@/components/Logo";
 
 export default function SlideshowPage() {
   const { slug } = useParams();
@@ -213,10 +214,13 @@ export default function SlideshowPage() {
           <p className="text-white/40 text-sm font-bold uppercase tracking-[0.4em] mt-2 ml-1">Live Social Wall</p>
         </div>
 
-        {/* Real-time indicator */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-[2rem] flex items-center gap-3 shadow-2xl">
-          <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: event.branding_color }} />
-          <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Sincronizado</p>
+        {/* Real-time indicator & Logo */}
+        <div className="flex flex-col items-end gap-6">
+          <Logo size="md" isDark={true} className="drop-shadow-2xl opacity-80" />
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-[2rem] flex items-center gap-3 shadow-2xl">
+            <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: event.branding_color }} />
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Sincronizado</p>
+          </div>
         </div>
       </div>
 
