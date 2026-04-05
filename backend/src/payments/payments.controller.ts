@@ -104,7 +104,7 @@ export class PaymentsController {
       status: PaymentRequestStatus.PENDING,
       proof_file_key,
       proof_url,
-    });
+    } as any);
 
     await this.paymentRequestRepo.save(paymentRequest);
 
