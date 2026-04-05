@@ -70,19 +70,70 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
-            <div className="hidden min-[400px]:block">
+            <div className="hidden lg:block">
                 <LanguageSwitcher />
             </div>
-            <Link href="/login" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-900 border border-zinc-200 px-3 py-2 rounded-full hover:bg-zinc-50 transition-colors">Entrar</Link>
-            <Link href="/register" className="hidden min-[500px]:block">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-4 sm:px-8 h-10 sm:h-12 text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20">
+            <Link href="/login" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-900 px-5 py-2.5 rounded-full bg-white border border-zinc-200 hover:border-purple-200 hover:text-purple-600 transition-all shadow-sm hover:shadow-md active:scale-95">
+                Entrar
+            </Link>
+            <Link href="/register" className="hidden min-[600px]:block">
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6 h-10 text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
                     Crear Evento
                 </Button>
             </Link>
-            <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            <button 
+                className="lg:hidden p-2 hover:bg-zinc-100 rounded-xl transition-colors relative z-50" 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+                {isMenuOpen ? <X className="w-6 h-6 text-purple-600" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
+
+          {/* Mobile Menu Overlay */}
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, x: "100%" }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="fixed inset-0 bg-white z-40 lg:hidden flex flex-col p-8 pt-24"
+              >
+                <div className="space-y-8 flex-1">
+                    {[
+                        { href: "#como-funciona", label: "Cómo funciona" },
+                        { href: "#beneficios", label: "Beneficios" },
+                        { href: "#precios", label: "Precios" }
+                    ].map((link) => (
+                        <a 
+                            key={link.href}
+                            href={link.href} 
+                            onClick={() => setIsMenuOpen(false)}
+                            className="block text-4xl font-black uppercase italic tracking-tighter text-zinc-900 border-b border-zinc-100 pb-4"
+                        >
+                            {link.label}
+                        </a>
+                    ))}
+                    <div className="pt-8">
+                        <LanguageSwitcher />
+                    </div>
+                </div>
+                
+                <div className="space-y-4">
+                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                        <Button variant="ghost" className="w-full h-16 rounded-3xl font-black uppercase tracking-widest text-zinc-400 text-xs">
+                            Ya tengo cuenta - Entrar
+                        </Button>
+                    </Link>
+                    <Link href="/register" onClick={() => setIsMenuOpen(false)}>
+                        <Button className="w-full h-20 rounded-[2.5rem] bg-purple-600 hover:bg-purple-700 text-white text-lg font-black uppercase tracking-tighter shadow-2xl shadow-purple-600/30">
+                            CREAR MI EVENTO GRATIS
+                        </Button>
+                    </Link>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </nav>
 
@@ -133,14 +184,39 @@ export default function LandingPage() {
               className="flex flex-col sm:flex-row items-center justify-center gap-6"
             >
               <Link href="/register">
-                <Button size="lg" className="h-20 px-12 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-xl font-black uppercase tracking-tighter shadow-2xl shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 group">
+                <Button size="lg" className="h-20 px-8 sm:px-12 bg-purple-600 hover:bg-purple-700 text-white rounded-full text-lg sm:text-xl font-black uppercase tracking-tighter shadow-2xl shadow-purple-600/30 transition-all hover:scale-105 active:scale-95 group">
                   CREAR MI EVENTO GRATIS <ArrowRight className="ml-2 w-6 h-6 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Button size="lg" variant="ghost" className="h-20 px-10 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-widest text-xs flex items-center gap-3">
+              <Button size="lg" variant="ghost" className="h-16 sm:h-20 px-10 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center gap-3 active:scale-95 transition-all">
                 <PlayCircle className="w-5 h-5 text-purple-600" /> VER CÓMO FUNCIONA
               </Button>
             </motion.div>
+
+            {/* Floating Elements for "Hook" */}
+            <div className="absolute top-1/4 left-10 hidden xl:block">
+                <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="bg-white p-6 rounded-[2.5rem] shadow-2xl shadow-purple-600/10 -rotate-12 border border-zinc-100 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center">
+                        <Heart className="w-6 h-6 text-purple-600 fill-current" />
+                    </div>
+                    <div className="text-left">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Bodas</p>
+                        <p className="text-sm font-black italic uppercase tracking-tighter">100% Emotivo</p>
+                    </div>
+                </motion.div>
+            </div>
+
+            <div className="absolute top-1/3 right-10 hidden xl:block">
+                <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }} className="bg-white p-6 rounded-[2.5rem] shadow-2xl shadow-indigo-600/10 rotate-12 border border-zinc-100 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center">
+                        <Zap className="w-6 h-6 text-indigo-600 fill-current" />
+                    </div>
+                    <div className="text-left">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Antros</p>
+                        <p className="text-sm font-black italic uppercase tracking-tighter">Viralidad Pura</p>
+                    </div>
+                </motion.div>
+            </div>
 
             <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
