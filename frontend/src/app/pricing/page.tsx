@@ -22,10 +22,23 @@ export default function PricingPage() {
       <div className="max-w-7xl mx-auto space-y-20 relative z-10">
         <div className="flex flex-col items-center text-center space-y-8">
           <Link href="/" className="mb-4">
-             <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-full text-purple-600 text-xs font-black uppercase tracking-widest hover:scale-105 transition-transform">
-                <ArrowLeft className="w-3 h-3" /> Volver al Inicio
-             </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-full text-purple-600 text-xs font-black uppercase tracking-widest hover:scale-105 transition-transform">
+              <ArrowLeft className="w-3 h-3" /> Volver al Inicio
+            </div>
           </Link>
+
+          {typeof document !== 'undefined' && document.cookie.includes('token=') && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              <Link href="/dashboard/events">
+                <Button className="h-16 px-12 bg-zinc-900 text-white rounded-full font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-zinc-200 border-2 border-white gap-3 group">
+                  Continuar al Panel de Control <ArrowLeft className="w-5 h-5 rotate-180 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+            </motion.div>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -38,7 +51,7 @@ export default function PricingPage() {
           <h1 className="text-5xl md:text-[6rem] font-black tracking-tighter italic text-zinc-900 leading-[0.95] uppercase">
             Impulsa tus <br /> <span className="text-purple-600 underline">eventos hoy</span>
           </h1>
-          
+
           <p className="text-zinc-500 text-xl md:text-2xl max-w-3xl mx-auto font-medium leading-relaxed">
             {t.pricing.subtitle}
           </p>
@@ -51,10 +64,10 @@ export default function PricingPage() {
             {t.pricing.secure_payments}
           </p>
           <div className="mt-8 flex justify-center gap-8 opacity-30 grayscale pointer-events-none">
-             {/* Simulating payment methods icons */}
-             <div className="text-2xl font-black italic">VISA</div>
-             <div className="text-2xl font-black italic">Mastercard</div>
-             <div className="text-2xl font-black italic">STRIPE</div>
+            {/* Simulating payment methods icons */}
+            <div className="text-2xl font-black italic">VISA</div>
+            <div className="text-2xl font-black italic">Mastercard</div>
+            <div className="text-2xl font-black italic">STRIPE</div>
           </div>
         </div>
       </div>

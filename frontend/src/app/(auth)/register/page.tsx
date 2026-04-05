@@ -60,8 +60,8 @@ export default function RegisterPage() {
             }
           }
         }
-        // Redirect to pricing if no specific plan was selected
-        router.push("/pricing?registered=true");
+        // Redirect to dashboard if no specific plan was selected
+        router.push("/dashboard/events?welcome=true");
       } else {
         const data = await res.json();
         setError(data.message || "Error al registrarse");
@@ -87,44 +87,44 @@ export default function RegisterPage() {
       >
         {/* Left Side: Marketing / Visual */}
         <div className="hidden lg:block space-y-10">
-            <Link href="/" className="inline-block">
-                <Logo size="lg" />
-            </Link>
-            
-            <h2 className="text-5xl font-black leading-tight italic tracking-tighter text-zinc-900">
-                Lleva tus eventos <br /> al <span className="text-purple-600 underline">siguiente nivel.</span>
-            </h2>
+          <Link href="/" className="inline-block">
+            <Logo size="lg" />
+          </Link>
 
-            <div className="space-y-6">
-                {[
-                    "Acceso instantáneo sin aplicaciones.",
-                    "Galerías en tiempo real con IA.",
-                    "Descarga masiva de recuerdos.",
-                    "Control total de tu marca."
-                ].map((text, i) => (
-                    <div key={i} className="flex gap-4 items-center font-bold text-zinc-500">
-                        <CheckCircle2 className="text-purple-600 w-6 h-6" />
-                        <span>{text}</span>
-                    </div>
-                ))}
-            </div>
+          <h2 className="text-5xl font-black leading-tight italic tracking-tighter text-zinc-900">
+            Lleva tus eventos <br /> al <span className="text-purple-600 underline">siguiente nivel.</span>
+          </h2>
 
-            <div className="p-8 bg-white rounded-3xl border border-zinc-100 shadow-xl shadow-zinc-200/50 relative overflow-hidden group">
-                <Sparkles className="absolute -right-4 -top-4 w-24 h-24 text-purple-100 opacity-50 group-hover:scale-110 transition-transform" />
-                <p className="text-zinc-600 font-medium italic relative z-10">"QRFoto cambió la forma en que mis clientes ven sus eventos. La interacción es inmediata."</p>
-                <div className="mt-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">M</div>
-                    <span className="font-bold text-sm">Miguel, Organizador de Bodas</span>
-                </div>
+          <div className="space-y-6">
+            {[
+              "Acceso instantáneo sin aplicaciones.",
+              "Galerías en tiempo real con IA.",
+              "Descarga masiva de recuerdos.",
+              "Control total de tu marca."
+            ].map((text, i) => (
+              <div key={i} className="flex gap-4 items-center font-bold text-zinc-500">
+                <CheckCircle2 className="text-purple-600 w-6 h-6" />
+                <span>{text}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="p-8 bg-white rounded-3xl border border-zinc-100 shadow-xl shadow-zinc-200/50 relative overflow-hidden group">
+            <Sparkles className="absolute -right-4 -top-4 w-24 h-24 text-purple-100 opacity-50 group-hover:scale-110 transition-transform" />
+            <p className="text-zinc-600 font-medium italic relative z-10">"QRFoto cambió la forma en que mis clientes ven sus eventos. La interacción es inmediata."</p>
+            <div className="mt-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">M</div>
+              <span className="font-bold text-sm">Miguel, Organizador de Bodas</span>
             </div>
+          </div>
         </div>
 
         {/* Right Side: Form Card */}
         <Card className="bg-white border-zinc-100 p-10 md:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.05)] rounded-[3.5rem] relative">
           <div className="absolute top-0 right-0 p-8">
-             <UserPlus className="w-20 h-20 text-zinc-50 -mr-10 -mt-10" />
+            <UserPlus className="w-20 h-20 text-zinc-50 -mr-10 -mt-10" />
           </div>
-          
+
           <div className="mb-10 text-center lg:text-left">
             <h1 className="text-4xl font-black text-zinc-900 tracking-tighter uppercase italic leading-none mb-3">Únete a <Logo size="md" /></h1>
             <p className="text-zinc-400 font-bold text-sm">Empieza tu prueba gratuita en 30 segundos.</p>
