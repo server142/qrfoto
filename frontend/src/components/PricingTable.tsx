@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { getApiUrl } from "@/lib/api";
 import { useTranslation } from "@/lib/LanguageContext";
 import { useRouter } from "next/navigation";
+import { ManualPaymentModal } from "./ManualPaymentModal";
 
 export function PricingTable({
     onSubscribe
@@ -19,6 +20,7 @@ export function PricingTable({
     const [loading, setLoading] = useState(true);
     const [purchasing, setPurchasing] = useState<string | null>(null);
     const [activePlanId, setActivePlanId] = useState<string | null>(null);
+    const [manualPlan, setManualPlan] = useState<any>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -72,6 +74,9 @@ export function PricingTable({
             const data = await res.json();
             if (data.url) {
                 window.location.href = data.url;
+            } else if (data.mode === 'manual') {
+                // Stripe not configured → show manual payment modal
+                setManualPlan(data.plan);
             }
         } catch (err) {
             console.error("Error redirecting to checkout:", err);
@@ -195,6 +200,13 @@ export function PricingTable({
                     <Zap className="w-12 h-12 text-zinc-200 mx-auto mb-4" />
                     <p className="text-zinc-400 font-bold uppercase tracking-widest text-xs">No hay planes disponibles en este momento</p>
                 </div>
+            )}
+
+            {manualPlan && (
+                <ManualPaymentModal
+                    plan={manualPlan}
+                    onClose={() => setManualPlan(null)}
+                />
             )}
         </div>
     );

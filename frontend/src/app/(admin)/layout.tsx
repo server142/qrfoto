@@ -2,7 +2,7 @@
 
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
-import { Home, Users, CreditCard, Settings, Calendar, LogOut, BarChart3, Star, Menu, X, ArrowRight } from "lucide-react";
+import { Home, Users, CreditCard, Settings, Calendar, LogOut, BarChart3, Star, Menu, X, ArrowRight, Receipt } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "@/lib/LanguageContext";
 import { getApiUrl } from "@/lib/api";
@@ -18,6 +18,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     { label: t.admin.plans_title, icon: CreditCard, href: "/admin/plans" },
     { label: t.admin.users, icon: Users, href: "/admin/users" },
     { label: t.admin.reviews_title || "Reviews", icon: Star, href: "/admin/reviews" },
+    { label: "Solicitudes de Pago", icon: Receipt, href: "/admin/payments" },
     { label: t.admin.user_dashboard || "User Dashboard", icon: Calendar, href: "/dashboard", variant: "user" },
   ];
 
@@ -37,8 +38,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest ${item.variant === "user"
-                  ? "text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/10 mt-6"
-                  : "text-white/50 hover:bg-white/5 hover:text-white"
+                ? "text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/10 mt-6"
+                : "text-white/50 hover:bg-white/5 hover:text-white"
                 }`}
             >
               <item.icon className="w-4 h-4" /> {item.label}

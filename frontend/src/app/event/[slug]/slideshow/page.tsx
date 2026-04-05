@@ -9,6 +9,7 @@ import { getApiUrl, getBaseUrl } from "@/lib/api";
 import { QRCodeSVG } from "qrcode.react";
 import { Logo } from "@/components/Logo";
 import { useTranslation } from "@/lib/LanguageContext";
+import { Button } from "@/components/ui/button";
 
 export default function SlideshowPage() {
   const { slug } = useParams();
@@ -138,6 +139,7 @@ export default function SlideshowPage() {
     </div>
   );
 
+  const [qrOpen, setQrOpen] = useState(false);
   const currentMedia = media[currentIndex];
 
   return (
@@ -163,14 +165,14 @@ export default function SlideshowPage() {
 
           {!currentMedia.file_url ? (
             /* FULL SCREEN TYPOGRAPHY FOR MESSAGES ONLY */
-            <div className="max-w-4xl p-12 text-center space-y-12 relative">
+            <div className="max-w-4xl p-12 text-center space-y-12 relative px-20">
               <motion.div
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5, duration: 1 }}
               >
-                <MessageSquareQuote className="w-24 h-24 mx-auto mb-12 opacity-20" style={{ color: event.branding_color }} />
-                <h2 className="text-6xl md:text-8xl font-black uppercase italic tracking-tighter text-white leading-none whitespace-pre-wrap">
+                <MessageSquareQuote className="w-16 h-16 mx-auto mb-10 opacity-20" style={{ color: event.branding_color }} />
+                <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-none whitespace-pre-wrap drop-shadow-2xl">
                   "{currentMedia.message}"
                 </h2>
                 <div className="mt-12 flex items-center justify-center gap-6">
@@ -204,16 +206,16 @@ export default function SlideshowPage() {
               {/* ELEGANT MESSAGE OVERLAY ON PHOTOS */}
               {currentMedia.message && (
                 <motion.div
-                  initial={{ opacity: 0, x: "-100%" }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: "-100%" }}
-                  transition={{ delay: 0.4, duration: 0.7, type: "spring", stiffness: 80, damping: 18 }}
-                  className="absolute bottom-24 left-1/2 -translate-x-1/2 max-w-2xl w-[90%]"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 50 }}
+                  transition={{ delay: 0.4, duration: 0.7, type: "spring" }}
+                  className="absolute bottom-32 left-12 max-w-xl"
                 >
                   <div className="bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
                     <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: event.branding_color }} />
-                    <MessageSquareQuote className="absolute -top-4 -left-4 w-24 h-24 text-white/5 -rotate-12" />
-                    <p className="text-2xl md:text-3xl font-bold text-white tracking-tight leading-snug drop-shadow-sm mb-6">
+                    <MessageSquareQuote className="absolute -top-4 -left-4 w-20 h-20 text-white/5 -rotate-12" />
+                    <p className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug drop-shadow-sm mb-6">
                       {currentMedia.message}
                     </p>
                     <div className="flex items-center gap-3">
@@ -231,46 +233,102 @@ export default function SlideshowPage() {
       </AnimatePresence>
 
       {/* Overlay: Branding & Info */}
-      <div className="absolute top-0 inset-x-0 p-12 flex justify-between items-start pointer-events-none bg-gradient-to-b from-black/60 to-transparent z-40">
+      <div className="absolute top-0 inset-x-0 p-12 flex justify-between items-start pointer-events-none bg-gradient-to-b from-black/80 to-transparent z-40">
         <div>
-          <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter italic drop-shadow-2xl" style={{ color: event.branding_color }}>
+          <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic drop-shadow-2xl" style={{ color: event.branding_color }}>
             {event.name}
           </h1>
-          <p className="text-white/40 text-sm font-bold uppercase tracking-[0.4em] mt-2 ml-1">Live Social Wall</p>
+          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mt-2 ml-1">Live Social Wall</p>
         </div>
 
         {/* Real-time indicator & Logo */}
-        <div className="flex flex-col items-end gap-6">
+        <div className="flex flex-col items-end gap-6 pointer-events-auto">
           <Logo size="md" isDark={true} className="drop-shadow-2xl opacity-80" />
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-[2rem] flex items-center gap-3 shadow-2xl">
-            <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: event.branding_color }} />
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Sincronizado</p>
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={() => setQrOpen(true)}
+              className="bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-full flex items-center gap-3 shadow-2xl hover:bg-white/10 transition-all active:scale-95"
+            >
+              <QrCode className="w-5 h-5" style={{ color: event.branding_color }} />
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/80">Código Invitado</p>
+            </Button>
+
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-full flex items-center gap-3 shadow-2xl hidden md:flex">
+              <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: event.branding_color }} />
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">Sync</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* QR Code Overlay (Bottom Right - Small & Discreet) */}
-      <div className="absolute bottom-6 right-6 z-50 flex flex-col items-center gap-2 group hover:scale-110 transition-transform">
+      {/* QR Code Overlay (Bottom Right - Small & Discreet for Desktop Viewers) */}
+      <div className="absolute bottom-10 right-10 z-50 flex flex-col items-center gap-3 group hidden lg:flex">
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white p-2 rounded-[1.5rem] shadow-2xl border-2"
+          className="bg-white p-3 rounded-[2rem] shadow-2xl border-4"
           style={{ borderColor: event.branding_color }}
         >
           <QRCodeSVG
             value={`${process.env.NEXT_PUBLIC_FRONTEND_URL ?? getBaseUrl()}/event/${slug}`}
-            size={90}
-            level="L"
+            size={120}
+            level="H"
           />
         </motion.div>
-        <div className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-2">
-          <QrCode className="w-2.5 h-2.5 text-white/40" />
-          <p className="text-[8px] font-black uppercase tracking-widest text-white/50">Escanear</p>
+        <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 flex items-center gap-2">
+          <QrCode className="w-3 h-3 text-white/40" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Scanner</p>
         </div>
       </div>
 
+      {/* QR MODAL (For manual interactions) */}
+      <AnimatePresence>
+        {qrOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setQrOpen(false)}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-10 cursor-pointer"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white p-12 rounded-[4rem] flex flex-col items-center gap-10 shadow-[0_0_100px_rgba(255,255,255,0.1)] relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="absolute -top-6 -right-6 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl" onClick={() => setQrOpen(false)}>
+                <Logo size="sm" />
+              </div>
+
+              <div className="text-center space-y-4">
+                <h3 className="text-4xl font-black italic tracking-tighter text-zinc-900 uppercase">¡Unete a la Galería!</h3>
+                <p className="text-zinc-400 font-bold tracking-[0.2em] text-xs uppercase">Escanea para subir tus momentos</p>
+              </div>
+
+              <div className="p-1 border-4 rounded-[3.5rem]" style={{ borderColor: event.branding_color }}>
+                <QRCodeSVG
+                  value={`${process.env.NEXT_PUBLIC_FRONTEND_URL ?? getBaseUrl()}/event/${slug}`}
+                  size={400}
+                  level="H"
+                />
+              </div>
+
+              <Button
+                onClick={() => setQrOpen(false)}
+                className="h-16 px-12 rounded-full font-black uppercase tracking-widest text-sm"
+                style={{ backgroundColor: event.branding_color, color: 'white' }}
+              >
+                Cerrar y ver Galería
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Footer Progress (Line) */}
-      <div className="absolute bottom-0 left-0 h-1 bg-white/10 w-full z-50">
+      <div className="absolute bottom-0 left-0 h-1.5 bg-white/5 w-full z-50">
         <motion.div
           key={`${currentIndex}-${media.length}`}
           initial={{ width: "0%" }}

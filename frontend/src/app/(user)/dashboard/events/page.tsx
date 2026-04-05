@@ -419,6 +419,12 @@ export default function EventsPage() {
                         </Button>
                       </Link>
 
+                      <Link href={`/event/${event.slug}`} target="_blank">
+                        <Button className="w-full bg-white border border-zinc-100 text-zinc-900 hover:bg-zinc-50 rounded-2xl text-[10px] h-16 font-black uppercase transition-all shadow-sm">
+                          <ExternalLink className="w-4 h-4 mr-2 text-purple-600" /> Ver Galería
+                        </Button>
+                      </Link>
+
                       <Button onClick={() => handleDelete(event.id)} className="col-span-2 bg-red-50 hover:bg-red-100 text-red-500 border border-red-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all opacity-40 hover:opacity-100">
                         <Trash2 className="w-4 h-4 mr-2" /> {t.events.delete}
                       </Button>
