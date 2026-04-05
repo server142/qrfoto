@@ -42,6 +42,7 @@ export class MediaController {
 
     const event = await this.eventsService.findOneBySlug(slug);
     if (!event) throw new BadRequestException('Event invalid');
+    if (event.status === 'Finished') throw new BadRequestException('This event has already ended.');
 
     // Validación de ALMACENAMIENTO (Guardia de Almacenamiento)
     if (event.userId && file) {

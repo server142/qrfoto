@@ -19,13 +19,13 @@ export class EventsService {
             const userData = await this.usersService.getMe(userId);
             if (userData && userData.activePlan) {
                 const plan = userData.activePlan;
-                
+
                 // 1. Validar límite de eventos simultáneos
                 if (plan.max_events !== 0) { // 0 significa ilimitado
-                    const activeEvents = await this.eventsRepository.count({ 
-                        where: { userId, status: 'Active' } 
+                    const activeEvents = await this.eventsRepository.count({
+                        where: { userId, status: 'Active' }
                     });
-                    
+
                     if (activeEvents >= plan.max_events) {
                         throw new Error(`Plan limit reached: You can only have ${plan.max_events} active events.`);
                     }
@@ -55,27 +55,6 @@ export class EventsService {
     async findOneBySlug(slug: string) {
         const event = await this.eventsRepository.findOne({ where: { slug } });
         if (!event) throw new NotFoundException('Event not found by slug');
-        
-        // Validación de status
-        if (event.status === 'Finished') throw new NotFoundException('This event has already ended.');
-
-        // Validación de duración basada en el plan (Guardia de expiración)
-        if (event.userId) {
-            const userData = await this.usersService.getMe(event.userId);
-            if (userData && userData.activePlan) {
-                const plan = userData.activePlan;
-                const eventDate = new Date(event.event_date);
-                const expiryDate = new Date(eventDate.getTime() + (plan.event_duration_days * 24 * 60 * 60 * 1000));
-                
-                if (new Date() > expiryDate) {
-                    // Auto-finalizar si expiró
-                    event.status = 'Finished' as any;
-                    await this.eventsRepository.save(event);
-                    throw new NotFoundException('This event gallery has expired based on plan duration.');
-                }
-            }
-        }
-
         return event;
     }
 
@@ -101,7 +80,7 @@ export class EventsService {
     async getDashboardStats(userId: string) {
         const events = await this.eventsRepository.find({ where: { userId } });
         const eventIds = events.map(e => e.id);
-        
+
         let totalPhotos = 0;
         if (eventIds.length > 0) {
             totalPhotos = await this.eventsRepository.manager.count(Media, {
