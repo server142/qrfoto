@@ -23,9 +23,6 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-background text-foreground antialiased`}>
         <LanguageProvider>
-          <div className="fixed top-4 right-4 z-[100] md:hidden">
-            <LanguageSwitcher />
-          </div>
           {children}
         </LanguageProvider>
       </body>
