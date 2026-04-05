@@ -35,10 +35,10 @@ export class User {
   preferred_language: string;
 
   @Column({ nullable: true })
-  reset_password_token: string;
+  reset_password_token: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  reset_password_expires: Date;
+  reset_password_expires: Date | null;
 
   @CreateDateColumn()
   created_at: Date;
