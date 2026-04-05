@@ -89,7 +89,7 @@ export function PricingTable({
     );
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-12 max-w-7xl mx-auto px-4 pb-20">
             {plans.map((plan: any, i) => {
                 const exchangeRate = language === 'en' ? 20 : 1;
                 const displayPrice = parseInt(plan.price) === 0 ? 0 : Math.round(plan.price / exchangeRate);
@@ -100,29 +100,29 @@ export function PricingTable({
                 const isPremium = plan.type === 'Annual' || plan.price > 0;
 
                 const features = [
-                    { 
-                        label: `${plan.max_events === 0 ? t.pricing.unlimited : plan.max_events} ${t.pricing.simultaneous}`, 
-                        enabled: true 
+                    {
+                        label: `${plan.max_events === 0 ? t.pricing.unlimited : plan.max_events} ${t.pricing.simultaneous}`,
+                        enabled: true
                     },
-                    { 
-                        label: `${plan.storage_limit_mb >= 1000 ? `${plan.storage_limit_mb / 1000}GB` : `${plan.storage_limit_mb}MB`} ${t.pricing.storage}`, 
-                        enabled: true 
+                    {
+                        label: `${plan.storage_limit_mb >= 1000 ? `${plan.storage_limit_mb / 1000}GB` : `${plan.storage_limit_mb}MB`} ${t.pricing.storage}`,
+                        enabled: true
                     },
-                    { 
-                        label: `${plan.event_duration_days} ${t.pricing.duration}`, 
-                        enabled: true 
+                    {
+                        label: `${plan.event_duration_days} ${t.pricing.duration}`,
+                        enabled: true
                     },
-                    { 
-                        label: t.pricing.custom_qr, 
-                        enabled: plan.has_custom_qr ?? true 
+                    {
+                        label: t.pricing.custom_qr,
+                        enabled: plan.has_custom_qr ?? true
                     },
-                    { 
-                        label: t.pricing.bulk_download, 
-                        enabled: plan.has_bulk_download ?? true 
+                    {
+                        label: t.pricing.bulk_download,
+                        enabled: plan.has_bulk_download ?? true
                     },
-                    { 
-                        label: t.pricing.branding, 
-                        enabled: plan.has_custom_branding ?? true 
+                    {
+                        label: t.pricing.branding,
+                        enabled: plan.has_custom_branding ?? true
                     }
                 ];
 
@@ -135,24 +135,24 @@ export function PricingTable({
                         transition={{ delay: i * 0.1 }}
                         className="relative group"
                     >
-                        <Card className={`relative h-full bg-white border-zinc-100 p-6 sm:p-10 flex flex-col transition-all duration-500 rounded-[2rem] sm:rounded-[3rem] shadow-[0_40px_100px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.08)] hover:-translate-y-2 group-hover:border-purple-200 overflow-hidden ${isActive ? 'ring-4 ring-green-500/20 border-green-500 scale-105 z-10' : ''}`}>
+                        <Card className={`relative h-full bg-white border-zinc-100 p-10 sm:p-12 flex flex-col transition-all duration-500 rounded-[3.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.1)] hover:-translate-y-2 group-hover:border-purple-200 overflow-hidden ${isActive ? 'ring-4 ring-green-500/20 border-green-500 scale-[1.02] z-10' : ''}`}>
                             {isActive ? (
-                                <div className="absolute top-0 right-0 p-4 sm:p-8">
-                                    <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
+                                <div className="absolute top-0 right-0 p-8 sm:p-10">
+                                    <ShieldCheck className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
                                 </div>
                             ) : null}
 
                             {!isActive && (plan.type === 'Annual' || plan.price > 50) ? (
-                                <div className="absolute top-0 right-0 p-4 sm:p-8">
-                                    <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 animate-pulse" />
+                                <div className="absolute top-0 right-0 p-8 sm:p-10">
+                                    <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600 animate-pulse" />
                                 </div>
                             ) : null}
 
                             <div className="mb-12 text-left">
-                                <h3 className="text-2xl font-black tracking-tighter text-zinc-400 mb-4 italic uppercase">{plan.name}</h3>
+                                <h3 className="text-3xl font-black tracking-tighter text-zinc-300 mb-4 italic uppercase">{plan.name}</h3>
                                 <div className="flex items-baseline gap-2 flex-wrap">
-                                    <span className="text-4xl min-[400px]:text-5xl sm:text-6xl font-black text-zinc-900 tracking-tighter">{symbol}{displayPrice}</span>
-                                    <span className="text-zinc-400 uppercase text-[10px] sm:text-xs font-black tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
+                                    <span className="text-5xl sm:text-7xl font-black text-zinc-900 tracking-tighter leading-none">{symbol}{displayPrice}</span>
+                                    <span className="text-zinc-400 uppercase text-xs font-black tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
                                 </div>
                             </div>
 
@@ -171,8 +171,8 @@ export function PricingTable({
                                 onClick={() => handleSubscribe(plan.id)}
                                 disabled={purchasing !== null || isActive}
                                 className={`w-full h-16 rounded-full font-black uppercase tracking-widest text-sm transition-all shadow-xl active:scale-95 text-center ${isActive ? 'bg-green-50 text-green-600 hover:bg-green-50 cursor-default shadow-none border-2 border-green-500' :
-                                        plan.type === 'Annual' || plan.price > 50 ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-purple-600/30' :
-                                            'bg-zinc-900 text-white hover:bg-zinc-800 shadow-zinc-900/20'
+                                    plan.type === 'Annual' || plan.price > 50 ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-purple-600/30' :
+                                        'bg-zinc-900 text-white hover:bg-zinc-800 shadow-zinc-900/20'
                                     }`}
                             >
                                 {purchasing === plan.id ? (
