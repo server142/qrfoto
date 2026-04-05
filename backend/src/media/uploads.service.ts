@@ -81,28 +81,36 @@ export class UploadsService {
       try {
         const sharp = require('sharp');
         const path = require('path');
-        const watermarkPath = path.join(__dirname, '..', 'assets', 'watermark.png');
+        const fs = require('fs');
         
-        // Redimensionar marca de agua al 15% del ancho de la imagen original
-        const metadata = await sharp(file.buffer).metadata();
-        const watermarkWidth = Math.round((metadata.width || 1000) * 0.20); // 20% del ancho
+        let watermarkPath = path.join(process.cwd(), 'src', 'assets', 'watermark.png');
+        if (!fs.existsSync(watermarkPath)) {
+            // Production path (inside dist or relative to it)
+            watermarkPath = path.join(process.cwd(), 'assets', 'watermark.png');
+        }
         
-        const watermark = await sharp(watermarkPath)
-          .resize(watermarkWidth)
-          .toBuffer();
+        if (!fs.existsSync(watermarkPath)) {
+            console.error(`[QRFoto-Media] ⚠️ Watermark not found at: ${watermarkPath}`);
+        } else {
+            const metadata = await sharp(file.buffer).metadata();
+            const watermarkWidth = Math.round((metadata.width || 1000) * 0.20); // 20% del ancho
+            
+            const watermark = await sharp(watermarkPath)
+              .resize(watermarkWidth)
+              .toBuffer();
 
-        finalBuffer = await sharp(file.buffer)
-          .composite([
-            { 
-              input: watermark, 
-              gravity: 'southeast', // Esquina inferior derecha
-              blend: 'over',
-              // opacity: 0.8 // Opcional
-            }
-          ])
-          .toBuffer();
-          
-        console.log(`[QRFoto-Media] 💧 Watermark applied to ${file.originalname}`);
+            finalBuffer = await sharp(file.buffer)
+              .composite([
+                { 
+                  input: watermark, 
+                  gravity: 'southeast', // Esquina inferior derecha
+                  blend: 'over'
+                }
+              ])
+              .toBuffer();
+              
+            console.log(`[QRFoto-Media] 💧 Watermark applied to ${file.originalname}`);
+        }
       } catch (err) {
         console.error(`[QRFoto-Media] ⚠️ Could not apply watermark:`, err.message);
         // Fallback to original buffer if sharp fails
