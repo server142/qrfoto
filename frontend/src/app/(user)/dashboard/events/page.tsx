@@ -329,7 +329,7 @@ export default function EventsPage() {
             <p className="text-zinc-400 uppercase text-xs font-black tracking-[0.3em]">{t.events.syncing}</p>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
             {events.length === 0 ? (
               <div className="col-span-full py-40 text-center border-4 border-dashed border-zinc-100 rounded-[3rem] bg-white shadow-xl shadow-zinc-100/50">
                 <Calendar className="w-24 h-24 text-zinc-100 mx-auto mb-8" />
@@ -346,30 +346,30 @@ export default function EventsPage() {
                   key={event.id}
                   className="group"
                 >
-                  <Card className="bg-white border-zinc-100 p-10 sm:p-12 flex flex-col hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 rounded-[3.5rem] shadow-xl shadow-zinc-100 relative overflow-hidden h-full">
-                    <div className="flex justify-between items-start mb-8 relative z-10">
+                  <Card className="bg-white border-zinc-100 p-8 flex flex-col hover:shadow-[0_40px_80px_rgba(0,0,0,0.06)] transition-all duration-500 rounded-[3.5rem] shadow-xl shadow-zinc-100 relative overflow-hidden h-full group">
+                    <div className="flex justify-between items-start mb-6 relative z-10">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 mb-2">
                           <div className={`w-2 h-2 rounded-full ${event.status === 'Active' ? 'bg-green-500 animate-pulse' : 'bg-red-400'}`} />
                           <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">{event.status === 'Active' ? t.events.status_active : t.events.status_finished}</span>
                         </div>
-                        <h3 className="text-3xl font-black text-zinc-900 group-hover:text-purple-600 transition-colors italic leading-tight tracking-tighter">{event.name}</h3>
+                        <h3 className="text-2xl font-black text-zinc-900 group-hover:text-purple-600 transition-colors italic leading-tight tracking-tighter">{event.name}</h3>
                         <p className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em]">{new Date(event.event_date).toLocaleDateString(t.language === 'en' ? 'en-US' : 'es-MX', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                       </div>
-                      <div className="w-14 h-14 bg-zinc-50 rounded-2xl flex items-center justify-center border border-zinc-100 group-hover:bg-purple-50 group-hover:border-purple-100 transition-colors">
-                        <QrCode className="w-7 h-7 text-zinc-300 group-hover:text-purple-600 transition-colors" />
+                      <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center border border-zinc-100 group-hover:bg-purple-50 group-hover:border-purple-100 transition-colors">
+                        <QrCode className="w-6 h-6 text-zinc-300 group-hover:text-purple-600 transition-colors" />
                       </div>
                     </div>
 
-                    <div className="flex-1 space-y-6 mb-10 relative z-10">
-                      <div className="bg-white p-8 rounded-[3.5rem] flex flex-col items-center justify-center border-2 border-zinc-50 group-hover:border-purple-100 transition-all shadow-sm relative group/qr">
+                    <div className="flex-1 space-y-6 mb-8 relative z-10">
+                      <div className="bg-white p-6 rounded-[3.5rem] flex flex-col items-center justify-center border-2 border-zinc-50 group-hover:border-purple-100 transition-all shadow-sm relative group/qr">
                         <QRCodeSVG
                           value={
                             window.location.hostname === 'localhost' && localConfig?.frontendUrl
                               ? `${localConfig.frontendUrl}/event/${event.slug}`
                               : `${getBaseUrl()}/event/${event.slug}`
                           }
-                          size={220}
+                          size={180}
                           level="H"
                         />
                         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm opacity-0 group-hover/qr:opacity-100 transition-opacity flex flex-col items-center justify-center p-6 text-center">
@@ -386,7 +386,7 @@ export default function EventsPage() {
                       </Button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6 relative z-10">
+                    <div className="grid grid-cols-2 gap-4 relative z-10">
                       <Link href={`/event/${event.slug}/slideshow`} target="_blank" className="col-span-2">
                         <Button
                           disabled={event.status !== 'Active'}
