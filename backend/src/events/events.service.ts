@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Event } from './entities/event.entity';
+import { Media } from '../media/entities/media.entity';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -95,5 +96,23 @@ export class EventsService {
         const event = await this.findOne(id);
         await this.eventsRepository.remove(event);
         return { message: 'Event deleted successfully' };
+    }
+
+    async getDashboardStats(userId: string) {
+        const events = await this.eventsRepository.find({ where: { userId } });
+        const eventIds = events.map(e => e.id);
+        
+        let totalPhotos = 0;
+        if (eventIds.length > 0) {
+            totalPhotos = await this.eventsRepository.manager.count(Media, {
+                where: { event_id: In(eventIds) }
+            });
+        }
+
+        return {
+            totalEvents: events.length,
+            totalPhotos: totalPhotos,
+            interactions: totalPhotos * 3, // Mock de interacciones (clicks + visualizaciones)
+        };
     }
 }

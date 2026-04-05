@@ -11,6 +11,7 @@ import { getApiUrl } from "@/lib/api";
 export default function UserDashboard() {
   const { t } = useTranslation();
   const [events, setEvents] = useState<any[]>([]);
+  const [statsData, setStatsData] = useState<any>({ totalEvents: 0, totalPhotos: 0, interactions: 0 });
   const [loading, setLoading] = useState(true);
 
   const getToken = () => {
@@ -20,14 +21,23 @@ export default function UserDashboard() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        const token = getToken();
+        // Fetch Events
         const res = await fetch(`${getApiUrl()}/events`, {
-          headers: {
-            "Authorization": `Bearer ${getToken()}`
-          }
+          headers: { "Authorization": `Bearer ${token}` }
         });
         if (res.ok) {
           const data = await res.json();
           setEvents(data);
+        }
+
+        // Fetch Real Stats
+        const statsRes = await fetch(`${getApiUrl()}/events/dashboard/stats`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          setStatsData(stats);
         }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -39,16 +49,10 @@ export default function UserDashboard() {
     fetchDashboardData();
   }, []);
 
-  // Compute Stats
-  const activeEventsCount = events.length;
-  // For total photos, we'd need another endpoint, so for now let's mock it but with the idea of connecting it soon.
-  const totalPhotos = events.length * 12; // Placeholder while we add media count API
-  const totalInteractions = totalPhotos * 3;
-
   const stats = [
-    { title: t.user_dashboard.stats.active_events, value: activeEventsCount.toString(), icon: Calendar, color: "text-blue-400" },
-    { title: t.user_dashboard.stats.total_photos, value: totalPhotos.toString(), icon: ImageIcon, color: "text-purple-400" },
-    { title: t.user_dashboard.stats.interactions, value: totalInteractions.toString(), icon: MousePointer2, color: "text-green-400" },
+    { title: t.user_dashboard.stats.active_events, value: statsData.totalEvents.toString(), icon: Calendar, color: "text-blue-400" },
+    { title: t.user_dashboard.stats.total_photos, value: statsData.totalPhotos.toString(), icon: ImageIcon, color: "text-purple-400" },
+    { title: t.user_dashboard.stats.interactions, value: statsData.interactions.toString(), icon: MousePointer2, color: "text-green-400" },
   ];
 
   const recentEvents = [...events].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 3);

@@ -24,6 +24,12 @@ export class EventsController {
         return this.eventsService.findAll(req.user.userId);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('dashboard/stats')
+    getDashboardStats(@Request() req: any) {
+        return this.eventsService.getDashboardStats(req.user.userId);
+    }
+
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.eventsService.findOne(id);
