@@ -40,6 +40,19 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   reset_password_expires: Date | null;
 
+  @Column({
+    type: 'enum',
+    enum: ['Active', 'Blocked', 'Pending'],
+    default: 'Active',
+  })
+  status: string;
+
+  @Column({ nullable: true })
+  registration_ip: string;
+
+  @Column({ nullable: true })
+  registration_country: string;
+
   @CreateDateColumn()
   created_at: Date;
 

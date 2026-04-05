@@ -1,9 +1,9 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UnauthorizedException, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('api/auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -16,8 +16,9 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() registerDto: Record<string, any>) {
-    return this.authService.register(registerDto);
+  async register(@Body() registerDto: Record<string, any>, @Req() req: any) {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    return this.authService.register(registerDto, ip);
   }
 
   @Post('forgot-password')

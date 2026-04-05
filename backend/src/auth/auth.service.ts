@@ -18,6 +18,10 @@ export class AuthService {
     const user = await this.usersService.findOneByEmail(email);
     if (!user) return null;
 
+    if (user.status === 'Blocked') {
+      throw new UnauthorizedException('Su cuenta ha sido suspendida por seguridad.');
+    }
+
     // Check if the password matches
     const isMatch = await bcrypt.compare(pass, user.password_hash);
     if (isMatch) {
@@ -35,7 +39,7 @@ export class AuthService {
     };
   }
 
-  async register(registerDto: any) {
+  async register(registerDto: any, ip?: string) {
     const existingUser = await this.usersService.findOneByEmail(registerDto.email);
     if (existingUser) {
       throw new BadRequestException('Email already in use');
@@ -49,7 +53,9 @@ export class AuthService {
       password_hash,
       first_name: registerDto.first_name,
       last_name: registerDto.last_name,
-      role: registerDto.role || UserRole.USER
+      role: registerDto.role || UserRole.USER,
+      registration_ip: ip || 'unknown',
+      status: 'Active'
     });
 
     const { password_hash: _pw, ...result } = newUser;
