@@ -343,17 +343,20 @@ export default function SlideshowPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setHelpOpen(false)}
-            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-10 cursor-pointer"
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex justify-center p-4 md:p-10 cursor-pointer overflow-y-auto"
           >
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-zinc-900 border border-white/10 p-12 rounded-[2rem] flex flex-col gap-6 shadow-[0_0_100px_rgba(255,255,255,0.05)] relative max-w-3xl w-full text-left"
+              className="bg-zinc-900 border border-white/10 p-6 md:p-12 rounded-[2rem] flex flex-col gap-6 shadow-[0_0_100px_rgba(255,255,255,0.05)] relative max-w-5xl w-full text-left my-auto h-fit"
               onClick={(e) => e.stopPropagation()}
             >
-              <button className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors" onClick={() => setHelpOpen(false)}>
-                <X className="w-8 h-8" />
+              <button
+                className="absolute top-4 right-4 md:top-8 md:right-8 text-white/40 hover:text-white transition-colors bg-white/10 md:bg-transparent rounded-full p-2 md:p-0 z-50"
+                onClick={() => setHelpOpen(false)}
+              >
+                <X className="w-6 h-6 md:w-8 md:h-8" />
               </button>
 
               <div className="space-y-2 mb-4">
