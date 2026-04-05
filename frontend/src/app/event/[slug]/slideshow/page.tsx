@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Camera, User, MessageSquareQuote, QrCode } from "lucide-react";
+import { Loader2, Camera, User, MessageSquareQuote, QrCode, MonitorUp, X } from "lucide-react";
 import { io } from "socket.io-client";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
 import { QRCodeSVG } from "qrcode.react";
@@ -20,6 +20,7 @@ export default function SlideshowPage() {
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState<any>(null);
   const [qrOpen, setQrOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     let socket: any;
@@ -239,6 +240,13 @@ export default function SlideshowPage() {
             {event.name}
           </h1>
           <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mt-2 ml-1">Live Social Wall</p>
+
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="pointer-events-auto mt-4 ml-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white/80 transition-colors bg-white/5 px-3 py-1.5 rounded-full border border-white/5 backdrop-blur-sm"
+          >
+            <MonitorUp className="w-3 h-3" /> Proyectar
+          </button>
         </div>
 
         {/* Real-time indicator & Logo */}
@@ -322,6 +330,76 @@ export default function SlideshowPage() {
               >
                 Cerrar y ver Galería
               </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* HELP MODAL (Proyección) */}
+      <AnimatePresence>
+        {helpOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setHelpOpen(false)}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-10 cursor-pointer"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-zinc-900 border border-white/10 p-12 rounded-[2rem] flex flex-col gap-6 shadow-[0_0_100px_rgba(255,255,255,0.05)] relative max-w-3xl w-full text-left"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors" onClick={() => setHelpOpen(false)}>
+                <X className="w-8 h-8" />
+              </button>
+
+              <div className="space-y-2 mb-4">
+                <h3 className="text-3xl font-black tracking-tighter text-white/90 uppercase flex items-center gap-3">
+                  <MonitorUp className="w-8 h-8" style={{ color: event.branding_color }} />
+                  ¿Cómo proyectar la galería?
+                </h3>
+                <p className="text-zinc-500 font-bold tracking-widest text-xs uppercase">Guía rápida de conexión con pantallas</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-zinc-300">
+                <div className="flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="bg-white/10 w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 text-white text-xs">1</div>
+                  <div>
+                    <h4 className="font-bold text-white mb-2 text-sm uppercase tracking-wider">Cable Físico (HDMI)</h4>
+                    <p className="text-xs leading-relaxed text-zinc-400">Conecta el cable desde este equipo al proyector/pantalla. Presiona <b className="text-white bg-white/10 px-1 py-0.5 rounded">F11</b> para poner este navegador en pantalla completa inmersiva.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="bg-white/10 w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 text-white text-xs">2</div>
+                  <div>
+                    <h4 className="font-bold text-white mb-2 text-sm uppercase tracking-wider">Transmisión (Cast)</h4>
+                    <p className="text-xs leading-relaxed text-zinc-400">Haz clic derecho en cualquier parte vacía de esta pantalla y selecciona <b className="text-white">Transmitir / Cast...</b> para enviarla a un Chromecast o Smart TV en la misma red Wi-Fi.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="bg-white/10 w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 text-white text-xs">3</div>
+                  <div>
+                    <h4 className="font-bold text-white mb-2 text-sm uppercase tracking-wider">Transmisión de Sistema</h4>
+                    <p className="text-xs leading-relaxed text-zinc-400">En Windows presiona <b className="text-white bg-white/10 px-1 py-0.5 rounded">Win + K</b> para buscar pantallas inalámbricas. En Mac usa la opción nativa de <b className="text-white">AirPlay</b> en la barra superior.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="bg-white/10 w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 text-white text-xs">4</div>
+                  <div>
+                    <h4 className="font-bold text-white mb-2 text-sm uppercase tracking-wider">Vía Navegador Web TV</h4>
+                    <p className="text-xs leading-relaxed text-zinc-400 mb-2">Si la pantalla tiene navegador propio, ingresa esta URL exacta en ella:</p>
+                    <code className="block bg-black px-3 py-2 rounded-lg border border-white/10 text-[10px] text-zinc-300 font-mono break-all selection:bg-purple-500/30">
+                      {typeof window !== 'undefined' ? window.location.href : `${process.env.NEXT_PUBLIC_FRONTEND_URL ?? getBaseUrl()}/event/${slug}/slideshow`}
+                    </code>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
