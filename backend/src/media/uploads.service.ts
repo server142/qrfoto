@@ -13,12 +13,8 @@ export class UploadsService {
     const minioPort = this.configService.get<string>('MINIO_PORT', '9000');
     const internalEndpoint = `http://localhost:${minioPort}`;
 
-    // Public URL = what browsers use to load images
     const publicIp = this.configService.get<string>('PUBLIC_IP', 'localhost');
     this.publicBaseUrl = `http://${publicIp}:${minioPort}`;
-
-    console.log(`[QRFoto-Media] Internal endpoint: ${internalEndpoint}`);
-    console.log(`[QRFoto-Media] Public base URL: ${this.publicBaseUrl}`);
 
     this.s3Client = new S3.S3Client({
       region: this.configService.get<string>('MINIO_REGION', 'us-east-1'),
@@ -34,20 +30,13 @@ export class UploadsService {
     this.ensureBucketPublic();
   }
 
-  /**
-   * Ensures the bucket exists and is publicly readable.
-   * This eliminates all signature mismatch problems.
-   */
   private async ensureBucketPublic() {
     try {
       await this.s3Client.send(new S3.HeadBucketCommand({ Bucket: this.bucketName }));
-      console.log(`[QRFoto-Media] Bucket "${this.bucketName}" already exists.`);
     } catch {
-      console.log(`[QRFoto-Media] Creating bucket "${this.bucketName}"...`);
       await this.s3Client.send(new S3.CreateBucketCommand({ Bucket: this.bucketName }));
     }
 
-    // Set a public READ policy so any browser can load images without signatures
     const publicPolicy = JSON.stringify({
       Version: '2012-10-17',
       Statement: [
@@ -67,14 +56,16 @@ export class UploadsService {
           Policy: publicPolicy,
         }),
       );
-      console.log(`[QRFoto-Media] ✅ Bucket is now PUBLIC. Images will load on all devices.`);
     } catch (err) {
-      console.error(`[QRFoto-Media] ❌ Could not set bucket policy:`, err.message);
+      console.error(`[QRFoto-Media] ❌ Policy error:`, err.message);
     }
   }
 
   async uploadFile(file: Express.Multer.File, folder: string = 'general'): Promise<string> {
     let finalBuffer = file.buffer;
+    let finalMimeType = file.mimetype;
+    let finalExtension = file.originalname.split('.').pop() || 'jpg';
+
     const isImage = file.mimetype.startsWith('image/') && !file.mimetype.includes('gif');
 
     if (isImage) {
@@ -82,62 +73,57 @@ export class UploadsService {
         const sharp = require('sharp');
         const path = require('path');
         const fs = require('fs');
-        
+
         let watermarkPath = path.join(process.cwd(), 'src', 'assets', 'watermark.png');
         if (!fs.existsSync(watermarkPath)) {
-            // Production path (inside dist or relative to it)
-            watermarkPath = path.join(process.cwd(), 'assets', 'watermark.png');
+          watermarkPath = path.join(process.cwd(), 'assets', 'watermark.png');
         }
-        
-        if (!fs.existsSync(watermarkPath)) {
-            console.error(`[QRFoto-Media] ⚠️ Watermark not found at: ${watermarkPath}`);
-        } else {
-            const metadata = await sharp(file.buffer).metadata();
-            const watermarkWidth = Math.round((metadata.width || 1000) * 0.20); // 20% del ancho
-            
-            const watermark = await sharp(watermarkPath)
-              .resize(watermarkWidth)
-              .toBuffer();
 
-            finalBuffer = await sharp(file.buffer)
-              .composite([
-                { 
-                  input: watermark, 
-                  gravity: 'southeast', // Esquina inferior derecha
-                  blend: 'over'
-                }
-              ])
-              .toBuffer();
-              
-            console.log(`[QRFoto-Media] 💧 Watermark applied to ${file.originalname}`);
+        // --- PROCESAMIENTO ROBUSTO DE IMAGEN ---
+        // Forzamos rotación según EXIF y siempre convertimos a JPEG para máxima compatibilidad
+        let pipeline = sharp(file.buffer)
+          .rotate() // Corrige la orientación automáticamente
+          .resize(2000, 2000, { fit: 'inside', withoutEnlargement: true }) // Redimensionamos para que no pesen demasiado
+          .jpeg({ quality: 80, mozjpeg: true });
+
+        if (fs.existsSync(watermarkPath)) {
+          const metadata = await sharp(file.buffer).metadata();
+          const watermarkWidth = Math.round((metadata.width || 1000) * 0.20);
+          const watermark = await sharp(watermarkPath).resize(watermarkWidth).toBuffer();
+
+          pipeline = pipeline.composite([
+            { input: watermark, gravity: 'southeast', blend: 'over' }
+          ]);
+          console.log(`[QRFoto-Media] 💧 Watermark & Auto-JPEG applied to ${file.originalname}`);
+        } else {
+          console.log(`[QRFoto-Media] ✅ Auto-JPEG applied to ${file.originalname}`);
         }
+
+        finalBuffer = await pipeline.toBuffer();
+        finalMimeType = 'image/jpeg';
+        finalExtension = 'jpg';
       } catch (err) {
-        console.error(`[QRFoto-Media] ⚠️ Could not apply watermark:`, err.message);
-        // Fallback to original buffer if sharp fails
+        console.error(`[QRFoto-Media] ⚠️ Error processing image (Sharp):`, err.message);
+        // Silently continue with original if sharp fails
       }
     }
 
-    const fileKey = `${folder}/${uuidv4()}-${file.originalname}`;
+    const fileKey = `${folder}/${uuidv4()}.${finalExtension}`;
 
     await this.s3Client.send(
       new S3.PutObjectCommand({
         Bucket: this.bucketName,
         Key: fileKey,
         Body: finalBuffer,
-        ContentType: file.mimetype,
+        ContentType: finalMimeType,
       }),
     );
 
     return fileKey;
   }
 
-  /**
-   * Returns a secure proxy URL to load images bypassing Mixed Content (HTTP vs HTTPS)
-   * Format: /api/media/s3/event_id/file.jpg
-   */
   getPublicUrl(fileKey: string): string | null {
     if (!fileKey) return null;
-    // We relative path so the frontend / backend URL config controls the domain properly
     const apiUrl = this.configService.get<string>('FRONTEND_URL', '').includes('localhost')
       ? 'http://localhost:3001/api'
       : 'https://api.qrfoto.com.mx/api';
