@@ -202,7 +202,7 @@ export function PricingTable({
                         transition={{ delay: i * 0.1 }}
                         className="relative group h-full"
                     >
-                        <Card className={`relative h-full bg-white border-zinc-100 p-8 sm:p-10 flex flex-col transition-all duration-500 rounded-[3rem] shadow-[0_40px_100px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.1)] hover:-translate-y-1 group-hover:border-purple-200 overflow-hidden ${isActive ? 'ring-4 ring-green-500/10 border-green-500 scale-[1.01] z-10' : ''}`}>
+                        <Card className={`relative h-full bg-white border-zinc-100 p-6 sm:p-8 flex flex-col transition-all duration-500 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.1)] hover:-translate-y-1 group-hover:border-purple-200 overflow-hidden ${isActive ? 'ring-4 ring-green-500/10 border-green-500 scale-[1.01] z-10' : ''}`}>
                             {isActive ? (
                                 <div className="absolute top-0 right-0 p-6">
                                     <ShieldCheck className="w-6 h-6 text-green-500" />
@@ -215,18 +215,18 @@ export function PricingTable({
                                 </div>
                             ) : null}
 
-                            <div className="mb-10 text-left">
-                                <h3 className="text-xl font-black tracking-tighter text-zinc-300 mb-2 italic uppercase">{plan.name}</h3>
+                            <div className="mb-6 text-left">
+                                <h3 className="text-sm font-black tracking-widest text-zinc-300 mb-1 italic uppercase">{plan.name}</h3>
                                 <div className="flex items-baseline gap-2 flex-wrap">
                                     {promoData && originalDisplayPrice > 0 && (
-                                        <span className="text-2xl font-black text-zinc-300 tracking-tighter line-through">{symbol}{originalDisplayPrice}</span>
+                                        <span className="text-xl font-black text-zinc-300 tracking-tighter line-through">{symbol}{originalDisplayPrice}</span>
                                     )}
-                                    <span className="text-5xl sm:text-6xl font-black text-zinc-900 tracking-tighter leading-none">{symbol}{displayPrice}</span>
-                                    <span className="text-zinc-400 uppercase text-[10px] font-black tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
+                                    <span className="text-4xl sm:text-5xl font-black text-zinc-900 tracking-tighter leading-none">{symbol}{displayPrice}</span>
+                                    <span className="text-zinc-400 uppercase text-[9px] font-black tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
                                 </div>
                             </div>
 
-                            <ul className="space-y-5 mb-10 flex-1">
+                            <ul className="space-y-3 mb-8 flex-1">
                                 {features.map((feat, j) => (
                                     <li key={j} className={`flex items-center gap-3 font-bold text-xs sm:text-sm group/item ${feat.enabled ? 'text-zinc-600' : 'text-zinc-300 line-through decoration-zinc-200 opacity-60'}`}>
                                         <div className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 transition-colors ${!feat.enabled ? 'bg-zinc-50 text-zinc-300' : isActive ? 'bg-green-50 text-green-600' : 'bg-purple-50 text-purple-600'}`}>

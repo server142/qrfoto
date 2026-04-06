@@ -25,7 +25,7 @@ import { Logo } from "@/components/Logo";
 import Link from "next/link";
 
 export default function LandingPage() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -47,20 +47,20 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#FDFDFD] text-zinc-900 selection:bg-purple-100 selection:text-purple-900 font-sans">
       {/* Navigation */}
-      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-xl border-b border-zinc-100 py-4 shadow-sm" : "bg-transparent py-6"}`}>
-        <div className="container mx-auto px-6 flex items-center justify-between">
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-xl border-b border-zinc-100 py-3 shadow-sm" : "bg-transparent py-5"}`}>
+        <div className="container mx-auto px-6 flex items-center justify-between font-sans">
           <div className="flex items-center gap-2">
             <Logo size="md" />
           </div>
 
-          <div className="hidden lg:flex items-center gap-8 text-[10px] font-black uppercase tracking-wider text-zinc-400">
+          <div className="hidden lg:flex items-center gap-6 text-[10px] font-black uppercase tracking-wider text-zinc-400">
             <a href="#como-funciona" className="hover:text-purple-600 transition-colors uppercase">{t.nav.features}</a>
             <a href="#beneficios" className="hover:text-purple-600 transition-colors uppercase">{t.landing.benefits.control}</a>
             <a href="#precios" className="hover:text-purple-600 transition-colors uppercase">{t.nav.pricing}</a>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/login" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-900 px-5 sm:px-6 py-3 rounded-full bg-white border border-zinc-100 hover:border-purple-600 hover:text-purple-600 transition-all shadow-xl hover:shadow-purple-600/10 active:scale-95 leading-none">
+            <Link href="/login" className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-zinc-900 px-4 sm:px-5 py-2.5 rounded-full bg-white border border-zinc-100 hover:border-purple-600 hover:text-purple-600 transition-all shadow-xl hover:shadow-purple-600/10 active:scale-95 leading-none">
               {t.login.cta}
             </Link>
 
@@ -69,8 +69,8 @@ export default function LandingPage() {
             </div>
 
             <Link href="/register" className="hidden xl:block">
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-7 h-11 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
-                {t.hero.cta}
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6 h-10 text-[9px] sm:text-[10px] font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
+                {language === 'es' ? "REGÍSTRATE" : "SIGN UP"}
               </Button>
             </Link>
             <button
