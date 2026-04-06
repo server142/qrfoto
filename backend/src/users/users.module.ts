@@ -1,4 +1,4 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module, OnModuleInit, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User, UserRole } from './entities/user.entity';
 import { Subscription } from '../subscriptions/entities/subscription.entity';
@@ -7,9 +7,13 @@ import { UsersController } from './users.controller';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EventsModule } from '../events/events.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Subscription])],
+  imports: [
+    TypeOrmModule.forFeature([User, Subscription]),
+    forwardRef(() => EventsModule)
+  ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

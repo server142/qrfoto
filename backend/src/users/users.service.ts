@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from './entities/user.entity';
 import { Subscription } from '../subscriptions/entities/subscription.entity';
+import { EventsService } from '../events/events.service';
 
 @Injectable()
 export class UsersService {
@@ -11,7 +12,24 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(Subscription)
     private subRepository: Repository<Subscription>,
+    @Inject(forwardRef(() => EventsService))
+    private eventsService: EventsService,
   ) { }
+
+  async remove(id: string): Promise<void> {
+    // 1. Limpiar todos sus eventos y ARCHIVOS FÍSICOS
+    const events = await this.eventsService.findAll(id);
+    for (const event of events) {
+      await this.eventsService.remove(event.id);
+    }
+
+    // 2. Borrar subscripciones
+    await this.subRepository.delete({ user_id: id });
+
+    // 3. Borrar usuario
+    await this.usersRepository.delete(id);
+    console.log(`[QRFoto-Users] 👤 User ${id} fully removed from system.`);
+  }
 
   async getMe(userId: string): Promise<any> {
     const user = await this.usersRepository.findOne({ where: { id: userId } });
@@ -38,7 +56,7 @@ export class UsersService {
   async create(userData: Partial<User>): Promise<User> {
     const newUser = this.usersRepository.create(userData);
     const savedUser = await this.usersRepository.save(newUser);
-    
+
     // Asignar plan FREE por defecto
     try {
       const plans = await this.subRepository.manager.query('SELECT id FROM plans WHERE type = "Free" OR name = "Free" LIMIT 1');

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Media } from './entities/media.entity';
@@ -13,10 +13,11 @@ import { UsersModule } from '../users/users.module';
     MulterModule.register({
       limits: { fileSize: 20 * 1024 * 1024 }, // 20MB para fotos de alta calidad de galería
     }),
-    EventsModule,
+    forwardRef(() => EventsModule),
     UsersModule
   ],
   controllers: [MediaController],
   providers: [UploadsService],
+  exports: [UploadsService],
 })
 export class MediaModule { }

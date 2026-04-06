@@ -138,4 +138,39 @@ export class UploadsService {
     const response = await this.s3Client.send(command);
     return response.Body;
   }
+
+  /**
+   * Deletes all files within a folder in the bucket.
+   * Crucial for freeing up S3/MinIO space.
+   */
+  async deleteFolder(folder: string): Promise<void> {
+    try {
+      // 1. List all objects in the folder
+      const listCommand = new S3.ListObjectsV2Command({
+        Bucket: this.bucketName,
+        Prefix: folder, // e.g. "events/UUID"
+      });
+      const listedObjects = await this.s3Client.send(listCommand);
+
+      if (!listedObjects.Contents || listedObjects.Contents.length === 0) return;
+
+      // 2. Map objects to delete
+      const deleteParams = {
+        Bucket: this.bucketName,
+        Delete: {
+          Objects: listedObjects.Contents.map(({ Key }) => ({ Key })),
+        },
+      };
+
+      // 3. Execute delete
+      await this.s3Client.send(new S3.DeleteObjectsCommand(deleteParams));
+
+      // 4. If truncated, repeat (recurse)
+      if (listedObjects.IsTruncated) await this.deleteFolder(folder);
+
+      console.log(`[QRFoto-Media] 🗑️ Folder "${folder}" cleared from storage.`);
+    } catch (err) {
+      console.error(`[QRFoto-Media] ⚠️ Error deleting folder ${folder}:`, err.message);
+    }
+  }
 }

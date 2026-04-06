@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Event } from './entities/event.entity';
 import { Media } from '../media/entities/media.entity';
 import { UsersService } from '../users/users.service';
+import { UploadsService } from '../media/uploads.service';
 
 @Injectable()
 export class EventsService {
@@ -11,6 +12,8 @@ export class EventsService {
         @InjectRepository(Event)
         private readonly eventsRepository: Repository<Event>,
         private readonly usersService: UsersService,
+        @Inject(forwardRef(() => UploadsService))
+        private readonly uploadsService: UploadsService,
     ) { }
 
     async create(createEventDto: any, userId?: string) {
@@ -73,6 +76,10 @@ export class EventsService {
 
     async remove(id: string) {
         const event = await this.findOne(id);
+
+        // BORRADO FÍSICO: Limpiar carpeta de S3/MinIO
+        await this.uploadsService.deleteFolder(`events/${event.id}`);
+
         await this.eventsRepository.remove(event);
         return { message: 'Event deleted successfully' };
     }

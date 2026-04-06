@@ -24,7 +24,7 @@ export default function PlansManagementPage() {
     type: "Monthly",
     max_events: 5,
     storage_limit_mb: 500,
-    event_duration_days: 30,
+    event_duration_days: 8,
     currency: "MXN",
     periodicity: "monthly"
   });
@@ -53,7 +53,7 @@ export default function PlansManagementPage() {
       type: "Monthly",
       max_events: 5,
       storage_limit_mb: 500,
-      event_duration_days: 30,
+      event_duration_days: 8,
       currency: "MXN",
       periodicity: "monthly"
     });

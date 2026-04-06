@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsController } from './events.controller';
 import { EventsService } from './events.service';
@@ -7,9 +7,16 @@ import { Event } from './entities/event.entity';
 import { AuthModule } from '../auth/auth.module';
 import { ReviewsModule } from '../reviews/reviews.module';
 import { UsersModule } from '../users/users.module';
+import { MediaModule } from '../media/media.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Event]), AuthModule, ReviewsModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Event]),
+    AuthModule,
+    ReviewsModule,
+    UsersModule,
+    forwardRef(() => MediaModule)
+  ],
   controllers: [EventsController],
   providers: [EventsService, EventsGateway],
   exports: [EventsService, EventsGateway],

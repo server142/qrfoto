@@ -211,21 +211,36 @@ export default function EventsPage() {
       const media = res.ok ? await res.json() : [];
 
       const doc = new jsPDF();
-      doc.setFontSize(22);
-      doc.setTextColor(168, 85, 247);
-      doc.text("QRFoto - Reporte de Evento", 14, 22);
-      doc.setFontSize(16);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`Evento: ${event.name}`, 14, 32);
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text(`Fecha: ${new Date(event.event_date).toLocaleDateString()}`, 14, 40);
-      doc.text(`Generado: ${new Date().toLocaleString()}`, 14, 46);
 
-      const tableColumn = ["#", "Invitado", "Mensaje", "Fecha/Hora"];
+      // Header Background
+      doc.setFillColor(248, 250, 252);
+      doc.rect(0, 0, 210, 50, 'F');
+
+      // BRANDING
+      doc.setFontSize(28);
+      doc.setTextColor(168, 85, 247);
+      doc.setFont("helvetica", "bold");
+      doc.text("QRFoto", 14, 25);
+
+      doc.setFontSize(10);
+      doc.setTextColor(148, 163, 184);
+      doc.text("INTERACTIVE EVENT PLATFORM", 14, 32);
+
+      // EVENT INFO
+      doc.setFontSize(16);
+      doc.setTextColor(15, 23, 42);
+      doc.text(event.name.toUpperCase(), 14, 45);
+
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139);
+      doc.text(`CÓDIGO: /${event.slug}`, 150, 25);
+      doc.text(`FECHA EVENTO: ${new Date(event.event_date).toLocaleDateString()}`, 150, 31);
+      doc.text(`REPORTE: ${new Date().toLocaleString()}`, 150, 37);
+
+      const tableColumn = ["#", "Colaborador", "Dedicatoria", "Captura"];
       const tableRows = media.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((m: any, i: number) => [
         i + 1,
-        m.guest_name || "Invitado",
+        (m.guest_name || "Anónimo").toUpperCase(),
         m.message || "-",
         new Date(m.created_at).toLocaleString()
       ]);
@@ -233,13 +248,19 @@ export default function EventsPage() {
       (doc as any).autoTable({
         head: [tableColumn],
         body: tableRows,
-        startY: 55,
-        theme: 'grid',
-        headStyles: { fillColor: [168, 85, 247], textColor: [255, 255, 255] },
-        styles: { fontSize: 9 }
+        startY: 60,
+        theme: 'striped',
+        headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontSize: 10, fontStyle: 'bold' },
+        styles: { fontSize: 9, cellPadding: 5 },
+        columnStyles: {
+          0: { cellWidth: 10 },
+          1: { cellWidth: 40, fontStyle: 'bold' },
+          2: { cellWidth: 90 },
+          3: { cellWidth: 40 }
+        }
       });
 
-      doc.save(`${event.slug}-reporte.pdf`);
+      doc.save(`${event.slug}-reporte-qrfoto.pdf`);
     } catch (err) {
       console.error("Export error:", err);
       alert("Error al generar PDF.");
@@ -400,10 +421,19 @@ export default function EventsPage() {
                       </Button>
 
                       <Link href={`/event/${event.slug}/card`} target="_blank">
-                        <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all">
+                        <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all shadow-sm">
                           <Printer className="w-4 h-4 mr-2" /> {t.events.print}
                         </Button>
                       </Link>
+
+                      <Button
+                        onClick={() => handleExportPDF(event)}
+                        disabled={exporting === event.id}
+                        className="w-full bg-indigo-50/50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all shadow-sm"
+                      >
+                        {exporting === event.id ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileText className="w-4 h-4 mr-2" />}
+                        Reporte PDF
+                      </Button>
 
                       <Button
                         onClick={() => setFinishingEvent({ ...event, isReactivating: event.status !== 'Active' })}

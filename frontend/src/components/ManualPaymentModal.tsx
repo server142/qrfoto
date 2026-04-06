@@ -13,13 +13,14 @@ import { getApiUrl, getAuthHeaders } from "@/lib/api";
 
 interface ManualPaymentModalProps {
     plan: { id: string; name: string; price: number; currency: string };
+    promoData?: any;
     onClose: () => void;
 }
 
 type Step = 'method' | 'instructions' | 'upload' | 'success';
 type Method = 'oxxo' | 'transfer' | null;
 
-export function ManualPaymentModal({ plan, onClose }: ManualPaymentModalProps) {
+export function ManualPaymentModal({ plan, promoData, onClose }: ManualPaymentModalProps) {
     const [step, setStep] = useState<Step>('method');
     const [method, setMethod] = useState<Method>(null);
     const [methods, setMethods] = useState<any>(null);
@@ -27,6 +28,9 @@ export function ManualPaymentModal({ plan, onClose }: ManualPaymentModalProps) {
     const [uploading, setUploading] = useState(false);
     const [reference, setReference] = useState<string>('');
     const [copied, setCopied] = useState(false);
+
+    const discount = promoData ? (promoData.discount_percentage / 100) : 0;
+    const finalPrice = Math.round(plan.price - (plan.price * discount));
 
     useEffect(() => {
         fetch(`${getApiUrl()}/payments/methods`, { headers: getAuthHeaders() as any })
@@ -50,6 +54,9 @@ export function ManualPaymentModal({ plan, onClose }: ManualPaymentModalProps) {
             formData.append('proof', file);
             formData.append('planId', plan.id);
             formData.append('method', method);
+            if (promoData) {
+                formData.append('promocode', promoData.code);
+            }
 
             const token = typeof document !== 'undefined'
                 ? document.cookie.split('; ').find(r => r.startsWith('token='))?.split('=')[1]
@@ -99,7 +106,8 @@ export function ManualPaymentModal({ plan, onClose }: ManualPaymentModalProps) {
                         <p className="text-white/70 text-[10px] font-black uppercase tracking-widest mb-2">Activar Plan</p>
                         <h2 className="text-3xl font-black text-white tracking-tighter italic uppercase">{plan.name}</h2>
                         <p className="text-white/80 font-black text-xl mt-1">
-                            ${plan.currency === 'USD' ? (plan.price / 20).toFixed(0) : plan.price} {plan.currency}/mes
+                            {promoData && <span className="text-white/40 line-through text-sm mr-2">${plan.currency === 'USD' ? (plan.price / 20).toFixed(0) : plan.price}</span>}
+                            ${plan.currency === 'USD' ? (finalPrice / 20).toFixed(0) : finalPrice} {plan.currency}/mes
                         </p>
 
                         {/* Step indicator */}
@@ -107,7 +115,7 @@ export function ManualPaymentModal({ plan, onClose }: ManualPaymentModalProps) {
                             {(['method', 'instructions', 'upload'] as Step[]).map((s, i) => (
                                 <div key={s} className="flex items-center gap-2">
                                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all ${step === s ? 'bg-white text-purple-600' :
-                                            ['method', 'instructions', 'upload', 'success'].indexOf(step) > i ? 'bg-white/40 text-white' : 'bg-white/10 text-white/40'
+                                        ['method', 'instructions', 'upload', 'success'].indexOf(step) > i ? 'bg-white/40 text-white' : 'bg-white/10 text-white/40'
                                         }`}>
                                         {['method', 'instructions', 'upload', 'success'].indexOf(step) > i ? '✓' : i + 1}
                                     </div>
@@ -188,7 +196,7 @@ export function ManualPaymentModal({ plan, onClose }: ManualPaymentModalProps) {
                                                 </div>
                                                 <div className="pt-3 border-t border-orange-100">
                                                     <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1">Monto a pagar</p>
-                                                    <p className="text-3xl font-black text-zinc-900">${plan.currency === 'USD' ? (plan.price / 20).toFixed(0) : plan.price} <span className="text-sm text-zinc-400">{plan.currency}</span></p>
+                                                    <p className="text-3xl font-black text-zinc-900">${plan.currency === 'USD' ? (finalPrice / 20).toFixed(0) : finalPrice} <span className="text-sm text-zinc-400">{plan.currency}</span></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -205,7 +213,7 @@ export function ManualPaymentModal({ plan, onClose }: ManualPaymentModalProps) {
                                                 </button>
                                                 <div className="pt-3 border-t border-indigo-100">
                                                     <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Monto exacto</p>
-                                                    <p className="text-3xl font-black text-zinc-900">${plan.currency === 'USD' ? (plan.price / 20).toFixed(0) : plan.price} <span className="text-sm text-zinc-400">{plan.currency}</span></p>
+                                                    <p className="text-3xl font-black text-zinc-900">${plan.currency === 'USD' ? (finalPrice / 20).toFixed(0) : finalPrice} <span className="text-sm text-zinc-400">{plan.currency}</span></p>
                                                 </div>
                                             </div>
                                         </div>

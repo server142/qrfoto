@@ -53,16 +53,16 @@ export class PaymentsController {
       return { mode: 'manual', plan: { id: plan.id, name: plan.name, price: plan.price, currency: plan.currency } };
     }
 
-    let currentPrice = plan.price;
+    let currentPrice = parseFloat(plan.price as any);
     let promoData = null;
 
     if (body.promocode) {
-        try {
-            promoData = await this.promocodesService.validateCode(body.promocode);
-            if (currentPrice > 0) {
-                 currentPrice = currentPrice - (currentPrice * (promoData.discount_percentage / 100));
-            }
-        } catch { /* if invalid ignore or throw error */ }
+      try {
+        promoData = await this.promocodesService.validateCode(body.promocode);
+        if (currentPrice > 0) {
+          currentPrice = currentPrice - (currentPrice * (parseFloat(promoData.discount_percentage as any) / 100));
+        }
+      } catch { /* if invalid ignore or throw error */ }
     }
 
     try {
@@ -109,15 +109,15 @@ export class PaymentsController {
       proof_url = this.uploadsService.getPublicUrl(proof_file_key);
     }
 
-    let currentPrice = plan.price;
+    let currentPrice = parseFloat(plan.price as any);
     let promoData = null;
     if (body.promocode) {
-        try {
-            promoData = await this.promocodesService.validateCode(body.promocode);
-            if (currentPrice > 0) {
-                 currentPrice = currentPrice - (currentPrice * (promoData.discount_percentage / 100));
-            }
-        } catch { }
+      try {
+        promoData = await this.promocodesService.validateCode(body.promocode);
+        if (currentPrice > 0) {
+          currentPrice = currentPrice - (currentPrice * (parseFloat(promoData.discount_percentage as any) / 100));
+        }
+      } catch { }
     }
 
     const paymentRequest = this.paymentRequestRepo.create({
@@ -193,16 +193,16 @@ export class PaymentsController {
 
     // Record commission usage if it has promocode
     if (pr.promocode_id) {
-        const _plan = await this.planRepo.findOne({ where: { id: pr.plan_id } });
-        if (_plan) {
-            await this.promocodesService.recordUsage(
-                pr.promocode_id, 
-                pr.user_id, 
-                _plan.name, 
-                pr.original_price || _plan.price, 
-                pr.amount
-            );
-        }
+      const _plan = await this.planRepo.findOne({ where: { id: pr.plan_id } });
+      if (_plan) {
+        await this.promocodesService.recordUsage(
+          pr.promocode_id,
+          pr.user_id,
+          _plan.name,
+          pr.original_price || _plan.price,
+          pr.amount
+        );
+      }
     }
 
     return { message: 'Suscripción activada correctamente.' };

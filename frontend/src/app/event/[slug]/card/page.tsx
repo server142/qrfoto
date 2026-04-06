@@ -68,10 +68,21 @@ export default function EventCardPage() {
             const element = document.getElementById('pdf-card');
             if (!element) return;
 
+            // Scroll to top to ensure clean capture
+            window.scrollTo(0, 0);
+
             // Escala para calidad de impresión
-            const canvas = await html2canvas(element, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
-            const imgData = canvas.toDataURL('image/png');
-            
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                windowWidth: element.scrollWidth,
+                windowHeight: element.scrollHeight
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
             // Layout de 8.5 x 11 pulgadas
             const pdf = new jsPDF({
                 orientation: 'portrait',
@@ -79,8 +90,8 @@ export default function EventCardPage() {
                 format: 'letter'
             });
 
-            pdf.addImage(imgData, 'PNG', 0, 0, 8.5, 11);
-            pdf.save(`${event.name}-QR.pdf`);
+            pdf.addImage(imgData, 'JPEG', 0, 0, 8.5, 11);
+            pdf.save(`${event.name}-QR-QRFoto.pdf`);
         } catch (error) {
             console.error("Error generating PDF", error);
             alert("No se pudo exportar el PDF. Intenta imprimirlo usando el botón Imprimir y eligiendo el destino 'Guardar como PDF'.");

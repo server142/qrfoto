@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request, Patch, Param, Body } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Patch, Param, Body, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 // import { RolesGuard } from '../auth/roles.guard';
@@ -24,5 +24,12 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   async updateStatus(@Param('id') id: string, @Body('status') status: string) {
     return this.usersService.update(id, { status });
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async remove(@Param('id') id: string) {
+    await this.usersService.remove(id);
+    return { message: 'User and all associated data deleted successfully' };
   }
 }

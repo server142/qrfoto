@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera, Image as ImageIcon, CheckCircle2, MessageSquare,
-  User, Loader2, Send, X, Mail, ArrowRight, QrCode, Plus, Download, Share2
+  User, Loader2, Send, X, Mail, ArrowRight, QrCode, Plus, Download, Share2, Ban
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -181,6 +181,29 @@ export default function GuestUploadPage() {
     </div>
   );
 
+  // BLOQUEO DE EVENTO FINALIZADO
+  if (event?.status === 'Finished') {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8 text-center">
+        <div className="absolute inset-0 opacity-10 blur-[120px]" style={{ background: event.branding_color }} />
+        <div className="relative z-10 space-y-8 max-w-md">
+          <div className="w-24 h-24 bg-white/5 border border-white/10 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-2xl relative">
+            <Ban className="w-10 h-10 text-red-500" />
+            <div className="absolute -top-2 -right-2 bg-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest animate-pulse">Cerrado</div>
+          </div>
+          <h1 className="text-4xl font-black uppercase italic tracking-tighter leading-none">{event.name}</h1>
+          <div className="h-1 w-20 bg-white/10 mx-auto rounded-full" />
+          <p className="text-white/40 text-sm font-medium leading-relaxed">
+            Este evento ha llegado a su fin. La galería interactiva ya no recibe nuevas fotos y el acceso público ha sido deshabilitado por el anfitrión.
+          </p>
+          <div className="pt-10">
+            <Logo size="md" isDark={true} className="opacity-20 mx-auto" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-purple-500/30 overflow-x-hidden relative font-sans">
       {/* Ambient Glow */}
@@ -195,7 +218,7 @@ export default function GuestUploadPage() {
           <motion.div
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 mb-6 cursor-pointer active:scale-95 transition-transform"
+            className="self-start flex items-center gap-3 bg-white/5 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 mb-6 cursor-pointer active:scale-95 transition-transform"
           >
             <div className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ backgroundColor: event.branding_color }} />
             <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.2em] italic">Live Gallery</p>

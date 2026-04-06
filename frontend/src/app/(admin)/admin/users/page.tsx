@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { getApiUrl } from "@/lib/api";
-import { Shield, ShieldAlert, Clock, Globe, Ban, CheckCircle2 } from "lucide-react";
+import { Shield, ShieldAlert, Clock, Globe, Ban, CheckCircle2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function UsersManagementPage() {
@@ -44,6 +44,22 @@ export default function UsersManagementPage() {
       body: JSON.stringify({ status: newStatus })
     });
     fetchUsers();
+  };
+
+  const deleteUser = async (userId: string, email: string) => {
+    if (!confirm(`¿ESTÁS SEGURO? Esta acción es IRREVERSIBLE.\n\nSe eliminarán:\n- La cuenta de ${email}\n- Todos sus eventos\n- Todas sus fotos del servidor\n\n¿Deseas continuar?`)) return;
+
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+    const res = await fetch(`${getApiUrl()}/users/${userId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (res.ok) {
+      fetchUsers();
+    } else {
+      alert("Error al eliminar usuario.");
+    }
   };
 
   return (
@@ -97,17 +113,27 @@ export default function UsersManagementPage() {
                   </div>
                 </TableCell>
                 <TableCell className="px-6 text-right">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => toggleStatus(user.id, user.status || 'Active')}
-                    className={`h-9 px-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${user.status === 'Blocked'
-                      ? 'text-green-400 hover:bg-green-500/10'
-                      : 'text-red-400 hover:bg-red-500/10'
-                      }`}
-                  >
-                    {user.status === 'Blocked' ? <><CheckCircle2 className="w-3 h-3 mr-2" /> Desbloquear</> : <><Ban className="w-3 h-3 mr-2" /> Bloquear</>}
-                  </Button>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => toggleStatus(user.id, user.status || 'Active')}
+                      className={`h-9 px-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${user.status === 'Blocked'
+                        ? 'text-green-400 hover:bg-green-500/10'
+                        : 'text-red-400 hover:bg-red-500/10'
+                        }`}
+                    >
+                      {user.status === 'Blocked' ? <><CheckCircle2 className="w-3 h-3 mr-2" /> Desbloquear</> : <><Ban className="w-3 h-3 mr-2" /> Bloquear</>}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => deleteUser(user.id, user.email)}
+                      className="h-9 px-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all text-zinc-600 hover:text-red-600 hover:bg-red-500/10"
+                    >
+                      <Trash2 className="w-3 h-3 h-3 mr-2" /> Eliminar
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

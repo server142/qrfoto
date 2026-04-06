@@ -180,6 +180,59 @@ export const translations = {
       ready_title: "Gallery Ready",
       ready_desc: "Scan the QR code and start sharing your moments!",
       guest: "Guest"
+    },
+    landing: {
+      promo_badge: "FREE ACCESS FOR A LIMITED TIME",
+      hero_title: "Turn your event into a",
+      hero_viral: "viral machine",
+      hero_desc1: "Your guests upload photos in real-time. You get memories and",
+      hero_desc2: "effortless content",
+      hero_desc3: "so no one misses the best moments.",
+      how_it_works_btn: "SEE HOW IT WORKS",
+      categories: {
+        weddings: "Weddings",
+        weddings_desc: "Capture every tear and laugh without chasing guests.",
+        birthdays: "Birthdays",
+        birthdays_desc: "The center of attention with a dynamic live gallery.",
+        nightlife: "Clubs / Bars",
+        nightlife_desc: "Instant viral content for your social media.",
+        corporate: "Corporate Events",
+        corporate_desc: "Visual networking and flawless branding."
+      },
+      how_it_works: {
+        title: "Frictionless Experience",
+        subtitle: "Designed so even your great-aunt can participate. No apps, no downloads, no mess.",
+        step1_title: "Scan the QR",
+        step1_desc: "Place the custom QR code on tables, screens, or the entrance.",
+        step2_title: "Upload Photos",
+        step2_desc: "Guests select or take photos from their own mobile instantly.",
+        step3_title: "Live Magic!",
+        step3_desc: "Everything appears instantly in the private gallery and on your main screen."
+      },
+      benefits: {
+        title: "It's not just a gallery,",
+        subtitle: "it's the soul of your party.",
+        control: "Total Control",
+        control_desc: "Moderate which photos appear on screen in real-time from your own mobile panel.",
+        download: "Bulk Download",
+        download_desc: "At the end of the event, download all high-resolution photos with one click.",
+        custom: "Customization",
+        custom_desc: "Set colors, logos, and welcome messages to match your style.",
+        privacy: "Privacy",
+        privacy_desc: "You decide who can see or upload photos. Protected and secure galleries."
+      },
+      reviews_title: "Real Experiences",
+      pricing_title: "Choose the plan",
+      pricing_success: "for your success.",
+      pricing_desc: "Invest in viral experiences. No hidden costs, no surprise commissions.",
+      cta_banner: {
+        badge: "Instant Access",
+        title: "Ready to start?",
+        desc1: "Start today and set up your event in less than",
+        desc2: "30 seconds.",
+        button: "REGISTER FOR FREE"
+      },
+      footer_desc: "The ultimate platform to turn your events into massive digital experiences."
     }
   },
   es: {
@@ -363,6 +416,59 @@ export const translations = {
       ready_title: "Galería Lista",
       ready_desc: "¡Escanea el código QR y empieza a compartir tus momentos!",
       guest: "Invitado"
+    },
+    landing: {
+      promo_badge: "ACCESO GRATUITO POR TIEMPO LIMITADO",
+      hero_title: "Convierte tu evento en",
+      hero_viral: "una máquina viral",
+      hero_desc1: "Tus invitados suben fotos en tiempo real. Tú obtienes recuerdos y",
+      hero_desc2: "contenido sin esfuerzo",
+      hero_desc3: "para que nadie se pierda los mejores momentos.",
+      how_it_works_btn: "VER CÓMO FUNCIONA",
+      categories: {
+        weddings: "Bodas",
+        weddings_desc: "Captura cada lágrima y risa sin perseguir a los invitados.",
+        birthdays: "Cumpleaños",
+        birthdays_desc: "El centro de atención con una galería en vivo dinámica.",
+        nightlife: "Antros / Bares",
+        nightlife_desc: "Contenido viral instantáneo para tus redes sociales.",
+        corporate: "Eventos Corporativos",
+        corporate_desc: "Networking visual y branding impecable."
+      },
+      how_it_works: {
+        title: "Experiencia sin fricción",
+        subtitle: "Diseñado para que hasta tu tía abuela pueda participar. Sin apps, sin descargas, sin líos.",
+        step1_title: "Escanean el QR",
+        step1_desc: "Coloca el código QR personalizado en mesas, pantallas o la entrada.",
+        step2_title: "Suben sus fotos",
+        step2_desc: "Los invitados seleccionan o toman fotos desde su propio móvil al instante.",
+        step3_title: "¡Magia en Vivo!",
+        step3_desc: "Todo aparece al instante en la galería privada y en tu pantalla central."
+      },
+      benefits: {
+        title: "No es solo una galería,",
+        subtitle: "es el alma de tu fiesta.",
+        control: "Control Total",
+        control_desc: "Modera qué fotos aparecen en pantalla en tiempo real desde tu propio panel móvil.",
+        download: "Descarga Masiva",
+        download_desc: "Al terminar el evento, descarga todas las fotos en alta resolución con un solo clic.",
+        custom: "Personalización",
+        custom_desc: "Configura colores, logotipos y mensajes de bienvenida para que coincidan con tu estilo.",
+        privacy: "Privacidad",
+        privacy_desc: "Tú decides quién puede ver o subir fotos. Galerías protegidas y seguras."
+      },
+      reviews_title: "Experiencias Reales",
+      pricing_title: "Escoge el plan",
+      pricing_success: "para tu éxito.",
+      pricing_desc: "Invierte en experiencias virales. Sin costos ocultos, sin comisiones sorpresa.",
+      cta_banner: {
+        badge: "Acceso Instantáneo",
+        title: "¿Listo para empezar?",
+        desc1: "Empieza hoy mismo y configura tu evento en menos de",
+        desc2: "30 segundos.",
+        button: "REGISTRARME GRATIS"
+      },
+      footer_desc: "La plataforma definitiva para convertir tus eventos en experiencias digitales masivas."
     }
   }
 };
