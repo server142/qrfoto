@@ -211,7 +211,7 @@ export default function AdminPromocodesPage() {
                                     <div>
                                         <p className="text-xs font-black uppercase tracking-widest text-zinc-400">Código</p>
                                         <div className="flex items-center gap-2">
-                                            <h3 className="text-xl font-black tracking-widest uppercase text-zinc-900">{promo.code}</h3>
+                                            <h3 className="text-xl font-black tracking-widest uppercase text-white">{promo.code}</h3>
                                             <button onClick={() => copyCode(promo.code)} className="text-purple-600 hover:text-purple-800">
                                                 {copied === promo.code ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
                                             </button>
