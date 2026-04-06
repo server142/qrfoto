@@ -24,12 +24,7 @@ export class PromocodesService {
   }
 
   async findAll(): Promise<Promocode[]> {
-    const codes = await this.promocodeRepo.find({ order: { created_at: 'DESC' } });
-    // Limpiamos los objetos para máxima compatibilidad con el JSON.stringify del servidor
-    return codes.map(c => ({
-      ...c,
-      commissions: undefined
-    } as any));
+    return this.promocodeRepo.find({ order: { created_at: 'DESC' } });
   }
 
   async validateCode(code: string): Promise<Promocode> {
@@ -58,6 +53,7 @@ export class PromocodesService {
     await this.promocodeRepo.delete(id);
   }
 
+  // Se llamará desde el sistema de pagos cuando se apruebe una transacción
   async recordUsage(
     codeId: string,
     userId: string,
@@ -68,11 +64,12 @@ export class PromocodesService {
     const promocode = await this.promocodeRepo.findOne({ where: { id: codeId } });
     if (!promocode) return;
 
+    // Calcular comisión
     let commission = 0;
     if (promocode.commission_type === 'fixed') {
-      commission = Number(promocode.commission_value);
+      commission = promocode.commission_value;
     } else {
-      commission = (Number(amountPaid) * Number(promocode.commission_value)) / 100;
+      commission = (amountPaid * promocode.commission_value) / 100;
     }
 
     const tracking = this.commissionRepo.create({
@@ -82,10 +79,12 @@ export class PromocodesService {
       original_price: originalPrice,
       amount_paid: amountPaid,
       commission_earned: commission,
-      status: 'pending'
+      status: 'pending' // Comienza como por pagar
     });
 
     await this.commissionRepo.save(tracking);
+
+    // Incrementar uso
     promocode.used_count += 1;
     await this.promocodeRepo.save(promocode);
   }
@@ -96,9 +95,11 @@ export class PromocodesService {
       order: { created_at: 'DESC' }
     });
 
+    // Romper la referencia circular y aplanar los datos para máxima seguridad
     return list.map(item => {
       const plain = { ...item };
       if (plain.promocode) {
+        // Solo conservamos lo necesario para la tabla, eliminando loops
         plain.promocode = {
           code: item.promocode.code,
           promoter_name: item.promocode.promoter_name
