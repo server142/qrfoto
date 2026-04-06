@@ -50,13 +50,19 @@ export class EventsService {
     }
 
     async findOne(id: string) {
-        const event = await this.eventsRepository.findOne({ where: { id } });
+        const event = await this.eventsRepository.findOne({ 
+            where: { id },
+            relations: ['leads']
+        });
         if (!event) throw new NotFoundException('Event not found');
         return event;
     }
 
     async findOneBySlug(slug: string) {
-        const event = await this.eventsRepository.findOne({ where: { slug } });
+        const event = await this.eventsRepository.findOne({ 
+            where: { slug },
+            relations: ['leads']
+        });
         if (!event) throw new NotFoundException('Event not found by slug');
         return event;
     }
@@ -71,7 +77,10 @@ export class EventsService {
         const event = await this.findOne(id);
         const updatedEvent = this.eventsRepository.merge(event, updateEventDto);
         await this.eventsRepository.save(updatedEvent);
-        return { message: 'Event updated successfully', event: updatedEvent };
+        return { 
+            message: 'Event updated successfully', 
+            event: await this.findOne(id) // Cargar con relaciones actualizadas
+        };
     }
 
     async remove(id: string) {

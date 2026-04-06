@@ -53,23 +53,23 @@ export default function LandingPage() {
             <Logo size="md" />
           </div>
 
-          <div className="hidden md:flex items-center gap-12 text-xs font-black uppercase tracking-widest text-zinc-500">
+          <div className="hidden lg:flex items-center gap-8 text-[10px] font-black uppercase tracking-wider text-zinc-400">
             <a href="#como-funciona" className="hover:text-purple-600 transition-colors uppercase">{t.nav.features}</a>
             <a href="#beneficios" className="hover:text-purple-600 transition-colors uppercase">{t.landing.benefits.control}</a>
             <a href="#precios" className="hover:text-purple-600 transition-colors uppercase">{t.nav.pricing}</a>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link href="/login" className="text-xs sm:text-sm font-black uppercase tracking-widest text-zinc-900 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white border-2 border-zinc-100 hover:border-purple-600 hover:text-purple-600 transition-all shadow-lg hover:shadow-purple-600/10 active:scale-95">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/login" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-900 px-5 sm:px-6 py-3 rounded-full bg-white border border-zinc-100 hover:border-purple-600 hover:text-purple-600 transition-all shadow-xl hover:shadow-purple-600/10 active:scale-95 leading-none">
               {t.login.cta}
             </Link>
 
-            <div className="scale-90 sm:scale-100">
+            <div className="scale-90 opacity-80 hover:opacity-100 transition-opacity">
               <LanguageSwitcher />
             </div>
 
-            <Link href="/register" className="hidden lg:block">
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-8 h-12 text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
+            <Link href="/register" className="hidden xl:block">
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-7 h-11 text-[10px] font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
                 {t.hero.cta}
               </Button>
             </Link>

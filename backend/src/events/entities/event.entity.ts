@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Lead } from '../../leads/entities/lead.entity';
 
 @Entity('events')
 export class Event {
@@ -38,6 +39,15 @@ export class Event {
 
     @ManyToOne(() => User)
     user: User;
+
+    @Column({ default: false })
+    collect_leads: boolean;
+
+    @Column({ default: false })
+    leads_required: boolean;
+
+    @OneToMany(() => Lead, (lead) => lead.event)
+    leads: Lead[];
 
     @CreateDateColumn()
     created_at: Date;

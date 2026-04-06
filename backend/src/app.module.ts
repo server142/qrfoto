@@ -12,6 +12,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { AdminModule } from './admin/admin.module';
 import { PromocodesModule } from './promocodes/promocodes.module';
+import { LeadsModule } from './leads/leads.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { PromocodesModule } from './promocodes/promocodes.module';
     ReviewsModule,
     AdminModule,
     PromocodesModule,
+    LeadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

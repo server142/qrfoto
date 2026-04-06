@@ -20,6 +20,9 @@ export class Media {
   @Column({ nullable: true })
   guest_email: string;
 
+  @Column({ nullable: true })
+  guest_phone: string;
+
   @Column({ length: 1024, nullable: true })
   file_url: string;
 

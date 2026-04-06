@@ -21,7 +21,10 @@ import {
   Zap,
   Globe,
   Loader2,
-  Settings
+  Settings,
+  Users,
+  ShieldCheck,
+  UserPlus
 } from "lucide-react";
 import Link from "next/link";
 import { getApiUrl, getAuthHeaders } from "@/lib/api";
@@ -37,6 +40,8 @@ export default function EventSettingsPage() {
   const [name, setName] = useState("");
   const [brandingColor, setBrandingColor] = useState("#8b5cf6");
   const [coverUrl, setCoverUrl] = useState("");
+  const [collectLeads, setCollectLeads] = useState(false);
+  const [leadsRequired, setLeadsRequired] = useState(false);
 
   useEffect(() => {
     fetch(`${getApiUrl()}/events/slug/${slug}`, {
@@ -45,9 +50,11 @@ export default function EventSettingsPage() {
       .then(res => res.json())
       .then(data => {
         setEvent(data);
-        setName(data.name);
+        setName(data.name || "");
         setBrandingColor(data.branding_color || "#8b5cf6");
         setCoverUrl(data.cover_image_url || "");
+        setCollectLeads(data.collect_leads || false);
+        setLeadsRequired(data.leads_required || false);
         setLoading(false);
       });
   }, [slug]);
@@ -61,7 +68,9 @@ export default function EventSettingsPage() {
         body: JSON.stringify({
           name,
           branding_color: brandingColor,
-          cover_image_url: coverUrl
+          cover_image_url: coverUrl,
+          collect_leads: collectLeads,
+          leads_required: leadsRequired
         }),
       });
       if (res.ok) {
@@ -122,15 +131,16 @@ export default function EventSettingsPage() {
               <Settings className="w-32 h-32 text-purple-600 -mr-10 -mt-10" />
             </div>
 
+            {/* Identidad Visual */}
             <div className="space-y-4 relative z-10">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400">
                   <Globe className="w-5 h-5" />
                 </div>
-                <Label className="text-zinc-900 text-lg font-black italic tracking-tight italic">Identidad Visual</Label>
+                <Label className="text-zinc-900 text-lg font-black italic tracking-tight underline decoration-purple-100 underline-offset-8">Identidad Visual</Label>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 pt-4">
                 <Label className="text-zinc-400 text-[10px] uppercase tracking-[0.2em] font-black ml-1">Nombre Público</Label>
                 <Input
                   value={name}
@@ -142,12 +152,69 @@ export default function EventSettingsPage() {
               </div>
             </div>
 
+            {/* MARKETING & LEADS SECTION */}
+            <div className="space-y-6 relative z-10 p-8 bg-zinc-50/50 rounded-[2.5rem] border border-zinc-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-black italic text-zinc-900 tracking-tight">Marketing & Leads</h3>
+                </div>
+                <div 
+                  onClick={() => setCollectLeads(!collectLeads)}
+                  className={`w-14 h-8 rounded-full p-1 cursor-pointer transition-all duration-300 ${collectLeads ? 'bg-indigo-600' : 'bg-zinc-200'}`}
+                >
+                  <div className={`w-6 h-6 bg-white rounded-full shadow-sm transition-all duration-300 transform ${collectLeads ? 'translate-x-6' : 'translate-x-0'}`} />
+                </div>
+              </div>
+
+              <AnimatePresence>
+                {collectLeads && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-6 overflow-hidden pt-4"
+                  >
+                    <div className="p-6 bg-white rounded-3xl border border-zinc-100 shadow-sm space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <p className="text-xs font-black uppercase text-zinc-800 tracking-wider flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-green-500" /> Registro Obligatorio
+                          </p>
+                          <p className="text-[10px] text-zinc-400 font-medium">Los invitados deben registrarse para ver la galería.</p>
+                        </div>
+                        <div 
+                          onClick={() => setLeadsRequired(!leadsRequired)}
+                          className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-all duration-300 ${leadsRequired ? 'bg-green-500' : 'bg-zinc-100 border border-zinc-200'}`}
+                        >
+                          <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300 transform ${leadsRequired ? 'translate-x-6' : 'translate-x-0'}`} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="p-4 bg-white/50 rounded-2xl border border-dashed border-zinc-200 flex flex-col items-center justify-center text-center">
+                          <p className="text-[9px] font-black uppercase text-zinc-400 mb-1">WhatsApp</p>
+                          <div className="w-2 h-2 rounded-full bg-green-400" />
+                       </div>
+                       <div className="p-4 bg-white/50 rounded-2xl border border-dashed border-zinc-200 flex flex-col items-center justify-center text-center">
+                          <p className="text-[9px] font-black uppercase text-zinc-400 mb-1">Email</p>
+                          <div className="w-2 h-2 rounded-full bg-blue-400" />
+                       </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <div className="space-y-6 relative z-10">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
                   <Palette className="w-5 h-5" />
                 </div>
-                <h3 className="text-lg font-black italic text-zinc-900 tracking-tight">Colores del Tema</h3>
+                <h3 className="text-lg font-black italic text-zinc-900 tracking-tight">Personalización de Color</h3>
               </div>
 
               <div className="bg-zinc-50 p-8 rounded-[2.5rem] border border-zinc-100">
@@ -183,11 +250,11 @@ export default function EventSettingsPage() {
                 <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
                   <ImageIcon className="w-5 h-5" />
                 </div>
-                <h3 className="text-lg font-black italic text-zinc-900 tracking-tight">Multimedia</h3>
+                <h3 className="text-lg font-black italic text-zinc-900 tracking-tight">Imagen de Portada</h3>
               </div>
 
               <div className="space-y-4">
-                <Label className="text-zinc-400 text-[10px] uppercase tracking-[0.2em] font-black ml-1">URL de Imagen de Portada</Label>
+                <Label className="text-zinc-400 text-[10px] uppercase tracking-[0.2em] font-black ml-1">URL de la Imagen</Label>
                 <div className="relative group">
                   <Globe className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-300 transition-colors group-focus-within:text-indigo-600" />
                   <Input
@@ -197,13 +264,60 @@ export default function EventSettingsPage() {
                     className="bg-zinc-50 border-zinc-100 text-zinc-900 h-16 rounded-2xl focus:ring-indigo-600/20 font-bold pl-16 pr-6"
                   />
                 </div>
-                <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex items-start gap-3">
-                  <Sparkles className="w-4 h-4 text-indigo-400 mt-1" />
-                  <p className="text-[10px] text-indigo-600 font-bold leading-relaxed italic">
-                    Tip: Usa imágenes horizontales de alta calidad (1920x1080) para un mejor impacto visual en la bienvenida.
-                  </p>
-                </div>
               </div>
+            </div>
+
+            {/* TABLA DE LEADS CAPTURADOS */}
+            <div className="space-y-6 relative z-10 pt-10 border-t border-zinc-100">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-green-50 flex items-center justify-center text-green-600">
+                            <Sparkles className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-lg font-black italic text-zinc-900 tracking-tight">Prospectos Generados (Leads)</h3>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      onClick={async () => {
+                        const res = await fetch(`${getApiUrl()}/leads/event/${slug}`, { headers: getAuthHeaders() as any });
+                        const data = await res.json();
+                        alert(`Total de Leads: ${data.length}\nFunción de Exportación CSV próximamente.`);
+                      }}
+                      className="text-[10px] font-black uppercase tracking-widest h-10 px-6 rounded-xl border-zinc-200"
+                    >
+                        Exportar Todo
+                    </Button>
+                </div>
+
+                <div className="bg-zinc-50 rounded-[2.5rem] border border-zinc-100 overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-white border-b border-zinc-100">
+                                <tr>
+                                    <th className="px-8 py-5 text-[9px] font-black uppercase text-zinc-400">Nombre</th>
+                                    <th className="px-8 py-5 text-[9px] font-black uppercase text-zinc-400">WhatsApp</th>
+                                    <th className="px-8 py-5 text-[9px] font-black uppercase text-zinc-400">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-zinc-100">
+                                {event?.leads?.length > 0 ? event.leads.map((lead: any) => (
+                                    <tr key={lead.id} className="hover:bg-white transition-colors group">
+                                        <td className="px-8 py-5 text-sm font-bold text-zinc-900 italic tracking-tight">{lead.name}</td>
+                                        <td className="px-8 py-5 text-sm font-black text-indigo-600 tracking-widest">{lead.phone || '-'}</td>
+                                        <td className="px-8 py-5 text-[10px] font-bold text-zinc-400 uppercase">{new Date(lead.created_at).toLocaleDateString()}</td>
+                                    </tr>
+                                )) : (
+                                    <tr>
+                                        <td colSpan={3} className="px-8 py-20 text-center">
+                                            <Users className="w-12 h-12 text-zinc-100 mx-auto mb-4" />
+                                            <p className="text-[10px] font-black uppercase text-zinc-300 tracking-[0.2em] italic">Aún no hay prospectos registrados</p>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
           </Card>
         </div>
@@ -214,7 +328,7 @@ export default function EventSettingsPage() {
             <div className="flex items-center justify-between px-4">
               <div className="flex items-center gap-3">
                 <Eye className="w-5 h-5 text-zinc-400" />
-                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-zinc-400 italic">Live Preview</h3>
+                <h3 className="text-sm font-black uppercase tracking-[0.3em] text-zinc-400 italic">Previsualización Live</h3>
               </div>
               <div className="flex bg-zinc-100 p-1 rounded-full border border-zinc-200">
                 <button className="p-2 bg-white rounded-full shadow-sm">
@@ -229,7 +343,7 @@ export default function EventSettingsPage() {
             <motion.div
               animate={{ rotateY: [0, 2, -2, 0] }}
               transition={{ duration: 10, repeat: Infinity }}
-              className="w-full aspect-[9/18.5] max-w-[340px] mx-auto border-[12px] border-zinc-900 rounded-[3.5rem] bg-white overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.15)] relative ring-1 ring-white/20 ring-inset"
+              className="w-full aspect-[9/18.5] max-w-[340px] mx-auto border-[12px] border-zinc-900 rounded-[30px] bg-white overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.15)] relative ring-1 ring-white/20 ring-inset"
             >
               {/* Smartphone Details */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-7 bg-zinc-900 rounded-b-[1.5rem] z-50 flex items-center justify-center">
@@ -247,24 +361,43 @@ export default function EventSettingsPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         src={coverUrl}
                         className="w-full h-full object-cover relative z-10"
+                        alt="Preview"
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center p-8 space-y-4 text-center">
                         <div className="w-12 h-12 rounded-full bg-zinc-200 animate-pulse" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-300">Esperando imagen de portada...</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-300">Esperando imagen...</p>
                       </div>
                     )}
                   </AnimatePresence>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-20" />
                   <div className="absolute bottom-6 left-6 z-30">
-                    <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white font-black italic italic">QR</div>
+                    <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white font-black italic">QR</div>
                   </div>
                 </div>
 
-                <div className="flex-1 p-8 text-center space-y-8 flex flex-col items-center pt-10">
-                  <Link href="/">
-                    <span className="text-[10px] font-black tracking-[0.5em] text-zinc-300 uppercase mb-4 block">Powered by QRFoto</span>
-                  </Link>
+                <div className="flex-1 p-8 text-center space-y-6 flex flex-col items-center pt-8">
+                  {collectLeads && (
+                    <motion.div 
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      className="absolute inset-0 z-40 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-8 text-center"
+                    >
+                      <UserPlus className="w-12 h-12 text-indigo-600 mb-4" />
+                      <h5 className="text-xl font-black italic tracking-tighter mb-2">¡Bienvenido!</h5>
+                      <p className="text-[11px] text-zinc-500 font-bold mb-6 italic leading-relaxed">
+                        Regístrate para recibir tus fotos personalizadas y descubrir momentos increíbles.
+                      </p>
+                      <div className="w-full space-y-3">
+                         <div className="h-10 bg-zinc-50 border border-zinc-100 rounded-xl" />
+                         <div className="h-10 bg-zinc-50 border border-zinc-100 rounded-xl" />
+                         <Button className="w-full h-12 bg-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-xl">Entrar ahora</Button>
+                         {!leadsRequired && <p className="text-[9px] text-zinc-300 uppercase font-black cursor-pointer">Omitir</p>}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <span className="text-[10px] font-black tracking-[0.5em] text-zinc-300 uppercase mb-4 block">Powered by QRFoto</span>
 
                   <div className="space-y-2">
                     <motion.h4
@@ -279,23 +412,22 @@ export default function EventSettingsPage() {
                   <div className="w-full h-px bg-zinc-100" />
 
                   <div className="space-y-6 flex-1 flex flex-col justify-center">
-                    <p className="text-xs text-zinc-500 font-medium leading-relaxed">¡Bienvenido! Comparte aquí tus mejores momentos y descúbrelos en la pantalla principal.</p>
+                    <p className="text-xs text-zinc-500 font-medium leading-relaxed">Comparte tus mejores momentos y descúbrelos en la pantalla principal.</p>
 
                     <motion.div
                       animate={{ backgroundColor: brandingColor, boxShadow: `0 20px 40px ${brandingColor}30` }}
-                      className="w-24 h-24 rounded-[2rem] mx-auto flex items-center justify-center relative group"
+                      className="w-20 h-20 rounded-[2rem] mx-auto flex items-center justify-center relative shadow-xl"
                     >
-                      <Zap className="absolute -top-2 -right-2 text-yellow-400 w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <ImageIcon className="w-10 h-10 text-white" />
+                      <ImageIcon className="w-8 h-8 text-white" />
                     </motion.div>
 
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300">Toca para subir fotos</p>
+                    <p className="text-[9px] font-black uppercase tracking-[0.1em] text-zinc-300">Toca para participar</p>
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            <p className="text-center text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em]">Esta es una aproximación visual de la interfaz del invitado.</p>
+            <p className="text-center text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em]">Preview de la experiencia del invitado</p>
           </div>
         </div>
       </div>

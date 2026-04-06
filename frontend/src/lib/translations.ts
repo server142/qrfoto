@@ -212,7 +212,7 @@ export const translations = {
       benefits: {
         title: "It's not just a gallery,",
         subtitle: "it's the soul of your party.",
-        control: "Total Control",
+        control: "Control",
         control_desc: "Moderate which photos appear on screen in real-time from your own mobile panel.",
         download: "Bulk Download",
         download_desc: "At the end of the event, download all high-resolution photos with one click.",
@@ -248,7 +248,7 @@ export const translations = {
       subtitle: "Descubre por qué cientos de anfitriones confían en nosotros."
     },
     nav: {
-      features: "Funcionalidades",
+      features: "Funciones",
       pricing: "Precios",
       gallery: "Galería en Vivo",
       change_lang: "Cambiar Idioma"
@@ -448,7 +448,7 @@ export const translations = {
       benefits: {
         title: "No es solo una galería,",
         subtitle: "es el alma de tu fiesta.",
-        control: "Control Total",
+        control: "Control",
         control_desc: "Modera qué fotos aparecen en pantalla en tiempo real desde tu propio panel móvil.",
         download: "Descarga Masiva",
         download_desc: "Al terminar el evento, descarga todas las fotos en alta resolución con un solo clic.",
