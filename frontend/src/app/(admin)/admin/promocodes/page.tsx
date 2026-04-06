@@ -152,37 +152,37 @@ export default function AdminPromocodesPage() {
 
             {/* MÈTRICAS (KPIs) */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                 <Card className="bg-white p-6 rounded-[2rem] border-zinc-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                     <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
-                         <Activity className="w-6 h-6" />
-                     </div>
-                     <div>
-                         <p className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Cupones Activos</p>
-                         <h3 className="text-3xl font-black tracking-tighter text-zinc-900 mt-1">{promocodes.length}</h3>
-                     </div>
-                 </Card>
-                 <Card className="bg-white p-6 rounded-[2rem] border-zinc-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                     <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
-                         <TrendingUp className="w-6 h-6" />
-                     </div>
-                     <div>
-                         <p className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Total Ventas (Afiliados)</p>
-                         <h3 className="text-3xl font-black tracking-tighter text-zinc-900 mt-1">
+                <Card className="bg-white p-6 rounded-[2rem] border-zinc-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+                    <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
+                        <Activity className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Cupones Activos</p>
+                        <h3 className="text-3xl font-black tracking-tighter text-zinc-900 mt-1">{promocodes.length}</h3>
+                    </div>
+                </Card>
+                <Card className="bg-white p-6 rounded-[2rem] border-zinc-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+                    <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                        <TrendingUp className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Total Ventas (Afiliados)</p>
+                        <h3 className="text-3xl font-black tracking-tighter text-zinc-900 mt-1">
                             ${commissions.reduce((acc, curr) => acc + Number(curr.amount_paid), 0).toLocaleString('en-US')}
-                         </h3>
-                     </div>
-                 </Card>
-                 <Card className="bg-white p-6 rounded-[2rem] border-zinc-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                     <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center">
-                         <HandCoins className="w-6 h-6" />
-                     </div>
-                     <div>
-                         <p className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Deuda Comisiones (Por Pagar)</p>
-                         <h3 className="text-3xl font-black tracking-tighter text-amber-500 mt-1">
+                        </h3>
+                    </div>
+                </Card>
+                <Card className="bg-white p-6 rounded-[2rem] border-zinc-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+                    <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center">
+                        <HandCoins className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Deuda Comisiones (Por Pagar)</p>
+                        <h3 className="text-3xl font-black tracking-tighter text-amber-500 mt-1">
                             ${commissions.filter(c => c.status === 'pending').reduce((acc, curr) => acc + Number(curr.commission_earned), 0).toLocaleString('en-US')}
-                         </h3>
-                     </div>
-                 </Card>
+                        </h3>
+                    </div>
+                </Card>
             </div>
 
             {/* TAB: CÓDIGOS */}
@@ -203,7 +203,7 @@ export default function AdminPromocodesPage() {
                                         <Trash2 className="w-4 h-4" />
                                     </button>
                                 </div>
-                                
+
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
                                         <Ticket className="w-5 h-5" />
@@ -218,7 +218,7 @@ export default function AdminPromocodesPage() {
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="space-y-3 pt-4 border-t border-zinc-50 border-dashed">
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-zinc-400 uppercase text-[10px] tracking-widest font-bold">Promotor:</span>
@@ -292,13 +292,13 @@ export default function AdminPromocodesPage() {
                                             </td>
                                             <td className="p-6">
                                                 {c.status === 'pending' ? (
-                                                     <span className="text-amber-600 font-black text-[10px] uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full flex items-center gap-1 w-max">
-                                                         <AlertCircle className="w-3 h-3" /> Por Pagar
-                                                     </span>
+                                                    <span className="text-amber-600 font-black text-[10px] uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full flex items-center gap-1 w-max">
+                                                        <AlertCircle className="w-3 h-3" /> Por Pagar
+                                                    </span>
                                                 ) : (
                                                     <span className="text-emerald-600 font-black text-[10px] uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full flex items-center gap-1 w-max">
-                                                         <CheckCircle2 className="w-3 h-3" /> Pagado
-                                                     </span>
+                                                        <CheckCircle2 className="w-3 h-3" /> Pagado
+                                                    </span>
                                                 )}
                                             </td>
                                         </tr>
@@ -337,36 +337,36 @@ export default function AdminPromocodesPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="col-span-2">
                                         <label className="text-[10px] tracking-widest uppercase font-black text-zinc-400 mb-2 block">Nombre del Creador/Promotor</label>
-                                        <input required type="text" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm outline-none focus:border-purple-500 transition-colors" value={form.promoter_name} onChange={e => setForm({ ...form, promoter_name: e.target.value })} placeholder="Ej. Juan Pérez" />
+                                        <input required type="text" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm text-zinc-900 outline-none focus:border-purple-500 transition-colors" value={form.promoter_name} onChange={e => setForm({ ...form, promoter_name: e.target.value })} placeholder="Ej. Juan Pérez" />
                                     </div>
                                     <div className="col-span-2 flex items-end gap-3">
                                         <div className="flex-1">
                                             <label className="text-[10px] tracking-widest uppercase font-black text-zinc-400 mb-2 block">Código Alfanumérico</label>
-                                            <input required type="text" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-black tracking-widest uppercase text-sm outline-none focus:border-purple-500 transition-colors" value={form.code} onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })} placeholder="XJ9K12" maxLength={8} />
+                                            <input required type="text" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-black tracking-widest uppercase text-sm text-zinc-900 outline-none focus:border-purple-500 transition-colors" value={form.code} onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })} placeholder="XJ9K12" maxLength={8} />
                                         </div>
                                         <Button type="button" variant="outline" onClick={generateRandomCode} className="h-12 border-zinc-200">Generar</Button>
                                     </div>
                                     <div>
                                         <label className="text-[10px] tracking-widest uppercase font-black text-zinc-400 mb-2 block">% Descuento al Cliente</label>
-                                        <input required type="number" min="0" max="100" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm outline-none focus:border-purple-500 transition-colors" value={form.discount_percentage} onChange={e => setForm({ ...form, discount_percentage: parseInt(e.target.value) || 0 })} />
+                                        <input required type="number" min="0" max="100" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm text-zinc-900 outline-none focus:border-purple-500 transition-colors" value={form.discount_percentage} onChange={e => setForm({ ...form, discount_percentage: parseInt(e.target.value) || 0 })} />
                                     </div>
                                     <div>
                                         <label className="text-[10px] tracking-widest uppercase font-black text-zinc-400 mb-2 block">Límite de usos (0 = Ilimitado)</label>
-                                        <input required type="number" min="0" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm outline-none focus:border-purple-500 transition-colors" value={form.max_uses} onChange={e => setForm({ ...form, max_uses: parseInt(e.target.value) || 0 })} />
+                                        <input required type="number" min="0" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm text-zinc-900 outline-none focus:border-purple-500 transition-colors" value={form.max_uses} onChange={e => setForm({ ...form, max_uses: parseInt(e.target.value) || 0 })} />
                                     </div>
                                     <div className="col-span-2 mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-zinc-500 text-xs">
                                         <p className="font-bold uppercase tracking-widest text-[10px] ml-1">Modalidad de Comisión para el Promotor</p>
                                     </div>
                                     <div>
                                         <label className="text-[10px] tracking-widest uppercase font-black text-zinc-400 mb-2 block">Tipo de Comisión</label>
-                                        <select className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm outline-none focus:border-purple-500 transition-colors" value={form.commission_type} onChange={e => setForm({ ...form, commission_type: e.target.value })}>
+                                        <select className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm text-zinc-900 outline-none focus:border-purple-500 transition-colors" value={form.commission_type} onChange={e => setForm({ ...form, commission_type: e.target.value })}>
                                             <option value="fixed">Fijo (Pesos/Dolares)</option>
                                             <option value="percentage">Porcentaje (%)</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label className="text-[10px] tracking-widest uppercase font-black text-zinc-400 mb-2 block">Valor a pagarle</label>
-                                        <input required type="number" min="0" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm outline-none focus:border-purple-500 transition-colors" value={form.commission_value} onChange={e => setForm({ ...form, commission_value: parseInt(e.target.value) || 0 })} />
+                                        <input required type="number" min="0" className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 font-bold text-sm text-zinc-900 outline-none focus:border-purple-500 transition-colors" value={form.commission_value} onChange={e => setForm({ ...form, commission_value: parseInt(e.target.value) || 0 })} />
                                     </div>
                                 </div>
 
