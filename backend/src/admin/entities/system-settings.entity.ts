@@ -17,6 +17,12 @@ export class SystemSettings {
     @Column({ default: 'MXN' })
     defaultCurrency: string;
 
+    @Column('decimal', { precision: 10, scale: 2, default: 49.00 })
+    extraStoragePrice: number;
+
+    @Column({ default: 'GB' })
+    extraStorageUnit: string;
+
     @Column({ type: 'json', nullable: true })
     paymentMethods: {
         stripe: { enabled: boolean; config: any };

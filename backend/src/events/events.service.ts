@@ -89,16 +89,25 @@ export class EventsService {
         const eventIds = events.map(e => e.id);
 
         let totalPhotos = 0;
+        let totalStorageBytes = 0;
         if (eventIds.length > 0) {
             totalPhotos = await this.eventsRepository.manager.count(Media, {
                 where: { event_id: In(eventIds) }
             });
+
+            const storageRes = await this.eventsRepository.manager
+                .createQueryBuilder(Media, 'm')
+                .select('SUM(m.size_bytes)', 'total')
+                .where('m.event_id IN (:...ids)', { ids: eventIds })
+                .getRawOne();
+            totalStorageBytes = parseInt(storageRes.total) || 0;
         }
 
         return {
             totalEvents: events.length,
             totalPhotos: totalPhotos,
-            interactions: totalPhotos * 3, // Mock de interacciones (clicks + visualizaciones)
+            totalStorageMb: Math.round(totalStorageBytes / (1024 * 1024) * 100) / 100,
+            interactions: totalPhotos * 3, // Mock
         };
     }
 }

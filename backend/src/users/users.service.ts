@@ -42,7 +42,17 @@ export class UsersService {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password_hash, ...safeUser } = user;
-    return { ...safeUser, activePlan: sub ? sub.plan : null };
+
+    // Obtener uso actual
+    const usage = await this.eventsService.getDashboardStats(userId);
+
+    const limits = {
+      maxEvents: sub?.plan?.max_events || 0,
+      storageLimitMb: (sub?.plan?.storage_limit_mb || 0) + (user.extra_storage_mb || 0),
+      extraStorageMb: user.extra_storage_mb || 0
+    };
+
+    return { ...safeUser, activePlan: sub ? sub.plan : null, usage, limits };
   }
 
   async findAll(): Promise<User[]> {

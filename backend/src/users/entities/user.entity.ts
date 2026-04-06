@@ -56,6 +56,9 @@ export class User {
   @CreateDateColumn()
   created_at: Date;
 
+  @Column({ type: 'int', default: 0 })
+  extra_storage_mb: number;
+
   @UpdateDateColumn()
   updated_at: Date;
 }

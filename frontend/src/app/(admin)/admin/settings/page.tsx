@@ -160,6 +160,35 @@ export default function AdminSettingsPage() {
                     </div>
                 </Card>
 
+                {/* RESOURCE PRICING */}
+                <Card className="bg-zinc-950/50 border-white/10 p-8 rounded-[2.5rem] shadow-2xl">
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
+                            <DollarSign className="w-6 h-6 text-orange-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-black uppercase italic tracking-tighter text-white">Precios de Recursos</h3>
+                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Almacenamiento adicional</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-2 italic text-orange-400/60">Precio por {settings.extraStorageUnit || 'GB'} Extra ({settings.defaultCurrency})</label>
+                            <div className="relative">
+                                <DollarSign className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                                <Input
+                                    type="number"
+                                    value={settings.extraStoragePrice || 0}
+                                    onChange={(e) => setSettings({ ...settings, extraStoragePrice: parseFloat(e.target.value) })}
+                                    className="bg-black border-white/5 h-14 rounded-2xl italic pl-12 pr-5 text-lg font-black"
+                                />
+                            </div>
+                            <p className="text-[9px] text-white/20 ml-2 uppercase italic tracking-widest leading-relaxed">Este precio se aplicará automáticamente al ofrecer paquetes de expansión a los usuarios que lleguen a su límite.</p>
+                        </div>
+                    </div>
+                </Card>
+
                 {/* PAYMENT METHODS */}
                 <Card className="bg-zinc-950/50 border-white/10 p-8 rounded-[2.5rem] lg:col-span-2 shadow-2xl">
                     <div className="flex items-center gap-4 mb-10 border-b border-white/5 pb-8">

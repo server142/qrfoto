@@ -44,11 +44,13 @@ export class MediaController {
     if (!event) throw new BadRequestException('Event invalid');
     if (event.status === 'Finished') throw new BadRequestException('This event has already ended.');
 
-    // Validación de ALMACENAMIENTO (Guardia de Almacenamiento)
+    // Validación de ALMACENAMIENTO (Guardia de Almacenamiento Inteligente)
     if (event.userId && file) {
       const userData = await this.usersService.getMe(event.userId);
-      if (userData && userData.activePlan) {
-        const plan = userData.activePlan;
+      if (userData) {
+        const planLimit = userData.activePlan?.storage_limit_mb || 0;
+        const extraLimit = userData.extra_storage_mb || 0;
+        const totalLimitMb = planLimit + extraLimit;
 
         // Calcular uso actual del usuario (todos sus eventos)
         const userEvents = await this.eventsService.findAll(event.userId);
@@ -60,8 +62,8 @@ export class MediaController {
 
         const usageMb = storageUsage / (1024 * 1024);
 
-        if (usageMb >= plan.storage_limit_mb) {
-          throw new BadRequestException(`Storage limit reached (${plan.storage_limit_mb}MB). Please upgrade your plan.`);
+        if (usageMb >= totalLimitMb) {
+          throw new BadRequestException(`Límite de almacenamiento alcanzado (${totalLimitMb}MB). Libera espacio o amplía tu capacidad para continuar.`);
         }
       }
     }
