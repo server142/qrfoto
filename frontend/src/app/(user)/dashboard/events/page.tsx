@@ -422,7 +422,13 @@ export default function EventsPage() {
 
                       <Link href={`/event/${event.slug}/card`} target="_blank">
                         <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all shadow-sm">
-                          <Printer className="w-4 h-4 mr-2" /> {t.events.print}
+                          <Printer className="w-4 h-4 mr-2" /> QR (Imprimir)
+                        </Button>
+                      </Link>
+
+                      <Link href={`/event/${event.slug}/card?download=true`} target="_blank">
+                        <Button className="w-full bg-purple-50 border border-purple-100 text-purple-600 hover:bg-purple-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all shadow-sm">
+                          <Download className="w-4 h-4 mr-2" /> Bajar Tarjeta QR
                         </Button>
                       </Link>
 

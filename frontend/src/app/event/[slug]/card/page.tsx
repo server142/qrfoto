@@ -27,6 +27,15 @@ export default function EventCardPage() {
                 const data = await res.json();
                 setEvent(data);
                 setLoading(false);
+
+                // AUTO DOWNLOAD IF IN URL
+                const searchParams = new URLSearchParams(window.location.search);
+                if (searchParams.get('download') === 'true') {
+                    // Esperar un momento a que renderice el QR
+                    setTimeout(() => {
+                        handleExportPDF();
+                    }, 1500);
+                }
             } catch (err) {
                 console.error("Error fetching event:", err);
             }
