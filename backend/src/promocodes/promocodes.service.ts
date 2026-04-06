@@ -12,7 +12,7 @@ export class PromocodesService {
     private readonly promocodeRepo: Repository<Promocode>,
     @InjectRepository(CommissionTracking)
     private readonly commissionRepo: Repository<CommissionTracking>,
-  ) {}
+  ) { }
 
   async create(createDto: CreatePromocodeDto): Promise<Promocode> {
     const existing = await this.promocodeRepo.findOne({ where: { code: createDto.code } });
@@ -29,7 +29,7 @@ export class PromocodesService {
 
   async validateCode(code: string): Promise<Promocode> {
     const promocode = await this.promocodeRepo.findOne({ where: { code } });
-    
+
     if (!promocode) {
       throw new NotFoundException('Código no encontrado');
     }
@@ -55,10 +55,10 @@ export class PromocodesService {
 
   // Se llamará desde el sistema de pagos cuando se apruebe una transacción
   async recordUsage(
-    codeId: string, 
-    userId: string, 
-    planName: string, 
-    originalPrice: number, 
+    codeId: string,
+    userId: string,
+    planName: string,
+    originalPrice: number,
     amountPaid: number
   ) {
     const promocode = await this.promocodeRepo.findOne({ where: { id: codeId } });
@@ -90,9 +90,17 @@ export class PromocodesService {
   }
 
   async getCommissions(): Promise<CommissionTracking[]> {
-    return this.commissionRepo.find({ 
+    const list = await this.commissionRepo.find({
       relations: ['promocode'],
       order: { created_at: 'DESC' }
+    });
+
+    // Romper la referencia circular para evitar fallos de serialización JSON -> 502/CORS crash
+    return list.map(item => {
+      if (item.promocode) {
+        delete (item.promocode as any).commissions;
+      }
+      return item;
     });
   }
 }
