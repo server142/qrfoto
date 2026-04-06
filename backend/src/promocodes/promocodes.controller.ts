@@ -6,7 +6,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 
-@Controller('api/promocodes')
+@Controller('promocodes')
 export class PromocodesController {
   constructor(private readonly promocodesService: PromocodesService) { }
 

@@ -95,12 +95,17 @@ export class PromocodesService {
       order: { created_at: 'DESC' }
     });
 
-    // Romper la referencia circular para evitar fallos de serialización JSON -> 502/CORS crash
+    // Romper la referencia circular y aplanar los datos para máxima seguridad
     return list.map(item => {
-      if (item.promocode) {
-        delete (item.promocode as any).commissions;
+      const plain = { ...item };
+      if (plain.promocode) {
+        // Solo conservamos lo necesario para la tabla, eliminando loops
+        plain.promocode = {
+          code: item.promocode.code,
+          promoter_name: item.promocode.promoter_name
+        } as any;
       }
-      return item;
+      return plain;
     });
   }
 }
