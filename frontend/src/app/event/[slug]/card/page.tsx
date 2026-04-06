@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Printer, Download } from "lucide-react";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
 import { Sacramento, Inter } from "next/font/google";
 
@@ -17,6 +17,7 @@ export default function EventCardPage() {
     const { slug } = useParams();
     const [event, setEvent] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [exporting, setExporting] = useState(false);
     const [frontendUrl, setFrontendUrl] = useState<string>("");
 
     useEffect(() => {
@@ -57,10 +58,41 @@ export default function EventCardPage() {
         </div>
     );
 
+    const handleExportPDF = async () => {
+        setExporting(true);
+        try {
+            // Importaciones dinámicas para no romper SSR rendering
+            const html2canvas = (await import('html2canvas')).default;
+            const { jsPDF } = await import('jspdf');
+
+            const element = document.getElementById('pdf-card');
+            if (!element) return;
+
+            // Escala para calidad de impresión
+            const canvas = await html2canvas(element, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+            const imgData = canvas.toDataURL('image/png');
+            
+            // Layout de 8.5 x 11 pulgadas
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'in',
+                format: 'letter'
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, 8.5, 11);
+            pdf.save(`${event.name}-QR.pdf`);
+        } catch (error) {
+            console.error("Error generating PDF", error);
+            alert("No se pudo exportar el PDF. Intenta imprimirlo usando el botón Imprimir y eligiendo el destino 'Guardar como PDF'.");
+        } finally {
+            setExporting(false);
+        }
+    };
+
     return (
-        <div className={`min-h-screen bg-white text-black p-0 m-0 ${inter.className}`}>
+        <div className={`min-h-screen bg-zinc-100 text-black p-0 m-0 ${inter.className} pb-32 print:pb-0 print:bg-white`}>
             {/* Container with Letter Aspect Ratio (8.5x11) */}
-            <div className="w-[8.5in] h-[11in] mx-auto bg-white border border-gray-100 shadow-2xl overflow-hidden flex flex-col items-center justify-between py-16 px-16 print:shadow-none print:border-none print:m-0">
+            <div id="pdf-card" className="w-[8.5in] h-[11in] mx-auto bg-white shadow-2xl overflow-hidden flex flex-col items-center justify-between py-16 px-16 print:shadow-none print:max-w-none print:w-full print:border-none print:m-0 mt-8">
 
                 {/* Decorative Header */}
                 <div className="text-center w-full">
@@ -114,13 +146,21 @@ export default function EventCardPage() {
             </div>
 
             {/* Floating Action Button for Print (Hidden in Print) */}
-            <div className="fixed bottom-12 left-1/2 -translate-x-1/2 print:hidden z-50">
+            <div className="fixed bottom-12 left-1/2 -translate-x-1/2 print:hidden z-[100] flex gap-4">
                 <button
                     onClick={() => window.print()}
-                    className="bg-black hover:bg-zinc-900 text-white font-black uppercase tracking-widest px-12 py-6 rounded-2xl shadow-2xl transition-all active:scale-95 flex items-center gap-4 border border-white/10"
+                    disabled={exporting}
+                    className="bg-zinc-800 hover:bg-zinc-900 text-white font-black uppercase tracking-widest px-8 py-5 rounded-2xl shadow-2xl transition-all active:scale-95 flex items-center gap-3 border border-white/10"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9V2h12v7" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></svg>
-                    {t.card.print_btn}
+                    <Printer className="w-5 h-5" /> {t.card.print_btn}
+                </button>
+                <button
+                    onClick={handleExportPDF}
+                    disabled={exporting}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-black uppercase tracking-widest px-8 py-5 rounded-2xl shadow-2xl transition-all active:scale-95 flex items-center gap-3 border border-purple-400/50 min-w-48 justify-center"
+                >
+                    {exporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                    {exporting ? "Generando..." : "Bajar PDF"}
                 </button>
             </div>
 
