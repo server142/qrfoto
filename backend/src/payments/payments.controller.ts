@@ -9,6 +9,7 @@ import { StripeService } from './stripe.service';
 import { PaymentRequest, PaymentRequestStatus, PaymentMethod } from './entities/payment-request.entity';
 import { UploadsService } from '../media/uploads.service';
 import { SystemSettings } from '../admin/entities/system-settings.entity';
+import { PromocodesService } from '../promocodes/promocodes.service';
 
 @Controller('api/payments')
 export class PaymentsController {
@@ -19,6 +20,7 @@ export class PaymentsController {
     @InjectRepository(Subscription) private subRepo: Repository<Subscription>,
     @InjectRepository(PaymentRequest) private paymentRequestRepo: Repository<PaymentRequest>,
     @InjectRepository(SystemSettings) private settingsRepo: Repository<SystemSettings>,
+    private readonly promocodesService: PromocodesService,
   ) { }
 
   // ─────────────────────────────────────────────
@@ -26,7 +28,7 @@ export class PaymentsController {
   // ─────────────────────────────────────────────
   @Post('checkout')
   @UseGuards(JwtAuthGuard)
-  async checkout(@Body() body: { planId: string, currency?: string }, @Request() req: any) {
+  async checkout(@Body() body: { planId: string, currency?: string, promocode?: string }, @Request() req: any) {
     const userId = req.user.userId;
     const plan = await this.planRepo.findOne({ where: { id: body.planId } });
     if (!plan) throw new HttpException('Plan not found', HttpStatus.NOT_FOUND);
@@ -51,10 +53,22 @@ export class PaymentsController {
       return { mode: 'manual', plan: { id: plan.id, name: plan.name, price: plan.price, currency: plan.currency } };
     }
 
+    let currentPrice = plan.price;
+    let promoData = null;
+
+    if (body.promocode) {
+        try {
+            promoData = await this.promocodesService.validateCode(body.promocode);
+            if (currentPrice > 0) {
+                 currentPrice = currentPrice - (currentPrice * (promoData.discount_percentage / 100));
+            }
+        } catch { /* if invalid ignore or throw error */ }
+    }
+
     try {
       const currency = plan.currency?.toLowerCase() || 'mxn';
       const session = await this.stripeService.createCheckoutSession(
-        plan.id, userId, Math.round(plan.price * 100), plan.name, currency
+        plan.id, userId, Math.round(currentPrice * 100), plan.name, currency, promoData?.id, plan.price
       );
       return { url: session.url };
     } catch (err) {
@@ -70,7 +84,7 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('proof'))
   async createManualRequest(
-    @Body() body: { planId: string; method: string },
+    @Body() body: { planId: string; method: string; promocode?: string },
     @Request() req: any,
     @UploadedFile() file?: Express.Multer.File
   ) {
@@ -95,11 +109,24 @@ export class PaymentsController {
       proof_url = this.uploadsService.getPublicUrl(proof_file_key);
     }
 
+    let currentPrice = plan.price;
+    let promoData = null;
+    if (body.promocode) {
+        try {
+            promoData = await this.promocodesService.validateCode(body.promocode);
+            if (currentPrice > 0) {
+                 currentPrice = currentPrice - (currentPrice * (promoData.discount_percentage / 100));
+            }
+        } catch { }
+    }
+
     const paymentRequest = this.paymentRequestRepo.create({
       user_id: userId,
       plan_id: plan.id,
       method: body.method as PaymentMethod,
-      amount: plan.price,
+      amount: currentPrice,
+      original_price: plan.price,
+      promocode_id: promoData ? promoData.id : null,
       reference,
       status: PaymentRequestStatus.PENDING,
       proof_file_key,
@@ -163,6 +190,20 @@ export class PaymentsController {
     pr.status = PaymentRequestStatus.APPROVED;
     pr.admin_notes = body.notes || 'Pago verificado y aprobado.';
     await this.paymentRequestRepo.save(pr);
+
+    // Record commission usage if it has promocode
+    if (pr.promocode_id) {
+        const _plan = await this.planRepo.findOne({ where: { id: pr.plan_id } });
+        if (_plan) {
+            await this.promocodesService.recordUsage(
+                pr.promocode_id, 
+                pr.user_id, 
+                _plan.name, 
+                pr.original_price || _plan.price, 
+                pr.amount
+            );
+        }
+    }
 
     return { message: 'Suscripción activada correctamente.' };
   }

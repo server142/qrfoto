@@ -12,7 +12,7 @@ export class StripeService {
     });
   }
 
-  async createCheckoutSession(planId: string, userId: string, priceInCents: number, planName: string, currency: string = 'mxn') {
+  async createCheckoutSession(planId: string, userId: string, priceInCents: number, planName: string, currency: string = 'mxn', promocodeId?: string, originalPrice?: number) {
     return await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -33,6 +33,8 @@ export class StripeService {
       metadata: {
         planId,
         userId,
+        ...(promocodeId && { promocodeId }),
+        ...(originalPrice !== undefined && { originalPrice: originalPrice.toString() })
       },
     });
   }

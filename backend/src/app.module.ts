@@ -11,6 +11,7 @@ import { MediaModule } from './media/media.module';
 import { PaymentsModule } from './payments/payments.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { AdminModule } from './admin/admin.module';
+import { PromocodesModule } from './promocodes/promocodes.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AdminModule } from './admin/admin.module';
     PaymentsModule,
     ReviewsModule,
     AdminModule,
+    PromocodesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

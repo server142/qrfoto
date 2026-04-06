@@ -21,6 +21,10 @@ export function PricingTable({
     const [purchasing, setPurchasing] = useState<string | null>(null);
     const [activePlanId, setActivePlanId] = useState<string | null>(null);
     const [manualPlan, setManualPlan] = useState<any>(null);
+    const [promoCode, setPromoCode] = useState("");
+    const [promoData, setPromoData] = useState<any>(null);
+    const [promoLoading, setPromoLoading] = useState(false);
+    const [promoError, setPromoError] = useState("");
     const router = useRouter();
 
     useEffect(() => {
@@ -63,13 +67,18 @@ export function PricingTable({
         }
 
         try {
+            const bodyData: any = { planId, userId: "", currency: language === 'en' ? 'usd' : 'mxn' };
+            if (promoData) {
+                bodyData.promocode = promoData.code;
+            }
+
             const res = await fetch(`${getApiUrl()}/payments/checkout`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({ planId, userId: "", currency: language === 'en' ? 'usd' : 'mxn' }),
+                body: JSON.stringify(bodyData),
             });
             const data = await res.json();
             if (data.url) {
@@ -93,11 +102,64 @@ export function PricingTable({
         </div>
     );
 
+    const handleValidatePromo = async () => {
+        if (!promoCode.trim()) return;
+        setPromoLoading(true);
+        setPromoError("");
+        try {
+            const res = await fetch(`${getApiUrl()}/promocodes/validate/${promoCode.trim()}`);
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.message || "Código inválido");
+            }
+            const data = await res.json();
+            setPromoData(data);
+        } catch(err: any) {
+            setPromoError(err.message || "Código no válido");
+            setPromoData(null);
+        } finally {
+            setPromoLoading(false);
+        }
+    };
+
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 max-w-7xl mx-auto px-4 pb-20">
-            {plans.map((plan: any, i) => {
+        <div className="max-w-7xl mx-auto px-4 pb-20">
+            {/* PROMO CODE SECTION */}
+            <div className="flex flex-col items-center justify-center mb-16">
+                <div className="bg-white border border-zinc-200 p-2 rounded-full w-full max-w-sm flex shadow-sm focus-within:ring-2 focus-within:ring-purple-500 focus-within:border-purple-500 transition-all">
+                    <input 
+                        type="text" 
+                        placeholder={language === 'en' ? "PROMO CODE" : "CÓDIGO PROMOCIONAL"} 
+                        className="flex-1 bg-transparent px-4 py-2 outline-none uppercase font-black tracking-widest text-sm text-zinc-800 placeholder:text-zinc-300"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                        onKeyDown={(e) => e.key === 'Enter' && handleValidatePromo()}
+                        disabled={promoData !== null}
+                    />
+                    {promoData ? (
+                        <Button onClick={() => { setPromoData(null); setPromoCode(""); }} variant="outline" className="rounded-full text-red-500 border-red-200 bg-red-50 px-6 font-black uppercase text-xs">
+                            QUITAR
+                        </Button>
+                    ) : (
+                        <Button onClick={handleValidatePromo} disabled={promoLoading || !promoCode} className="rounded-full bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 px-6 font-black uppercase text-xs text-white">
+                            {promoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : language === 'en' ? "APPLY" : "APLICAR"}
+                        </Button>
+                    )}
+                </div>
+                {promoError && <p className="text-red-500 text-xs font-bold tracking-widest uppercase mt-3">{promoError}</p>}
+                {promoData && <p className="text-green-600 text-xs font-bold tracking-widest uppercase mt-3 flex items-center gap-1"><Check className="w-3 h-3" /> ¡DESCUENTO DE {promoData.discount_percentage}% APLICADO!</p>}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                {plans.map((plan: any, i) => {
                 const exchangeRate = language === 'en' ? 20 : 1;
-                const displayPrice = parseInt(plan.price) === 0 ? 0 : Math.round(plan.price / exchangeRate);
+                let displayPrice = parseInt(plan.price) === 0 ? 0 : Math.round(plan.price / exchangeRate);
+                let originalDisplayPrice = displayPrice;
+                
+                if (promoData && displayPrice > 0) {
+                    displayPrice = Math.round(displayPrice - (displayPrice * (promoData.discount_percentage / 100)));
+                }
+
                 const currency = language === 'en' ? 'USD' : 'MXN';
                 const symbol = '$';
 
@@ -156,6 +218,9 @@ export function PricingTable({
                             <div className="mb-10 text-left">
                                 <h3 className="text-xl font-black tracking-tighter text-zinc-300 mb-2 italic uppercase">{plan.name}</h3>
                                 <div className="flex items-baseline gap-2 flex-wrap">
+                                    {promoData && originalDisplayPrice > 0 && (
+                                        <span className="text-2xl font-black text-zinc-300 tracking-tighter line-through">{symbol}{originalDisplayPrice}</span>
+                                    )}
                                     <span className="text-5xl sm:text-6xl font-black text-zinc-900 tracking-tighter leading-none">{symbol}{displayPrice}</span>
                                     <span className="text-zinc-400 uppercase text-[10px] font-black tracking-widest">{currency} / {language === 'en' ? 'mo' : 'mes'}</span>
                                 </div>
@@ -205,9 +270,11 @@ export function PricingTable({
             {manualPlan && (
                 <ManualPaymentModal
                     plan={manualPlan}
+                    promoData={promoData}
                     onClose={() => setManualPlan(null)}
                 />
             )}
+            </div>
         </div>
     );
 }

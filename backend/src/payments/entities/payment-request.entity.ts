@@ -45,6 +45,12 @@ export class PaymentRequest {
     @Column({ nullable: true })
     admin_notes: string;
 
+    @Column({ nullable: true })
+    promocode_id: string;
+
+    @Column('decimal', { precision: 10, scale: 2, nullable: true })
+    original_price: number;
+
     @ManyToOne(() => User, { nullable: true, eager: false })
     @JoinColumn({ name: 'user_id' })
     user: User;

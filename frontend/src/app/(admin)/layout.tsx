@@ -2,7 +2,7 @@
 
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
-import { Home, Users, CreditCard, Settings, Calendar, LogOut, BarChart3, Star, Menu, X, ArrowRight, Receipt } from "lucide-react";
+import { Home, Users, CreditCard, Settings, Calendar, LogOut, BarChart3, Star, Menu, X, ArrowRight, Receipt, Ticket } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "@/lib/LanguageContext";
 import { getApiUrl } from "@/lib/api";
@@ -19,6 +19,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     { label: t.admin.users, icon: Users, href: "/admin/users" },
     { label: t.admin.reviews_title || "Reviews", icon: Star, href: "/admin/reviews" },
     { label: "Solicitudes de Pago", icon: Receipt, href: "/admin/payments" },
+    { label: "Promotores & Cupones", icon: Ticket, href: "/admin/promocodes" },
     { label: t.admin.user_dashboard || "User Dashboard", icon: Calendar, href: "/dashboard", variant: "user" },
   ];
 
