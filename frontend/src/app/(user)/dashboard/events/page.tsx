@@ -31,7 +31,6 @@ import {
   Share2,
   FileText,
   ChevronRight,
-  MoreVertical,
   Activity,
   Box
 } from "lucide-react";
@@ -205,7 +204,11 @@ export default function EventsPage() {
     setExporting(event.id);
     try {
       const { jsPDF } = await import("jspdf");
-      await import("jspdf-autotable");
+      const autoTable = (await import("jspdf-autotable")).default;
+
+      if (!autoTable) {
+        throw new Error("No se pudo cargar el motor de tablas PDF");
+      }
 
       const res = await fetch(`${getApiUrl()}/media/${event.slug}`);
       const media = res.ok ? await res.json() : [];
@@ -245,7 +248,7 @@ export default function EventsPage() {
         new Date(m.created_at).toLocaleString()
       ]);
 
-      (doc as any).autoTable({
+      (autoTable as any)(doc, {
         head: [tableColumn],
         body: tableRows,
         startY: 60,
@@ -263,7 +266,7 @@ export default function EventsPage() {
       doc.save(`${event.slug}-reporte-qrfoto.pdf`);
     } catch (err) {
       console.error("Export error:", err);
-      alert("Error al generar PDF.");
+      alert("Error al generar PDF. Verifique que el servidor esté activo.");
     } finally {
       setExporting(null);
     }
@@ -346,7 +349,7 @@ export default function EventsPage() {
             <p className="text-zinc-400 uppercase text-xs font-black tracking-[0.3em]">{t.events.syncing}</p>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-8 w-full">
             {events.length === 0 ? (
               <div className="col-span-full py-40 text-center border-4 border-dashed border-zinc-100 rounded-[3rem] bg-white shadow-xl shadow-zinc-100/50">
                 <Calendar className="w-24 h-24 text-zinc-100 mx-auto mb-8" />
@@ -394,76 +397,86 @@ export default function EventsPage() {
                           <span className="text-sm font-black text-purple-600 bg-purple-50 px-4 py-2 rounded-full border border-purple-100">/{event.slug}</span>
                         </div>
                       </div>
-                      <Button
-                        onClick={() => window.location.href = `${getApiUrl()}/media/${event.slug}/download`}
-                        className="w-full h-14 bg-white border border-dashed border-purple-200 text-purple-600 hover:bg-purple-50 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2 group/zip transition-all hover:scale-[1.02] mt-4"
-                      >
-                        <Download className="w-4 h-4 transition-transform group-hover/zip:-translate-y-1" />
-                        {t.events.bulk_download_btn}
-                      </Button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 relative z-10">
-                      <Link href={`/event/${event.slug}/slideshow`} target="_blank" className="col-span-2">
+                    <div className="space-y-4 relative z-10">
+                      {/* ACCIONES DE ALTO IMPACTO */}
+                      <Link href={`/event/${event.slug}/slideshow`} target="_blank">
                         <Button
                           disabled={event.status !== 'Active'}
-                          className="w-full h-16 bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-zinc-200 transition-all hover:scale-[1.02]"
+                          className="w-full h-16 bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-30 rounded-2xl font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-zinc-300/40 transition-all hover:scale-[1.02]"
                         >
                           <Activity className="w-4 h-4" /> {t.events.presentation}
                         </Button>
                       </Link>
 
-                      <Button
-                        onClick={() => handleShare(event)}
-                        className="bg-purple-600 text-white hover:bg-purple-700 rounded-2xl font-black uppercase tracking-widest text-[10px] h-16 gap-2 transition-all shadow-lg shadow-purple-600/10"
-                      >
-                        <Share2 className="w-4 h-4" /> {t.events.share}
-                      </Button>
-
-                      <Link href={`/event/${event.slug}/card`} target="_blank">
-                        <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all shadow-sm">
-                          <Printer className="w-4 h-4 mr-2" /> QR (Imprimir)
+                      <div className="grid grid-cols-2 gap-3">
+                        <Button
+                          onClick={() => handleShare(event)}
+                          className="bg-purple-600 text-white hover:bg-purple-700 rounded-2xl font-black uppercase tracking-widest text-[10px] h-14 gap-2 transition-all shadow-lg shadow-purple-600/10"
+                        >
+                          <Share2 className="w-4 h-4" /> {t.events.share}
                         </Button>
-                      </Link>
 
-                      <Link href={`/event/${event.slug}/card?download=true`} target="_blank">
-                        <Button className="w-full bg-purple-50 border border-purple-100 text-purple-600 hover:bg-purple-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all shadow-sm">
-                          <Download className="w-4 h-4 mr-2" /> Bajar Tarjeta QR
+                        <Button
+                          onClick={() => setFinishingEvent({ ...event, isReactivating: event.status !== 'Active' })}
+                          className={`rounded-2xl text-[10px] h-14 font-black uppercase border transition-all ${event.status === 'Active' ? 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100' : 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'}`}
+                        >
+                          {event.status === 'Active' ? <Power className="w-4 h-4 mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+                          {event.status === 'Active' ? t.events.finalize : t.events.activate}
                         </Button>
-                      </Link>
+                      </div>
 
-                      <Button
-                        onClick={() => handleExportPDF(event)}
-                        disabled={exporting === event.id}
-                        className="w-full bg-indigo-50/50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all shadow-sm"
-                      >
-                        {exporting === event.id ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileText className="w-4 h-4 mr-2" />}
-                        Reporte PDF
-                      </Button>
-
-                      <Button
-                        onClick={() => setFinishingEvent({ ...event, isReactivating: event.status !== 'Active' })}
-                        className={`col-span-1 rounded-2xl text-[10px] h-16 font-black uppercase border transition-all ${event.status === 'Active' ? 'bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100' : 'bg-green-50 text-green-600 border-green-100 hover:bg-green-100'}`}
-                      >
-                        {event.status === 'Active' ? <Power className="w-4 h-4 mr-2" /> : <CheckCircle className="w-4 h-4 mr-2" />}
-                        {event.status === 'Active' ? t.events.finalize : t.events.activate}
-                      </Button>
-
-                      <Link href={`/dashboard/events/${event.slug}/config`}>
-                        <Button className="w-full bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all">
-                          <Settings className="w-4 h-4 mr-2" /> {t.events.settings}
+                      {/* HERRAMIENTAS Y CONFIGURACIÓN */}
+                      <div className="flex gap-2">
+                        <Link href={`/dashboard/events/${event.slug}/config`} className="flex-1">
+                          <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-400 border border-zinc-100 rounded-2xl text-[10px] h-12 font-black uppercase transition-all shadow-sm">
+                            <Settings className="w-4 h-4 mr-2" /> AJUSTES
+                          </Button>
+                        </Link>
+                        <Link href={`/event/${event.slug}`} target="_blank" className="flex-1">
+                          <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-400 border border-zinc-100 rounded-2xl text-[10px] h-12 font-black uppercase transition-all shadow-sm">
+                            <ExternalLink className="w-4 h-4 mr-2 text-purple-600" /> GALERÍA
+                          </Button>
+                        </Link>
+                        <Button
+                          onClick={() => handleDelete(event.id)}
+                          className="bg-red-50 text-red-500 hover:bg-red-100 border border-red-100 rounded-2xl w-12 h-12 transition-all opacity-40 hover:opacity-100"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
-                      </Link>
+                      </div>
 
-                      <Link href={`/event/${event.slug}`} target="_blank">
-                        <Button className="w-full bg-white border border-zinc-100 text-zinc-900 hover:bg-zinc-50 rounded-2xl text-[10px] h-16 font-black uppercase transition-all shadow-sm">
-                          <ExternalLink className="w-4 h-4 mr-2 text-purple-600" /> Ver Galería
-                        </Button>
-                      </Link>
-
-                      <Button onClick={() => handleDelete(event.id)} className="col-span-2 bg-red-50 hover:bg-red-100 text-red-500 border border-red-100 rounded-2xl text-[10px] h-16 font-black uppercase transition-all opacity-40 hover:opacity-100">
-                        <Trash2 className="w-4 h-4 mr-2" /> {t.events.delete}
-                      </Button>
+                      {/* ÁREA DE EXPORTACIÓN (FOOTER DE CARD) */}
+                      <div className="pt-4 border-t border-zinc-100 space-y-3">
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300 text-center italic">Centro de Reportes y QR</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link href={`/event/${event.slug}/card`} target="_blank">
+                            <Button className="w-full bg-zinc-50 hover:bg-zinc-100 text-zinc-600 border border-zinc-100 rounded-xl text-[9px] h-11 font-black uppercase transition-all">
+                              <Printer className="w-3 h-3 mr-2" /> QR (PRINT)
+                            </Button>
+                          </Link>
+                          <Link href={`/event/${event.slug}/card?download=true`} target="_blank">
+                            <Button className="w-full bg-purple-50 hover:bg-purple-100 text-purple-600 border border-purple-100 rounded-xl text-[9px] h-11 font-black uppercase transition-all">
+                              <Download className="w-3 h-3 mr-2" /> BAJAR QR
+                            </Button>
+                          </Link>
+                          <Button
+                            onClick={() => handleExportPDF(event)}
+                            disabled={exporting === event.id}
+                            className="w-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-100 rounded-xl text-[9px] h-11 font-black uppercase transition-all"
+                          >
+                            {exporting === event.id ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : <FileText className="w-3 h-3 mr-2" />}
+                            REPORTE PDF
+                          </Button>
+                          <Button
+                            onClick={() => window.location.href = `${getApiUrl()}/media/${event.slug}/download`}
+                            className="w-full bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-[9px] h-11 font-black uppercase transition-all shadow-md"
+                          >
+                            <Download className="w-3 h-3 mr-2" /> BAJAR ZIP
+                          </Button>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Gradient hint */}

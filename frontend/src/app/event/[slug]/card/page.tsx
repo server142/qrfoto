@@ -70,40 +70,46 @@ export default function EventCardPage() {
     const handleExportPDF = async () => {
         setExporting(true);
         try {
-            // Importaciones dinámicas para no romper SSR rendering
+            // Importaciones dinámicas resistentes a fallos de carga
             const html2canvas = (await import('html2canvas')).default;
             const { jsPDF } = await import('jspdf');
+
+            if (!html2canvas || !jsPDF) {
+                throw new Error("No se pudieron cargar las librerías de PDF");
+            }
 
             const element = document.getElementById('pdf-card');
             if (!element) return;
 
-            // Scroll to top to ensure clean capture
+            // Asegurar que el scroll no afecte la captura
             window.scrollTo(0, 0);
 
-            // Escala para calidad de impresión
+            // Escala 2 para nitidez en impresión sin saturar memoria
             const canvas = await html2canvas(element, {
                 scale: 2,
                 useCORS: true,
                 backgroundColor: '#ffffff',
                 logging: false,
                 windowWidth: element.scrollWidth,
-                windowHeight: element.scrollHeight
+                windowHeight: element.scrollHeight,
+                // Forzar renders de fuentes y sombras
+                allowTaint: true
             });
 
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-            // Layout de 8.5 x 11 pulgadas
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'in',
                 format: 'letter'
             });
 
+            // Centrar y ajustar a tamaño carta (8.5 x 11 in)
             pdf.addImage(imgData, 'JPEG', 0, 0, 8.5, 11);
             pdf.save(`${event.name}-QR-QRFoto.pdf`);
         } catch (error) {
             console.error("Error generating PDF", error);
-            alert("No se pudo exportar el PDF. Intenta imprimirlo usando el botón Imprimir y eligiendo el destino 'Guardar como PDF'.");
+            alert("No se pudo descargar el PDF. Use el botón 'Imprimir' o asegúrese de no tener bloqueadores de ventanas emergentes.");
         } finally {
             setExporting(false);
         }
@@ -185,19 +191,19 @@ export default function EventCardPage() {
             </div>
 
             <style jsx global>{`
-        @media print {
-          @page {
-            size: 8.5in 11in;
-            margin: 0;
-          }
-          body {
-            background-color: white !important;
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
-          }
-          .print\:hidden { display: none !important; }
-        }
-      `}</style>
+                @media print {
+                    @page {
+                        size: 8.5in 11in;
+                        margin: 0;
+                    }
+                    body {
+                        background-color: white !important;
+                        print-color-adjust: exact;
+                        -webkit-print-color-adjust: exact;
+                    }
+                    .print\:hidden { display: none !important; }
+                }
+            `}</style>
         </div>
     );
 }
