@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { PromocodesService } from './promocodes.service';
 import { CreatePromocodeDto } from './dto/create-promocode.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'; // Asumiendo esto existe
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('promocodes')
 export class PromocodesController {
