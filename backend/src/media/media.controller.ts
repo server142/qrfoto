@@ -82,8 +82,10 @@ export class MediaController {
         }) || 0;
 
         const usageMb = storageUsage / (1024 * 1024);
-
-        if (usageMb >= totalLimitMb) {
+        
+        // Solo bloqueamos si el límite es explícito y mayor a cero. 
+        // Si el límite es 0 (ej: no configurado), permitimos el uso por cortesía local.
+        if (totalLimitMb > 0 && usageMb >= totalLimitMb) {
           throw new BadRequestException(`Límite de almacenamiento alcanzado (${totalLimitMb}MB). Libera espacio o amplía tu capacidad para continuar.`);
         }
       }

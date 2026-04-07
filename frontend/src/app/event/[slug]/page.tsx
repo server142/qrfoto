@@ -457,19 +457,20 @@ export default function GuestUploadPage() {
                         </p>
                     </div>
 
-                    <div className="space-y-4 pt-6">
+                    <div className="space-y-4 pt-8">
                         <Button 
                             onClick={() => setIsStorageFullModalOpen(false)}
-                            className="w-full h-16 rounded-[2rem] bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl active:scale-95 transition-all outline-none"
+                            className="w-full h-16 rounded-[2rem] bg-white text-black font-black uppercase tracking-[0.2em] text-xs shadow-2xl active:scale-95 transition-all outline-none border-none"
                         >
                             Ver Galería Actual
                         </Button>
                         
-                        <NextLink href="/dashboard/plan" className="block outline-none">
-                            <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white/30 hover:text-amber-400 transition-colors">
-                                ¿Eres el dueño? Amplía espacio aquí
-                            </p>
-                        </NextLink>
+                        <div className="pt-4 border-t border-white/5">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">¿Eres el organizador?</p>
+                            <NextLink href="/dashboard/plan" className="inline-block px-6 py-3 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-black uppercase tracking-widest hover:bg-amber-500 hover:text-black transition-all">
+                                Ampliar capacidad ahora
+                            </NextLink>
+                        </div>
                     </div>
                 </motion.div>
             </motion.div>
