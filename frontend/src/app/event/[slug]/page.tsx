@@ -175,7 +175,13 @@ export default function GuestUploadPage() {
         fetchMedia();
         setTimeout(() => setIsSuccess(false), 3000);
       } else {
-        alert("Error al enviar. Intenta de nuevo.");
+        if (res.status === 400) {
+          // Almacenamiento lleno → mostrar modal elegante
+          setIsUploadOpen(false);
+          setIsStorageFullModalOpen(true);
+        } else {
+          alert("Error al enviar. Intenta de nuevo.");
+        }
       }
     } catch {
       alert("Error de conexión. Intenta de nuevo.");
@@ -757,6 +763,47 @@ export default function GuestUploadPage() {
             <Plus className="w-8 h-8 text-black group-hover:scale-125 transition-transform" />
           </motion.button>
         )}
+
+        {/* ── MODAL: ALMACENAMIENTO LLENO ── */}
+        <AnimatePresence>
+          {isStorageFullModalOpen && (
+            <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => setIsStorageFullModalOpen(false)}
+                className="absolute inset-0 bg-black/90 backdrop-blur-3xl"
+              />
+              <motion.div
+                initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }}
+                className="relative w-full max-w-md bg-zinc-950 border border-white/10 rounded-[3rem] p-10 shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden"
+              >
+                <div className="relative z-10 text-center">
+                  <div className="w-20 h-20 rounded-[2rem] bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
+                    <span className="text-4xl">📷</span>
+                  </div>
+                  <h2 className="text-3xl font-black uppercase italic tracking-tighter text-white mb-2">¡Álbum Lleno!</h2>
+                  <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-8">El organizador necesita más espacio para seguir capturando recuerdos.</p>
+
+                  <div className="space-y-3">
+                    <a
+                      href={`/dashboard`}
+                      className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl active:scale-95 transition-all flex items-center justify-center"
+                    >
+                      ⚡ Expandir Almacenamiento
+                    </a>
+                    <button
+                      onClick={() => setIsStorageFullModalOpen(false)}
+                      className="w-full h-12 bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 font-black uppercase tracking-widest text-[9px] rounded-2xl transition-all"
+                    >
+                      Volver al Álbum
+                    </button>
+                  </div>
+                </div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 blur-[80px] rounded-full translate-x-1/3 -translate-y-1/3" />
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
