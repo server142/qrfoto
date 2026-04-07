@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import Link from "next/link";
+import NextLink from "next/link";
 
 const STORAGE_KEY = "qrfoto_guest_identity";
 
@@ -465,11 +465,11 @@ export default function GuestUploadPage() {
                             Ver Galería Actual
                         </Button>
                         
-                        <Link href="/dashboard/plan" className="block outline-none">
+                        <NextLink href="/dashboard/plan" className="block outline-none">
                             <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white/30 hover:text-amber-400 transition-colors">
                                 ¿Eres el dueño? Amplía espacio aquí
                             </p>
-                        </Link>
+                        </NextLink>
                     </div>
                 </motion.div>
             </motion.div>

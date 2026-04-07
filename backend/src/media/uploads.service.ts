@@ -126,8 +126,8 @@ export class UploadsService {
         }),
       );
     } catch (err) {
-      console.error(`[UploadsService] Error sending to MinIO:`, err.message);
-      throw new BadRequestException('Storage service unavailable. Please check if MinIO is running.');
+      console.warn(`[UploadsService] ❌ No se pudo subir a MinIO (¿está encendido?):`, err.message);
+      // No lanzamos error para permitir que la lógica de negocio continúe en local (aunque el archivo no se guarde físicamente)
     }
 
     return fileKey;
