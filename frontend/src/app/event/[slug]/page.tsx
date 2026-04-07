@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera, Image as ImageIcon, CheckCircle2, MessageSquare,
   User, Loader2, Send, X, Mail, ArrowRight, QrCode, Plus, Download, Share2, Ban,
-  Phone, UserPlus, Sparkles, Smartphone
+  Phone, UserPlus, Sparkles, Smartphone, HardDrive
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
