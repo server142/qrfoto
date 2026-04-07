@@ -570,7 +570,7 @@ export default function GuestUploadPage() {
               </motion.div>
             )}
 
-            {isUploadOpen && identity && !isSuccess && (
+            {isUploadOpen && !isSuccess && (
               <motion.div
                 key="form"
                 initial={{ opacity: 0, y: 100 }}
@@ -582,10 +582,10 @@ export default function GuestUploadPage() {
                   <header className="flex justify-between items-center mb-12">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-[1.2rem] flex items-center justify-center text-black text-lg font-black shadow-xl" style={{ backgroundColor: event.branding_color }}>
-                        {identity.name.charAt(0).toUpperCase()}
+                        {identity ? identity.name.charAt(0).toUpperCase() : 'U'}
                       </div>
                       <div className="space-y-0.5">
-                        <p className="text-sm font-black italic uppercase tracking-[0.1em]">{identity.name}</p>
+                        <p className="text-sm font-black italic uppercase tracking-[0.1em]">{identity ? identity.name : 'Invitado'}</p>
                         <p className="text-[9px] text-white/30 uppercase font-bold tracking-[0.2em] italic">Subiendo Recuerdo Live</p>
                       </div>
                     </div>
