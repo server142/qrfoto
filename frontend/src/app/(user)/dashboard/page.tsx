@@ -82,6 +82,9 @@ export default function UserDashboard() {
       const data = await response.json();
       if (data.url) {
         window.location.href = data.url;
+      } else if (data.mode === 'manual') {
+        // Stripe no configurado → ir al flujo de pago manual
+        window.location.href = `/dashboard/plan?planId=${planId}&checkout=manual`;
       }
     } catch (err) {
       console.error("Checkout Error:", err);
@@ -149,8 +152,8 @@ export default function UserDashboard() {
                         <div className="w-12 h-12 rounded-[1.2rem] bg-amber-500/10 flex items-center justify-center mb-6">
                             <Zap className="w-6 h-6 text-amber-500" />
                         </div>
-                        <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 select-none">Recarga Extra</h3>
-                        <p className="text-[10px] text-amber-500/60 font-black uppercase tracking-widest mb-6">+{p.storage_limit_mb} MB de por Vida</p>
+                        <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 select-none text-white">{p.name}</h3>
+                        <p className="text-[10px] text-amber-400 font-black uppercase tracking-widest mb-6">+{p.storage_limit_mb} MB de por Vida</p>
                       </div>
                       <Button onClick={() => handleCheckout(p.id)} className="w-full h-14 bg-amber-500 hover:bg-amber-400 text-black font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-amber-500/10 active:scale-95 transition-all">
                         Comprar por ${p.price}
@@ -169,8 +172,8 @@ export default function UserDashboard() {
                         <div className="w-12 h-12 rounded-[1.2rem] bg-purple-600/10 flex items-center justify-center mb-6">
                             <ArrowUpCircle className="w-6 h-6 text-purple-400" />
                         </div>
-                        <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 select-none">Plan {p.name}</h3>
-                        <p className="text-[10px] text-purple-400/60 font-black uppercase tracking-widest mb-6">Capacidad {p.storage_limit_mb} MB Pro</p>
+                        <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 select-none text-white">Plan {p.name}</h3>
+                        <p className="text-[10px] text-purple-400 font-black uppercase tracking-widest mb-6">Capacidad {p.storage_limit_mb} MB Pro</p>
                       </div>
                       <Button onClick={() => handleCheckout(p.id)} className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-purple-600/10 active:scale-95 transition-all">
                         Upgrade por ${p.price}
