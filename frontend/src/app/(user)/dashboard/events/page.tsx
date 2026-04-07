@@ -32,7 +32,8 @@ import {
   FileText,
   ChevronRight,
   Activity,
-  Box
+  Box,
+  ShieldAlert
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -434,14 +435,19 @@ export default function EventsPage() {
                             <Settings className="w-4 h-4 mr-2" /> AJUSTES
                           </Button>
                         </Link>
-                        <Link href={`/event/${event.slug}`} target="_blank" className="flex-1">
-                          <Button className="w-full bg-white hover:bg-zinc-50 text-zinc-400 border border-zinc-100 rounded-2xl text-[10px] h-12 font-black uppercase transition-all shadow-sm">
-                            <ExternalLink className="w-4 h-4 mr-2 text-purple-600" /> GALERÍA
+                        <Link href={`/dashboard/events/${event.slug}/moderation`} className="flex-1">
+                          <Button className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-100/50 rounded-2xl text-[10px] h-12 font-black uppercase transition-all shadow-sm">
+                            <ShieldAlert className="w-4 h-4 mr-2" /> MODERAR
+                          </Button>
+                        </Link>
+                        <Link href={`/event/${event.slug}`} target="_blank" className="flex-none">
+                          <Button className="w-12 bg-white hover:bg-zinc-50 text-zinc-400 border border-zinc-100 rounded-2xl h-12 flex items-center justify-center transition-all shadow-sm group">
+                            <ExternalLink className="w-4 h-4 text-purple-600 group-hover:scale-110 transition-transform" />
                           </Button>
                         </Link>
                         <Button
                           onClick={() => handleDelete(event.id)}
-                          className="bg-red-50 text-red-500 hover:bg-red-100 border border-red-100 rounded-2xl w-12 h-12 transition-all opacity-40 hover:opacity-100"
+                          className="bg-red-50 text-red-500 hover:bg-red-100 border border-red-100 rounded-2xl w-12 h-12 transition-all opacity-40 hover:opacity-100 flex-none"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
