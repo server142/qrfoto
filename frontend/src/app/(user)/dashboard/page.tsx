@@ -6,7 +6,8 @@ import { Plus, Calendar, Image as ImageIcon, MousePointer2, Loader2, QrCode, Zap
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/LanguageContext";
-import { getApiUrl } from "@/lib/api";
+import { fetchApi, getApiUrl } from "@/lib/api";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function UserDashboard() {
   const { t } = useTranslation();
