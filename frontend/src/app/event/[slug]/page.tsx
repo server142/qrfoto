@@ -76,6 +76,7 @@ export default function GuestUploadPage() {
     }
   };
 
+  useEffect(() => {
     let socket: any;
 
     const initEvent = async () => {
@@ -316,6 +317,8 @@ export default function GuestUploadPage() {
         </div>
       </div>
     );
+  }
+
   if (isBanned) return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center p-6 text-center space-y-6 bg-black text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-red-900/20 mix-blend-overlay animate-pulse" />
