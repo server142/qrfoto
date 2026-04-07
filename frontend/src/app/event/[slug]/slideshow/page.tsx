@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Camera, User, MessageSquareQuote, QrCode, MonitorUp, X, Ban } from "lucide-react";
+import { Loader2, Camera, User, MessageSquareQuote, QrCode, MonitorUp, X } from "lucide-react";
 import { io } from "socket.io-client";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
 import { QRCodeSVG } from "qrcode.react";
@@ -45,12 +45,6 @@ export default function SlideshowPage() {
         if (settingsData && settingsData.isSlideshowEnabled === false) {
           setLoading(false);
           setEvent({ ...evData, disabled: true });
-          return;
-        }
-
-        if (evData.status === 'Finished') {
-          setLoading(false);
-          setEvent(evData);
           return;
         }
 
@@ -104,7 +98,9 @@ export default function SlideshowPage() {
   useEffect(() => {
     if (media.length === 0) return;
 
-    const duration = 8000; // 8 seconds per slide
+    const currentItem = media[currentIndex];
+    if (!currentItem) return;
+    const duration = currentItem.file_type === 'video' ? 18000 : 8000;
 
     const timer = setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % media.length);
@@ -118,19 +114,6 @@ export default function SlideshowPage() {
     <div className="h-screen bg-black flex flex-col items-center justify-center text-white">
       <Loader2 className="w-12 h-12 animate-spin text-purple-600 mb-4" />
       <p className="tracking-widest uppercase text-xs opacity-50 font-black">{t.slideshow.syncing}</p>
-    </div>
-  );
-
-  if (event?.status === 'Finished') return (
-    <div className="h-screen bg-black flex flex-col items-center justify-center text-white p-10 text-center relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]" />
-      <div className="w-40 h-40 rounded-[3rem] border-4 border-white/5 flex items-center justify-center mb-10 relative z-10 shadow-3xl">
-        <Ban className="w-16 h-16 text-white/20" />
-      </div>
-      <h1 className="text-6xl md:text-8xl font-black mb-6 uppercase tracking-tighter italic relative z-10 text-white/80">{event.name}</h1>
-      <p className="text-2xl text-white/40 max-w-2xl font-medium tracking-tight relative z-10 border-t border-white/5 pt-8">
-        Este evento ha finalizado. La galería pública ha sido deshabilitada.
-      </p>
     </div>
   );
 
@@ -171,150 +154,271 @@ export default function SlideshowPage() {
           transition={{ duration: 1.5, ease: "easeInOut" }}
           className="absolute inset-0 flex items-center justify-center"
         >
-          {currentMedia.file_type === 'video' ? (
-            <video
-              src={currentMedia.file_url}
-              className="w-full h-full object-contain shadow-2xl"
-              autoPlay
-              muted
-              playsInline
-            />
+          {/* Background Blurred Glow */}
+          <div
+            className="absolute inset-0 -z-10 opacity-40 blur-[180px] scale-150 rotate-12 transition-all duration-1000"
+            style={{
+              backgroundImage: currentMedia.file_url ? `url(${currentMedia.file_url})` : 'none',
+              backgroundColor: currentMedia.file_url ? 'transparent' : event.branding_color,
+              backgroundSize: 'cover'
+            }}
+          />
+
+          {!currentMedia.file_url ? (
+            /* FULL SCREEN TYPOGRAPHY FOR MESSAGES ONLY */
+            <div className="max-w-4xl p-12 text-center space-y-12 relative px-20">
+              <motion.div
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 1 }}
+              >
+                <MessageSquareQuote className="w-16 h-16 mx-auto mb-10 opacity-20" style={{ color: event.branding_color }} />
+                <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter text-white leading-none whitespace-pre-wrap drop-shadow-2xl">
+                  "{currentMedia.message}"
+                </h2>
+                <div className="mt-12 flex items-center justify-center gap-6">
+                  <div className="h-[2px] w-12 bg-white/10" />
+                  <p className="text-2xl font-bold uppercase tracking-widest text-white/60">{currentMedia.guest_name}</p>
+                  <div className="h-[2px] w-12 bg-white/10" />
+                </div>
+              </motion.div>
+            </div>
           ) : (
-            <img
-              src={currentMedia.file_url}
-              alt="Moment"
-              className="w-full h-full object-contain shadow-2xl"
-            />
-          )}
+            /* PHOTO OR VIDEO */
+            <div className="w-full h-full relative flex items-center justify-center">
+              {currentMedia.file_type === 'video' ? (
+                <video
+                  src={currentMedia.file_url}
+                  autoPlay
+                  muted
+                  className="w-full h-full object-contain shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+                  onEnded={() => setCurrentIndex((prev) => (prev + 1) % media.length)}
+                  onError={() => setCurrentIndex((prev) => (prev + 1) % media.length)}
+                />
+              ) : (
+                <img
+                  src={currentMedia.file_url}
+                  className="w-full h-full object-contain shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+                  alt="Memory"
+                  onError={() => setCurrentIndex((prev) => (prev + 1) % media.length)}
+                />
+              )}
 
-          {/* User Badge / Social Proof */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1 }}
-            className="absolute bottom-12 left-12 flex items-center gap-6 bg-black/40 backdrop-blur-3xl px-8 py-5 rounded-[2.5rem] border border-white/10 shadow-2xl"
-          >
-            <div className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-black text-2xl font-black shadow-xl" style={{ backgroundColor: event?.branding_color || '#a855f7' }}>
-              {currentMedia.guest_name?.charAt(0).toUpperCase() || 'U'}
+              {/* ELEGANT MESSAGE OVERLAY ON PHOTOS */}
+              {currentMedia.message && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 50 }}
+                  transition={{ delay: 0.4, duration: 0.7, type: "spring" }}
+                  className="absolute bottom-32 left-12 max-w-xl"
+                >
+                  <div className="bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: event.branding_color }} />
+                    <MessageSquareQuote className="absolute -top-4 -left-4 w-20 h-20 text-white/5 -rotate-12" />
+                    <p className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug drop-shadow-sm mb-6">
+                      {currentMedia.message}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: event.branding_color }}>
+                        <User className="w-4 h-4" />
+                      </div>
+                      <span className="text-sm font-black uppercase tracking-widest text-white/60">{currentMedia.guest_name}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </div>
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-1">Capturado por</p>
-              <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">{currentMedia.guest_name || t.slideshow.guest}</h3>
-            </div>
-          </motion.div>
-
-          {/* Dedicatoria context */}
-          {currentMedia.message && (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2 }}
-              className="absolute bottom-12 right-12 max-w-md bg-white/5 backdrop-blur-2xl p-10 rounded-[3rem] border border-white/10 shadow-2xl relative overflow-hidden"
-            >
-              <div className="absolute top-0 left-0 w-2 h-full" style={{ backgroundColor: event?.branding_color }} />
-              <MessageSquareQuote className="absolute top-4 right-6 w-12 h-12 text-white/5" />
-              <p className="text-2xl font-medium text-white italic leading-relaxed">
-                "{currentMedia.message}"
-              </p>
-            </motion.div>
           )}
-
-          {/* Watermark Logo */}
-          <div className="absolute top-12 left-12 opacity-30 grayscale contrast-125">
-            <Logo size="md" isDark={true} />
-          </div>
         </motion.div>
       </AnimatePresence>
 
-      {/* Floating Info Pill (Fixed to the top right) */}
-      <div className="absolute top-12 right-12 flex flex-col items-end gap-3 z-50">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-black/60 backdrop-blur-3xl px-6 py-3 rounded-full border border-white/10 flex items-center gap-3 shadow-2xl"
-        >
-          <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-          <p className="text-[10px] font-black text-white italic tracking-[0.2em] uppercase">QRFoto Life Stream</p>
-          <div className="h-4 w-px bg-white/20 mx-1" />
-          <p className="text-[10px] font-black text-white italic tracking-[0.2em] uppercase opacity-40">{event?.name}</p>
-        </motion.div>
+      {/* Overlay: Branding & Info */}
+      <div className="absolute top-0 inset-x-0 p-12 flex justify-between items-start pointer-events-none bg-gradient-to-b from-black/80 to-transparent z-40">
+        <div>
+          <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter italic drop-shadow-2xl" style={{ color: event.branding_color }}>
+            {event.name}
+          </h1>
+          <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mt-2 ml-1">Live Social Wall</p>
 
-        <button
-          onClick={() => setQrOpen(true)}
-          className="bg-white/5 hover:bg-white/10 backdrop-blur-3xl px-5 py-3 rounded-2xl border border-white/10 flex items-center gap-3 transition-all hover:scale-110"
-        >
-          <QrCode className="w-4 h-4 text-white/60" />
-          <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Mostrar QR</span>
-        </button>
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="pointer-events-auto mt-4 ml-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white/80 transition-colors bg-white/5 px-3 py-1.5 rounded-full border border-white/5 backdrop-blur-sm"
+          >
+            <MonitorUp className="w-3 h-3" /> Proyectar
+          </button>
+        </div>
+
+        {/* Real-time indicator & Logo */}
+        <div className="flex flex-col items-end gap-6 pointer-events-auto">
+          <Logo size="md" isDark={true} className="drop-shadow-2xl opacity-80" />
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={() => setQrOpen(true)}
+              className="bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-full flex items-center gap-3 shadow-2xl hover:bg-white/10 transition-all active:scale-95"
+            >
+              <QrCode className="w-5 h-5" style={{ color: event.branding_color }} />
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/80">Código Invitado</p>
+            </Button>
+
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-full flex items-center gap-3 shadow-2xl hidden md:flex">
+              <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: event.branding_color }} />
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">Sync</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Floating Help Button */}
-      <button
-        onClick={() => setHelpOpen(true)}
-        className="absolute bottom-12 right-12 md:bottom-auto md:top-40 md:right-12 w-12 h-12 bg-white/5 hover:bg-white/10 rounded-full border border-white/10 flex items-center justify-center transition-all z-50"
-      >
-        <MonitorUp className="w-5 h-5 text-white/30" />
-      </button>
+      {/* QR Code Overlay (Bottom Right - Small & Discreet for Desktop Viewers) */}
+      <div className="absolute bottom-10 right-10 z-50 flex flex-col items-center gap-3 group hidden lg:flex">
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white p-3 rounded-[2rem] shadow-2xl border-4"
+          style={{ borderColor: event.branding_color }}
+        >
+          <QRCodeSVG
+            value={`${process.env.NEXT_PUBLIC_FRONTEND_URL ?? getBaseUrl()}/event/${slug}`}
+            size={120}
+            level="H"
+          />
+        </motion.div>
+        <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 flex items-center gap-2">
+          <QrCode className="w-3 h-3 text-white/40" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Scanner</p>
+        </div>
+      </div>
 
-      {/* MODAL: QR Fullscreen Overlay */}
+      {/* QR MODAL (For manual interactions) */}
       <AnimatePresence>
         {qrOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center p-10"
             onClick={() => setQrOpen(false)}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-10 cursor-pointer"
           >
-            <button className="absolute top-12 right-12 w-20 h-20 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
-              <X className="w-10 h-10" />
-            </button>
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white p-12 rounded-[4rem] flex flex-col items-center gap-10 shadow-[0_0_100px_rgba(255,255,255,0.1)] relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="absolute -top-6 -right-6 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl" onClick={() => setQrOpen(false)}>
+                <Logo size="sm" />
+              </div>
 
-            <div className="bg-white p-16 rounded-[4rem] shadow-[0_0_100px_rgba(255,255,255,0.1)] mb-12 rotate-[-2deg]">
-              <QRCodeSVG value={`${getBaseUrl()}/event/${slug}`} size={450} />
-            </div>
+              <div className="text-center space-y-4">
+                <h3 className="text-4xl font-black italic tracking-tighter text-zinc-900 uppercase">¡Unete a la Galería!</h3>
+                <p className="text-zinc-400 font-bold tracking-[0.2em] text-xs uppercase">Escanea para subir tus momentos</p>
+              </div>
 
-            <div className="text-center space-y-4">
-              <h2 className="text-5xl font-black uppercase italic tracking-tighter">{t.slideshow.ready_title}</h2>
-              <p className="text-xl text-white/40 font-medium tracking-wide uppercase">{t.slideshow.ready_desc}</p>
-            </div>
+              <div className="p-1 border-4 rounded-[3.5rem]" style={{ borderColor: event.branding_color }}>
+                <QRCodeSVG
+                  value={`${process.env.NEXT_PUBLIC_FRONTEND_URL ?? getBaseUrl()}/event/${slug}`}
+                  size={400}
+                  level="H"
+                />
+              </div>
+
+              <Button
+                onClick={() => setQrOpen(false)}
+                className="h-16 px-12 rounded-full font-black uppercase tracking-widest text-sm"
+                style={{ backgroundColor: event.branding_color, color: 'white' }}
+              >
+                Cerrar y ver Galería
+              </Button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* MODAL: HELP Fullscreen Overlay */}
+      {/* HELP MODAL (Proyección) */}
       <AnimatePresence>
         {helpOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed inset-0 z-[100] bg-zinc-950/98 backdrop-blur-3xl flex flex-col items-center justify-center p-10 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={() => setHelpOpen(false)}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex justify-center p-4 md:p-10 cursor-pointer overflow-y-auto"
           >
-            <div className="max-w-2xl space-y-12">
-              <h2 className="text-6xl font-black italic uppercase tracking-tighter">Guía de Visualización</h2>
-              <div className="grid grid-cols-2 gap-8 text-left">
-                <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10">
-                  <p className="text-purple-400 font-black mb-4 uppercase tracking-widest text-xs">Modo TV / Pantalla</p>
-                  <p className="text-sm font-medium leading-relaxed opacity-60 italic">Presiona F11 en tu teclado para entrar en modo pantalla completa y ocultar las barras del navegador.</p>
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-zinc-900 border border-white/10 p-6 md:p-12 rounded-[2rem] flex flex-col gap-6 shadow-[0_0_100px_rgba(255,255,255,0.05)] relative max-w-5xl w-full text-left my-auto h-fit"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="absolute top-4 right-4 md:top-8 md:right-8 text-white/40 hover:text-white transition-colors bg-white/10 md:bg-transparent rounded-full p-2 md:p-0 z-50"
+                onClick={() => setHelpOpen(false)}
+              >
+                <X className="w-6 h-6 md:w-8 md:h-8" />
+              </button>
+
+              <div className="space-y-2 mb-4">
+                <h3 className="text-3xl font-black tracking-tighter text-white/90 uppercase flex items-center gap-3">
+                  <MonitorUp className="w-8 h-8" style={{ color: event.branding_color }} />
+                  ¿Cómo proyectar la galería?
+                </h3>
+                <p className="text-zinc-500 font-bold tracking-widest text-xs uppercase">Guía rápida de conexión con pantallas</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-zinc-300">
+                <div className="flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="bg-white/10 w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 text-white text-xs">1</div>
+                  <div>
+                    <h4 className="font-bold text-white mb-2 text-sm uppercase tracking-wider">Cable Físico (HDMI)</h4>
+                    <p className="text-xs leading-relaxed text-zinc-400">Conecta el cable desde este equipo al proyector/pantalla. Presiona <b className="text-white bg-white/10 px-1 py-0.5 rounded">F11</b> para poner este navegador en pantalla completa inmersiva.</p>
+                  </div>
                 </div>
-                <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10">
-                  <p className="text-purple-400 font-black mb-4 uppercase tracking-widest text-xs">Carga Dinámica</p>
-                  <p className="text-sm font-medium leading-relaxed opacity-60 italic">Las nuevas fotos aparecen automáticamente al principio de la rotación sin necesidad de refrescar.</p>
+
+                <div className="flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="bg-white/10 w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 text-white text-xs">2</div>
+                  <div>
+                    <h4 className="font-bold text-white mb-2 text-sm uppercase tracking-wider">Transmisión (Cast)</h4>
+                    <p className="text-xs leading-relaxed text-zinc-400">Haz clic derecho en cualquier parte vacía de esta pantalla y selecciona <b className="text-white">Transmitir / Cast...</b> para enviarla a un Chromecast o Smart TV en la misma red Wi-Fi.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="bg-white/10 w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 text-white text-xs">3</div>
+                  <div>
+                    <h4 className="font-bold text-white mb-2 text-sm uppercase tracking-wider">Transmisión de Sistema</h4>
+                    <p className="text-xs leading-relaxed text-zinc-400">En Windows presiona <b className="text-white bg-white/10 px-1 py-0.5 rounded">Win + K</b> para buscar pantallas inalámbricas. En Mac usa la opción nativa de <b className="text-white">AirPlay</b> en la barra superior.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="bg-white/10 w-8 h-8 rounded-full flex items-center justify-center font-black flex-shrink-0 text-white text-xs">4</div>
+                  <div>
+                    <h4 className="font-bold text-white mb-2 text-sm uppercase tracking-wider">Vía Navegador Web TV</h4>
+                    <p className="text-xs leading-relaxed text-zinc-400 mb-2">Si la pantalla tiene navegador propio, ingresa esta URL exacta en ella:</p>
+                    <code className="block bg-black px-3 py-2 rounded-lg border border-white/10 text-[10px] text-zinc-300 font-mono break-all selection:bg-purple-500/30">
+                      {typeof window !== 'undefined' ? window.location.href : `${process.env.NEXT_PUBLIC_FRONTEND_URL ?? getBaseUrl()}/event/${slug}/slideshow`}
+                    </code>
+                  </div>
                 </div>
               </div>
-              <Button className="h-16 px-12 bg-white text-black font-black uppercase rounded-full">Entendido</Button>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Ambient Background Glow (Dynamic Color) */}
-      <div
-        className="fixed inset-0 -z-50 opacity-20 blur-[150px] scale-150 animate-pulse"
-        style={{ background: `radial-gradient(circle, ${event?.branding_color || '#a855f7'} 0%, transparent 70%)` }}
-      />
+      {/* Footer Progress (Line) */}
+      <div className="absolute bottom-0 left-0 h-1.5 bg-white/5 w-full z-50">
+        <motion.div
+          key={`${currentIndex}-${media.length}`}
+          initial={{ width: "0%" }}
+          animate={{ width: "100%" }}
+          transition={{ duration: currentMedia?.file_type === 'video' ? 18 : 8, ease: "linear" }}
+          className="h-full"
+          style={{ backgroundColor: event.branding_color }}
+        />
+      </div>
     </div>
   );
 }
