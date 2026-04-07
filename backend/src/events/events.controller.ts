@@ -36,8 +36,18 @@ export class EventsController {
     }
 
     @Get('slug/:slug')
-    findOneBySlug(@Param('slug') slug: string) {
-        return this.eventsService.findOneBySlug(slug);
+    async findOneBySlug(@Param('slug') slug: string) {
+        const event = await this.eventsService.findOneBySlug(slug);
+        
+        // Incluir estado de almacenamiento si hay fotos
+        const storage = event.userId 
+            ? await this.eventsService.getUserStorageUsage(event.userId)
+            : { isFull: false };
+
+        return {
+            ...event,
+            storage_status: storage
+        };
     }
 
     @UseGuards(JwtAuthGuard)

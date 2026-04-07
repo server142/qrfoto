@@ -42,6 +42,7 @@ export default function GuestUploadPage() {
   const [phoneInput, setPhoneInput] = useState("");
   const [identityError, setIdentityError] = useState("");
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [isStorageFullModalOpen, setIsStorageFullModalOpen] = useState(false);
 
   const [media, setMedia] = useState<any[]>([]);
   const [mediaLoading, setMediaLoading] = useState(false);
@@ -336,6 +337,54 @@ export default function GuestUploadPage() {
                         )}
                     </div>
                 </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* STORAGE FULL MODAL */}
+      <AnimatePresence>
+        {isStorageFullModalOpen && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[250] bg-black/90 backdrop-blur-2xl flex flex-col items-center justify-center p-8 text-center"
+                onClick={() => setIsStorageFullModalOpen(false)}
+            >
+                <motion.div 
+                    initial={{ scale: 0.9, y: 30 }}
+                    animate={{ scale: 1, y: 0 }}
+                    className="max-w-xs w-full space-y-8"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className="w-24 h-24 rounded-[2.5rem] bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-10 shadow-2xl relative transition-transform hover:scale-105">
+                        <HardDrive className="w-10 h-10 text-amber-500" />
+                        <div className="absolute -top-1 -right-1 bg-amber-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest animate-pulse shadow-lg shadow-amber-500/20 italic">Full</div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                        <h2 className="text-4xl font-black uppercase italic tracking-tighter leading-none">¡Galería al Límite!</h2>
+                        <div className="h-1 w-20 bg-white/10 mx-auto rounded-full" />
+                        <p className="text-white/40 text-sm font-medium leading-relaxed italic">
+                            "Este evento ha capturado tantos momentos increíbles que la bóveda de almacenamiento se ha llenado."
+                        </p>
+                    </div>
+
+                    <div className="space-y-4 pt-6">
+                        <Button 
+                            onClick={() => setIsStorageFullModalOpen(false)}
+                            className="w-full h-16 rounded-[2rem] bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl active:scale-95 transition-all outline-none"
+                        >
+                            Ver Galería Actual
+                        </Button>
+                        
+                        <Link href="/dashboard/plan" className="block outline-none">
+                            <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white/30 hover:text-amber-400 transition-colors">
+                                ¿Eres el dueño? Amplía espacio aquí
+                            </p>
+                        </Link>
+                    </div>
+                </motion.div>
             </motion.div>
         )}
       </AnimatePresence>
@@ -689,6 +738,12 @@ export default function GuestUploadPage() {
             whileHover={{ scale: 1.1, rotate: 5 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => {
+                // Interceptar si el almacenamiento está lleno
+                if (event?.storage_status?.isFull) {
+                    setIsStorageFullModalOpen(true);
+                    return;
+                }
+
                 if (!identity && event?.collect_leads) {
                     setIsLeadModalOpen(true);
                 } else {

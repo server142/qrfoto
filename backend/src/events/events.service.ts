@@ -118,5 +118,34 @@ export class EventsService {
             totalStorageMb: Math.round(totalStorageBytes / (1024 * 1024) * 100) / 100,
             interactions: totalPhotos * 3, // Mock
         };
+    async getUserStorageUsage(userId: string) {
+        const userData = await this.usersService.getMe(userId);
+        if (!userData) return { usageMb: 0, limitMb: 0, isFull: false };
+
+        const planLimit = userData.activePlan?.storage_limit_mb || 0;
+        const extraLimit = userData.extra_storage_mb || 0;
+        const totalLimitMb = planLimit + extraLimit;
+
+        // Calcular uso actual
+        const userEvents = await this.findAll(userId);
+        const eventIds = userEvents.map(e => e.id);
+
+        let totalStorageBytes = 0;
+        if (eventIds.length > 0) {
+            const storageRes = await this.eventsRepository.manager
+                .createQueryBuilder(Media, 'm')
+                .select('SUM(m.size_bytes)', 'total')
+                .where('m.event_id IN (:...ids)', { ids: eventIds })
+                .getRawOne();
+            totalStorageBytes = parseInt(storageRes.total) || 0;
+        }
+
+        const usageMb = totalStorageBytes / (1024 * 1024);
+
+        return {
+            usageMb: Math.round(usageMb * 100) / 100,
+            limitMb: totalLimitMb,
+            isFull: totalLimitMb > 0 && usageMb >= totalLimitMb
+        };
     }
 }
