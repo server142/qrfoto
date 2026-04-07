@@ -111,13 +111,13 @@ export default function UserDashboard() {
             </div>
             <div>
               <h3 className="text-xl font-black uppercase italic tracking-tighter">Uso de Almacenamiento</h3>
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Capacidad total: {storageLimit} MB (Plan + Extra)</p>
+              <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest italic">Capacidad total: {storageLimit} MB (Plan + Extra)</p>
             </div>
           </div>
 
           <div className="flex-1 w-full max-w-xl">
             <div className="flex justify-between items-end mb-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">{storagePercent < 100 ? `${storageUsed} MB Usados` : '¡Límite Alcanzado!'}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/80 italic">{storagePercent < 100 ? `${storageUsed} MB Usados` : '¡Límite Alcanzado!'}</span>
               <span className={`text-lg font-black italic ${storagePercent > 90 ? 'text-red-500' : 'text-amber-500'}`}>{Math.round(storagePercent)}%</span>
             </div>
             <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden border border-white/5 p-1">
@@ -128,9 +128,11 @@ export default function UserDashboard() {
             </div>
           </div>
 
-          <Button variant="outline" className="h-12 border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-xl font-black uppercase text-[10px] tracking-widest">
-            Gestionar Almacenamiento
-          </Button>
+          <Link href="/dashboard/plan">
+            <Button variant="outline" className="h-12 border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all active:scale-95">
+              Gestionar Almacenamiento
+            </Button>
+          </Link>
         </div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/[0.03] blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2" />
       </Card>
