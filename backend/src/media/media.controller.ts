@@ -9,8 +9,12 @@ import {
   Query,
   Req,
   Res,
+  Delete,
+  UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UploadsService } from './uploads.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
@@ -274,5 +278,37 @@ QRFoto Events • Memorias en Tiempo Real
       console.error(`[MediaProxy] Error streaming file ${fileKey}:`, err.message);
       res.status(404).send('File not found');
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteMedia(@Param('id') id: string, @Req() req: any) {
+    const mediaItem = await this.mediaRepo.findOne({ where: { id } });
+    if (!mediaItem) {
+      throw new BadRequestException('Media no encontrada');
+    }
+
+    const event = await this.eventsService.findOne(mediaItem.event_id);
+    if (!event) {
+      throw new BadRequestException('Evento no encontrado');
+    }
+
+    // Role check logic based on req.user
+    if (req.user.role !== 'super_admin' && event.userId !== req.user.userId) {
+      throw new UnauthorizedException('No tienes permisos para eliminar esta imagen');
+    }
+
+    // 1. Remove from S3/MinIO
+    if (mediaItem.file_url) {
+      await this.uploadsService.deleteFile(mediaItem.file_url);
+    }
+
+    // 2. Remove from DB
+    await this.mediaRepo.remove(mediaItem);
+
+    // 3. Notify frontend
+    this.eventsGateway.server.to(event.id).emit('mediaDeleted', { id: mediaItem.id });
+
+    return { success: true, message: 'Media removed successfully' };
   }
 }

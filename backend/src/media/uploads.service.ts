@@ -140,6 +140,23 @@ export class UploadsService {
   }
 
   /**
+   * Deletes a single file from S3/MinIO
+   */
+  async deleteFile(fileKey: string): Promise<void> {
+    try {
+      await this.s3Client.send(
+        new S3.DeleteObjectCommand({
+          Bucket: this.bucketName,
+          Key: fileKey,
+        }),
+      );
+      console.log(`[QRFoto-Media] 🗑️ Archivo "${fileKey}" eliminado físicamente.`);
+    } catch (err) {
+      console.error(`[QRFoto-Media] ⚠️ Error deleting file ${fileKey}:`, err.message);
+    }
+  }
+
+  /**
    * Deletes all files within a folder in the bucket.
    * Crucial for freeing up S3/MinIO space.
    */
