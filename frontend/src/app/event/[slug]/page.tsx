@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import Link from "next/link";
 
 const STORAGE_KEY = "qrfoto_guest_identity";
 
