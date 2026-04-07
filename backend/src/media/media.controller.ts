@@ -63,7 +63,7 @@ export class MediaController {
     if (event.status === 'Finished') throw new BadRequestException('This event has already ended.');
 
     // Aplicar Filtro Sanitario silcencioso al mensaje (Fase 1)
-    const message = this.censorMessage(rawMessage);
+    const message = this.censorMessage(rawMessage || "");
 
     // Validación de ALMACENAMIENTO (Guardia de Almacenamiento Inteligente)
     if (event.userId && file) {
