@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getApiUrl, getBaseUrl } from "@/lib/api";
+import { io } from "socket.io-client";
 import { QRCodeSVG } from "qrcode.react";
 import {
   Dialog,
@@ -34,6 +35,10 @@ export default function GuestUploadPage() {
   const { slug } = useParams();
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // Moderation state
+  const [isBanned, setIsBanned] = useState(false);
+  const [deviceId, setDeviceId] = useState<string>("");
 
   // Guest identification state
   const [identity, setIdentity] = useState<GuestIdentity | null>(null);
@@ -71,25 +76,85 @@ export default function GuestUploadPage() {
     }
   };
 
-  useEffect(() => {
-    // Load event data
-    fetch(`${getApiUrl()}/events/slug/${slug}`)
-      .then(res => res.json())
-      .then(data => { 
-        setEvent(data); 
-        setLoading(false); 
-        
-        // Lead Generation Logic
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (data.collect_leads && !stored) {
-            setIsLeadModalOpen(true);
+    let socket: any;
+
+    const initEvent = async () => {
+        // Init Device ID for moderation radar
+        let currentDeviceId = localStorage.getItem('qrfoto_device_id');
+        if (!currentDeviceId) {
+            currentDeviceId = 'dev_' + Math.random().toString(36).substring(2, 15);
+            localStorage.setItem('qrfoto_device_id', currentDeviceId);
         }
-      });
+        setDeviceId(currentDeviceId);
+
+        // Check Ban Status immediately
+        const isBannedLocal = localStorage.getItem(`qrfoto_banned_${slug}`);
+        if (isBannedLocal === "true") {
+            setIsBanned(true);
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${getApiUrl()}/events/slug/${slug}`);
+            const data = await res.json();
+            setEvent(data);
+            setLoading(false);
+
+            // Lead Generation Logic
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (data.collect_leads && !stored) {
+                setIsLeadModalOpen(true);
+            }
+
+            // Real-time tracking
+            const baseUrl = getBaseUrl().replace('http://', '').replace('https://', '').split(':')[0];
+            const port = window.location.hostname === 'localhost' ? ':3001' : '';
+            const socketUrl = window.location.hostname === 'localhost' ? `http://${baseUrl}${port}` : 'https://api.qrfoto.com.mx';
+
+            socket = io(socketUrl);
+            const guestStored = localStorage.getItem(STORAGE_KEY);
+            let guestName = 'Invitado';
+            if (guestStored) {
+                try {
+                   guestName = JSON.parse(guestStored).name || 'Invitado';
+                } catch { }
+            }
+
+            socket.on("connect", () => {
+                socket.emit("joinEvent", { eventId: data.id, deviceId: currentDeviceId, name: guestName });
+            });
+
+            socket.on("guestBlocked", (data: any) => {
+                if (data.deviceId === currentDeviceId) {
+                    setIsBanned(true);
+                    localStorage.setItem(`qrfoto_banned_${slug}`, "true");
+                }
+            });
+
+            socket.on("guestWarned", (data: any) => {
+                if (data.deviceId === currentDeviceId) {
+                    alert("⚠️ Aviso del Anfitrión: Por favor respeta las normas del evento.");
+                }
+            });
+
+            // Fallback reload when media is deleted
+            socket.on("mediaDeleted", () => {
+                fetchMedia();
+            });
+
+        } catch (err) {
+            console.error("Error inicializando evento:", err);
+            setLoading(false);
+        }
+    };
+
+    initEvent();
 
     // Initial media fetch
     fetchMedia();
 
-    // Polling for live updates every 10 seconds
+    // Polling for live updates every 10 seconds (for media only)
     const interval = setInterval(fetchMedia, 10000);
 
     // Check if guest has already identified themselves
@@ -101,7 +166,10 @@ export default function GuestUploadPage() {
       } catch { }
     }
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (socket) socket.disconnect();
+    };
   }, [slug]);
 
   const handleIdentitySubmit = async () => {
@@ -248,7 +316,16 @@ export default function GuestUploadPage() {
         </div>
       </div>
     );
-  }
+  if (isBanned) return (
+    <div className="min-h-[100dvh] flex flex-col items-center justify-center p-6 text-center space-y-6 bg-black text-white relative overflow-hidden">
+      <div className="absolute inset-0 bg-red-900/20 mix-blend-overlay animate-pulse" />
+      <Ban className="w-24 h-24 text-red-600 mb-4" />
+      <h1 className="text-4xl font-black uppercase tracking-tighter italic">Acceso Revocado</h1>
+      <p className="text-white/60 max-w-sm text-sm uppercase tracking-widest font-bold">
+        El organizador de este evento te ha bloqueado permanentemente el acceso a la galería.
+      </p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-purple-500/30 overflow-x-hidden relative font-sans">

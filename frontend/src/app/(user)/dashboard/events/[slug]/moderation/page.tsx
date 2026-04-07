@@ -10,11 +10,15 @@ import {
   AlertTriangle,
   Image as ImageIcon,
   ShieldAlert,
-  ServerCrash
+  ServerCrash,
+  Radio,
+  Ban,
+  MessageSquareWarning
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { getApiUrl, getAuthHeaders } from "@/lib/api";
+import { getApiUrl, getBaseUrl, getAuthHeaders } from "@/lib/api";
+import { io } from "socket.io-client";
 
 export default function ModerationPage() {
   const { slug } = useParams();
@@ -24,7 +28,13 @@ export default function ModerationPage() {
   const [event, setEvent] = useState<any>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // Radar State
+  const [activeGuests, setActiveGuests] = useState<any[]>([]);
+  const [socket, setSocket] = useState<any>(null);
+
   useEffect(() => {
+    let newSocket: any;
+    
     // Cargar info del evento
     fetch(`${getApiUrl()}/events/slug/${slug}`, {
       headers: getAuthHeaders() as any
@@ -33,8 +43,31 @@ export default function ModerationPage() {
       .then(data => {
         setEvent(data);
         fetchMedia();
+
+        // Connect Tracker
+        const baseUrl = getBaseUrl().replace('http://', '').replace('https://', '').split(':')[0];
+        const port = window.location.hostname === 'localhost' ? ':3001' : '';
+        const socketUrl = window.location.hostname === 'localhost' ? `http://${baseUrl}${port}` : 'https://api.qrfoto.com.mx';
+        
+        newSocket = io(socketUrl);
+        setSocket(newSocket);
+        
+        newSocket.on("connect", () => {
+          // Join the room to listen to activeGuestsSync, but we don't send a deviceId since we are not a guest
+          newSocket.emit("joinEvent", { eventId: data.id, name: "Moderador" });
+        });
+
+        newSocket.on("activeGuestsSync", (guests: any[]) => {
+          // Filter out the moderator if needed, or just show all
+          setActiveGuests(guests.filter(g => g.name !== "Moderador"));
+        });
+
       })
       .catch(() => setLoading(false));
+
+    return () => {
+      if (newSocket) newSocket.disconnect();
+    };
   }, [slug]);
 
   const fetchMedia = async () => {
@@ -73,6 +106,20 @@ export default function ModerationPage() {
     }
   };
 
+  const handleWarnUser = (deviceId: string) => {
+    if(!socket || !event) return;
+    if(confirm("⚠️ ¿Enviar amonestación a este usuario?")) {
+        socket.emit("warnGuest", { eventId: event.id, deviceId });
+    }
+  };
+
+  const handleBlockUser = (deviceId: string) => {
+    if(!socket || !event) return;
+    if(confirm("⛔ ¿BLOQUEAR permanentemente a este usuario? Se activará la pantalla negra en su celular.")) {
+        socket.emit("blockGuest", { eventId: event.id, deviceId });
+    }
+  };
+
   if (loading) return (
     <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
       <Loader2 className="w-12 h-12 text-red-500 animate-spin" />
@@ -101,6 +148,57 @@ export default function ModerationPage() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* RADAR DE CONEXIONES LIVE */}
+      <div className="bg-white p-8 rounded-[3rem] border border-zinc-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-[80px] -z-10 translate-x-1/2 -translate-y-1/2" />
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-2xl bg-red-50 flex items-center justify-center">
+            <Radio className="w-5 h-5 text-red-500 animate-pulse" />
+          </div>
+          <h2 className="text-xl font-black italic tracking-tighter text-zinc-900 uppercase">Radar en Vivo</h2>
+          <span className="ml-auto bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full flex items-center gap-2 border border-green-200">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> {activeGuests.length} Conectados
+          </span>
+        </div>
+
+        {activeGuests.length === 0 ? (
+          <div className="py-12 flex flex-col items-center justify-center text-center">
+            <Radio className="w-10 h-10 text-zinc-200 mb-3" />
+            <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest">Nadie subiendo fotos en este momento</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <AnimatePresence>
+              {activeGuests.map((guest) => (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
+                  key={guest.deviceId} 
+                  className="bg-zinc-50 border border-zinc-100 p-5 rounded-[2rem] flex items-center justify-between group hover:bg-white hover:shadow-xl transition-all"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-zinc-200 flex items-center justify-center text-zinc-500 font-black">
+                      {guest.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-black italic tracking-tight">{guest.name}</p>
+                      <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{guest.deviceId.slice(0, 10)}...</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button onClick={() => handleWarnUser(guest.deviceId)} size="icon" variant="ghost" className="h-10 w-10 text-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-xl">
+                      <MessageSquareWarning className="w-4 h-4" />
+                    </Button>
+                    <Button onClick={() => handleBlockUser(guest.deviceId)} size="icon" variant="ghost" className="h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl">
+                      <Ban className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6">
