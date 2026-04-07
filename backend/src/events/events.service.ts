@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Event } from './entities/event.entity';
 import { Media } from '../media/entities/media.entity';
+import { Lead } from '../leads/entities/lead.entity';
 import { UsersService } from '../users/users.service';
 import { UploadsService } from '../media/uploads.service';
 
@@ -88,6 +89,10 @@ export class EventsService {
 
         // BORRADO FÍSICO: Limpiar carpeta de S3/MinIO
         await this.uploadsService.deleteFolder(`events/${event.id}`);
+
+        // LIMPIEZA DB: Borrar media y leads antes del evento para evitar errores de clave foránea
+        await this.eventsRepository.manager.delete(Media, { event_id: id });
+        await this.eventsRepository.manager.delete(Lead, { event_id: id });
 
         await this.eventsRepository.remove(event);
         return { message: 'Event deleted successfully' };

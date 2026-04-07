@@ -41,7 +41,7 @@ export class Media {
   @CreateDateColumn()
   created_at: Date;
 
-  @ManyToOne(() => Event)
+  @ManyToOne(() => Event, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'event_id' })
   event: Event;
 }
