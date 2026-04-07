@@ -11,8 +11,7 @@ export class UploadsService {
 
   constructor(private configService: ConfigService) {
     const minioPort = this.configService.get<string>('MINIO_PORT', '9000');
-    const minioEndpoint = this.configService.get<string>('MINIO_ENDPOINT', '127.0.0.1');
-    const internalEndpoint = `http://${minioEndpoint}:${minioPort}`;
+    const internalEndpoint = `http://localhost:${minioPort}`;
 
     const publicIp = this.configService.get<string>('PUBLIC_IP', 'localhost');
     this.publicBaseUrl = `http://${publicIp}:${minioPort}`;
@@ -126,8 +125,8 @@ export class UploadsService {
         }),
       );
     } catch (err) {
-      console.warn(`[UploadsService] ❌ No se pudo subir a MinIO (¿está encendido?):`, err.message);
-      // No lanzamos error para permitir que la lógica de negocio continúe en local (aunque el archivo no se guarde físicamente)
+      console.error(`[UploadsService] Error sending to MinIO:`, err.message);
+      throw new BadRequestException('Storage service unavailable. Please check if MinIO is running.');
     }
 
     return fileKey;

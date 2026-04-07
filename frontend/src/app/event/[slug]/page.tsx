@@ -110,10 +110,7 @@ export default function GuestUploadPage() {
             }
 
             // Real-time tracking
-            const baseUrl = getBaseUrl().replace('http://', '').replace('https://', '').split(':')[0];
-            const port = window.location.hostname === 'localhost' ? ':3001' : '';
-            const socketUrl = window.location.hostname === 'localhost' ? `http://${baseUrl}${port}` : 'https://api.qrfoto.com.mx';
-
+            const socketUrl = getApiUrl().replace('/api', '');
             socket = io(socketUrl);
             const guestStored = localStorage.getItem(STORAGE_KEY);
             let guestName = 'Invitado';

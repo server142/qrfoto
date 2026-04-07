@@ -45,9 +45,8 @@ export default function ModerationPage() {
         fetchMedia();
 
         // Connect Tracker
-        const baseUrl = getBaseUrl().replace('http://', '').replace('https://', '').split(':')[0];
-        const port = window.location.hostname === 'localhost' ? ':3001' : '';
-        const socketUrl = window.location.hostname === 'localhost' ? `http://${baseUrl}${port}` : 'https://api.qrfoto.com.mx';
+        // Connect Tracker - Usamos la URL de la API directamente como base
+        const socketUrl = getApiUrl().replace('/api', '');
         
         newSocket = io(socketUrl);
         setSocket(newSocket);
@@ -201,7 +200,7 @@ export default function ModerationPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 w-full max-w-none">
         <AnimatePresence>
           {media.length === 0 ? (
             <div className="col-span-full py-20 flex flex-col items-center justify-center border-2 border-dashed border-zinc-200 rounded-[3rem] bg-white text-center">
