@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import * as S3 from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,7 +11,8 @@ export class UploadsService {
 
   constructor(private configService: ConfigService) {
     const minioPort = this.configService.get<string>('MINIO_PORT', '9000');
-    const internalEndpoint = `http://localhost:${minioPort}`;
+    const minioEndpoint = this.configService.get<string>('MINIO_ENDPOINT', '127.0.0.1');
+    const internalEndpoint = `http://${minioEndpoint}:${minioPort}`;
 
     const publicIp = this.configService.get<string>('PUBLIC_IP', 'localhost');
     this.publicBaseUrl = `http://${publicIp}:${minioPort}`;
@@ -33,8 +34,13 @@ export class UploadsService {
   private async ensureBucketPublic() {
     try {
       await this.s3Client.send(new S3.HeadBucketCommand({ Bucket: this.bucketName }));
-    } catch {
-      await this.s3Client.send(new S3.CreateBucketCommand({ Bucket: this.bucketName }));
+    } catch (e) {
+      try {
+        await this.s3Client.send(new S3.CreateBucketCommand({ Bucket: this.bucketName }));
+      } catch (err) {
+        console.warn(`[MinIO] Warning: Could not verify or create bucket ${this.bucketName}. Check if MinIO is running.`, err.message);
+        return; // Don't proceed with policy if bucket doesn't exist
+      }
     }
 
     const publicPolicy = JSON.stringify({
@@ -110,14 +116,19 @@ export class UploadsService {
 
     const fileKey = `${folder}/${uuidv4()}.${finalExtension}`;
 
-    await this.s3Client.send(
-      new S3.PutObjectCommand({
-        Bucket: this.bucketName,
-        Key: fileKey,
-        Body: finalBuffer,
-        ContentType: finalMimeType,
-      }),
-    );
+    try {
+      await this.s3Client.send(
+        new S3.PutObjectCommand({
+          Bucket: this.bucketName,
+          Key: fileKey,
+          Body: finalBuffer,
+          ContentType: finalMimeType,
+        }),
+      );
+    } catch (err) {
+      console.error(`[UploadsService] Error sending to MinIO:`, err.message);
+      throw new BadRequestException('Storage service unavailable. Please check if MinIO is running.');
+    }
 
     return fileKey;
   }
