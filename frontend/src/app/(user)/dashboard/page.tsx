@@ -17,6 +17,12 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [plans, setPlans] = useState<any[]>([]);
+  const [modalStep, setModalStep] = useState<1|2|3>(1);
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [paymentMethods, setPaymentMethods] = useState<any>(null);
+  const [selectedMethod, setSelectedMethod] = useState<'oxxo'|'transfer'|null>(null);
+  const [paymentRef, setPaymentRef] = useState<string>('');
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   const getToken = () => {
     return document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
@@ -69,26 +75,43 @@ export default function UserDashboard() {
     fetchDashboardData();
   }, []);
 
-  const handleCheckout = async (planId: string) => {
+  const openModal = () => {
+    setModalStep(1);
+    setSelectedPlan(null);
+    setSelectedMethod(null);
+    setPaymentRef('');
+    setIsUpgradeModalOpen(true);
+  };
+
+  const handleSelectPlan = async (plan: any) => {
+    setSelectedPlan(plan);
+    // Fetch payment methods
+    const res = await fetch(`${getApiUrl()}/payments/methods`, {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    if (res.ok) setPaymentMethods(await res.json());
+    setModalStep(2);
+  };
+
+  const handleCreateRequest = async () => {
+    if (!selectedPlan || !selectedMethod) return;
+    setPaymentLoading(true);
     try {
-      const response = await fetch(`${getApiUrl()}/payments/checkout`, {
+      const formData = new FormData();
+      formData.append('planId', selectedPlan.id);
+      formData.append('method', selectedMethod);
+      const res = await fetch(`${getApiUrl()}/payments/manual-request`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getToken()}`
-        },
-        body: JSON.stringify({ planId })
+        headers: { 'Authorization': `Bearer ${getToken()}` },
+        body: formData
       });
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else if (data.mode === 'manual') {
-        // Stripe no configurado → ir al flujo de pago manual
-        window.location.href = `/dashboard/plan?planId=${planId}&checkout=manual`;
+      if (res.ok) {
+        const data = await res.json();
+        setPaymentRef(data.reference);
+        setModalStep(3);
       }
-    } catch (err) {
-      console.error("Checkout Error:", err);
-    }
+    } catch(e) { console.error(e); }
+    finally { setPaymentLoading(false); }
   };
 
   const storageUsed = statsData.totalStorageMb || 0;
@@ -120,74 +143,142 @@ export default function UserDashboard() {
       <AnimatePresence>
         {isUpgradeModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              onClick={() => setIsUpgradeModalOpen(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-3xl" 
-            />
-            <motion.div 
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              className="relative bg-zinc-950 border border-white/10 rounded-[3rem] p-8 sm:p-12 max-w-2xl w-full shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsUpgradeModalOpen(false)} className="absolute inset-0 bg-black/80 backdrop-blur-3xl" />
+            <motion.div initial={{ scale: 0.9, y: 20, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }} exit={{ scale: 0.9, y: 20, opacity: 0 }} className="relative bg-zinc-950 border border-white/10 rounded-[3rem] p-8 sm:p-12 max-w-2xl w-full shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden">
               <div className="relative z-10">
-                <div className="flex justify-between items-start mb-10">
-                  <div>
-                    <h2 className="text-4xl sm:text-5xl font-black uppercase italic tracking-tighter leading-none mb-2 text-white">¡Rescate de Gigas!</h2>
-                    <p className="text-white/40 uppercase text-[10px] font-bold tracking-widest italic">Salva tu evento ahora mismo</p>
-                  </div>
-                  <Button variant="ghost" size="icon" onClick={() => setIsUpgradeModalOpen(false)} className="rounded-2xl border border-white/5 hover:bg-white/5 h-12 w-12 transition-all">
-                    <Plus className="w-6 h-6 rotate-45" />
-                  </Button>
-                </div>
 
-                <div className="grid sm:grid-cols-2 gap-6 pb-4">
-                  {/* Option A: Quick Addons */}
-                  {quickAddons.length > 0 ? quickAddons.map(p => (
-                    <div key={p.id} className="bg-amber-500/5 border border-amber-500/20 rounded-[2.5rem] p-8 flex flex-col justify-between group hover:border-amber-500 transition-all">
+                {/* STEP 1: Elegir plan */}
+                {modalStep === 1 && (
+                  <>
+                    <div className="flex justify-between items-start mb-10">
                       <div>
-                        <div className="w-12 h-12 rounded-[1.2rem] bg-amber-500/10 flex items-center justify-center mb-6">
-                            <Zap className="w-6 h-6 text-amber-500" />
-                        </div>
-                        <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 select-none text-white">{p.name}</h3>
-                        <p className="text-[10px] text-amber-400 font-black uppercase tracking-widest mb-6">+{p.storage_limit_mb} MB de por Vida</p>
+                        <h2 className="text-4xl sm:text-5xl font-black uppercase italic tracking-tighter leading-none mb-2 text-white">¡Rescate de Gigas!</h2>
+                        <p className="text-white/40 uppercase text-[10px] font-bold tracking-widest italic">Salva tu evento ahora mismo</p>
                       </div>
-                      <Button onClick={() => handleCheckout(p.id)} className="w-full h-14 bg-amber-500 hover:bg-amber-400 text-black font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-amber-500/10 active:scale-95 transition-all">
-                        Comprar por ${p.price}
+                      <Button variant="ghost" size="icon" onClick={() => setIsUpgradeModalOpen(false)} className="rounded-2xl border border-white/5 hover:bg-white/5 h-12 w-12">
+                        <Plus className="w-6 h-6 rotate-45" />
                       </Button>
                     </div>
-                  )) : (
-                    <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center opacity-40 italic">
-                        <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">No hay paquetes de recarga disponibles</p>
-                    </div>
-                  )}
-
-                  {/* Option B: Plan Upgrade */}
-                  {quickUpgrades.length > 0 ? quickUpgrades.map(p => (
-                    <div key={p.id} className="bg-purple-600/5 border border-purple-600/20 rounded-[2.5rem] p-8 flex flex-col justify-between group hover:border-purple-500 transition-all">
-                      <div>
-                        <div className="w-12 h-12 rounded-[1.2rem] bg-purple-600/10 flex items-center justify-center mb-6">
-                            <ArrowUpCircle className="w-6 h-6 text-purple-400" />
+                    <div className="grid sm:grid-cols-2 gap-6">
+                      {quickAddons.length > 0 ? quickAddons.map(p => (
+                        <div key={p.id} className="bg-amber-500/10 border border-amber-500/30 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-amber-400 transition-all cursor-pointer" onClick={() => handleSelectPlan(p)}>
+                          <div>
+                            <div className="w-12 h-12 rounded-[1.2rem] bg-amber-500/20 flex items-center justify-center mb-6"><Zap className="w-6 h-6 text-amber-400" /></div>
+                            <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 text-white">{p.name}</h3>
+                            <p className="text-[10px] text-amber-400 font-black uppercase tracking-widest mb-6">+{p.storage_limit_mb} MB permanentes</p>
+                          </div>
+                          <Button onClick={() => handleSelectPlan(p)} className="w-full h-14 bg-amber-500 hover:bg-amber-400 text-black font-black uppercase tracking-widest text-[10px] rounded-2xl active:scale-95 transition-all">
+                            Comprar por ${p.price} MXN
+                          </Button>
                         </div>
-                        <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 select-none text-white">Plan {p.name}</h3>
-                        <p className="text-[10px] text-purple-400 font-black uppercase tracking-widest mb-6">Capacidad {p.storage_limit_mb} MB Pro</p>
-                      </div>
-                      <Button onClick={() => handleCheckout(p.id)} className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-purple-600/10 active:scale-95 transition-all">
-                        Upgrade por ${p.price}
+                      )) : (
+                        <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 flex items-center justify-center text-center opacity-40">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white">Sin recargas disponibles</p>
+                        </div>
+                      )}
+                      {quickUpgrades.length > 0 ? quickUpgrades.map(p => (
+                        <div key={p.id} className="bg-purple-600/10 border border-purple-600/30 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-purple-400 transition-all cursor-pointer" onClick={() => handleSelectPlan(p)}>
+                          <div>
+                            <div className="w-12 h-12 rounded-[1.2rem] bg-purple-600/20 flex items-center justify-center mb-6"><ArrowUpCircle className="w-6 h-6 text-purple-400" /></div>
+                            <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 text-white">Plan {p.name}</h3>
+                            <p className="text-[10px] text-purple-400 font-black uppercase tracking-widest mb-6">Capacidad {p.storage_limit_mb} MB Pro</p>
+                          </div>
+                          <Button onClick={() => handleSelectPlan(p)} className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl active:scale-95 transition-all">
+                            Upgrade por ${p.price} MXN
+                          </Button>
+                        </div>
+                      )) : (
+                        <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 flex items-center justify-center text-center opacity-40">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white">Ya tienes el plan máximo</p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* STEP 2: Elegir método de pago */}
+                {modalStep === 2 && selectedPlan && (
+                  <>
+                    <div className="flex justify-between items-center mb-8">
+                      <button onClick={() => setModalStep(1)} className="text-white/40 hover:text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-colors">
+                        ← Volver
+                      </button>
+                      <Button variant="ghost" size="icon" onClick={() => setIsUpgradeModalOpen(false)} className="rounded-2xl border border-white/5 hover:bg-white/5 h-10 w-10">
+                        <Plus className="w-5 h-5 rotate-45" />
                       </Button>
                     </div>
-                  )) : (
-                    <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center opacity-40 italic">
-                        <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">Ya tienes el plan máximo</p>
+                    <div className="mb-8">
+                      <h2 className="text-3xl font-black uppercase italic tracking-tighter text-white mb-1">{selectedPlan.name}</h2>
+                      <p className="text-white/40 text-[10px] font-black uppercase tracking-widest italic">Total a pagar: <span className="text-white">${selectedPlan.price} MXN</span></p>
                     </div>
-                  )}
-                </div>
+                    <p className="text-white/50 uppercase text-[9px] font-black tracking-widest mb-4">Elige tu método de pago:</p>
+                    <div className="grid grid-cols-2 gap-4 mb-8">
+                      <button onClick={() => setSelectedMethod('oxxo')} className={`p-6 rounded-[2rem] border-2 text-center transition-all active:scale-95 ${selectedMethod === 'oxxo' ? 'border-amber-500 bg-amber-500/10' : 'border-white/10 bg-white/5 hover:border-white/20'}`}>
+                        <p className="text-xl font-black text-white mb-1">OXXO</p>
+                        <p className="text-[9px] text-white/40 uppercase font-bold tracking-widest">Pago en tienda</p>
+                      </button>
+                      <button onClick={() => setSelectedMethod('transfer')} className={`p-6 rounded-[2rem] border-2 text-center transition-all active:scale-95 ${selectedMethod === 'transfer' ? 'border-purple-500 bg-purple-500/10' : 'border-white/10 bg-white/5 hover:border-white/20'}`}>
+                        <p className="text-xl font-black text-white mb-1">Transferencia</p>
+                        <p className="text-[9px] text-white/40 uppercase font-bold tracking-widest">SPEI / Banco</p>
+                      </button>
+                    </div>
+                    <Button onClick={handleCreateRequest} disabled={!selectedMethod || paymentLoading} className="w-full h-14 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-2xl active:scale-95 transition-all disabled:opacity-30">
+                      {paymentLoading ? <Loader2 className="animate-spin w-5 h-5" /> : 'Ver datos de pago →'}
+                    </Button>
+                  </>
+                )}
+
+                {/* STEP 3: Datos de pago y referencia */}
+                {modalStep === 3 && (
+                  <>
+                    <div className="text-center mb-8">
+                      <div className="w-16 h-16 rounded-[1.5rem] bg-green-500/10 border border-green-500/20 flex items-center justify-center mx-auto mb-4">
+                        <span className="text-2xl">✓</span>
+                      </div>
+                      <h2 className="text-3xl font-black uppercase italic tracking-tighter text-white mb-1">¡Pedido Generado!</h2>
+                      <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Realiza el pago y envía el comprobante</p>
+                    </div>
+                    <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 mb-6 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Plan</span>
+                        <span className="text-sm font-black text-white">{selectedPlan?.name}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Total</span>
+                        <span className="text-sm font-black text-white">${selectedPlan?.price} MXN</span>
+                      </div>
+                      <div className="h-px bg-white/5" />
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Referencia</span>
+                        <span className="text-sm font-black text-amber-400 tracking-widest">{paymentRef}</span>
+                      </div>
+                      {selectedMethod === 'oxxo' && paymentMethods?.oxxo && (
+                        <>
+                          <div className="h-px bg-white/5" />
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">Tarjeta OXXO</span>
+                            <span className="text-sm font-black text-white">{paymentMethods.oxxo.card_number}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">A nombre de</span>
+                            <span className="text-sm font-black text-white">{paymentMethods.oxxo.account_holder}</span>
+                          </div>
+                        </>
+                      )}
+                      {selectedMethod === 'transfer' && paymentMethods?.ventanilla && (
+                        <>
+                          <div className="h-px bg-white/5" />
+                          <p className="text-[10px] text-white/60 font-bold leading-relaxed">{paymentMethods.ventanilla.details}</p>
+                        </>
+                      )}
+                    </div>
+                    <p className="text-center text-[9px] text-white/30 uppercase font-bold tracking-widest mb-6">Incluye tu referencia <span className="text-amber-400">{paymentRef}</span> al enviar tu comprobante</p>
+                    <Button onClick={() => setIsUpgradeModalOpen(false)} className="w-full h-12 bg-white/10 hover:bg-white/20 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all">
+                      Entendido, iré a pagar
+                    </Button>
+                  </>
+                )}
               </div>
-              
-              {/* Decoration */}
               <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/3" />
             </motion.div>
           </div>
@@ -242,7 +333,7 @@ export default function UserDashboard() {
             </div>
           </div>
 
-          <Button variant="outline" onClick={() => setIsUpgradeModalOpen(true)} className="h-12 border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all active:scale-95">
+          <Button variant="outline" onClick={openModal} className="h-12 border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all active:scale-95">
             Gestionar Almacenamiento
           </Button>
         </div>
