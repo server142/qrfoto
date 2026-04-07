@@ -53,14 +53,14 @@ export default function LandingPage() {
             <Logo size="md" />
           </div>
 
-          <div className="hidden lg:flex items-center gap-6 text-[10px] font-black uppercase tracking-wider text-zinc-400">
+          <div className="hidden lg:flex items-center gap-6 lg:gap-10 text-[10px] lg:text-[14px] font-black uppercase tracking-wider text-zinc-400">
             <a href="#como-funciona" className="hover:text-purple-600 transition-colors uppercase">{t.nav.features}</a>
             <a href="#beneficios" className="hover:text-purple-600 transition-colors uppercase">{t.landing.benefits.control}</a>
             <a href="#precios" className="hover:text-purple-600 transition-colors uppercase">{t.nav.pricing}</a>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/login" className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-zinc-900 px-4 sm:px-5 py-2.5 rounded-full bg-white border border-zinc-100 hover:border-purple-600 hover:text-purple-600 transition-all shadow-xl hover:shadow-purple-600/10 active:scale-95 leading-none">
+          <div className="flex items-center gap-2 sm:gap-4 lg:gap-6">
+            <Link href="/login" className="text-[9px] sm:text-[10px] lg:text-[13px] font-black uppercase tracking-widest text-zinc-900 px-4 sm:px-5 lg:px-7 py-2.5 lg:py-3.5 rounded-full bg-white border border-zinc-100 hover:border-purple-600 hover:text-purple-600 transition-all shadow-xl hover:shadow-purple-600/10 active:scale-95 leading-none">
               {t.login.cta}
             </Link>
 
@@ -69,7 +69,7 @@ export default function LandingPage() {
             </div>
 
             <Link href="/register" className="hidden xl:block">
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6 h-10 text-[9px] sm:text-[10px] font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6 xl:px-8 h-10 xl:h-12 text-[9px] sm:text-[10px] xl:text-[13px] font-black uppercase tracking-widest shadow-xl shadow-purple-600/20 active:scale-95 transition-all">
                 {language === 'es' ? "REGÍSTRATE" : "SIGN UP"}
               </Button>
             </Link>
