@@ -118,6 +118,8 @@ export class EventsService {
             totalStorageMb: Math.round(totalStorageBytes / (1024 * 1024) * 100) / 100,
             interactions: totalPhotos * 3, // Mock
         };
+    }
+
     async getUserStorageUsage(userId: string) {
         const userData = await this.usersService.getMe(userId);
         if (!userData) return { usageMb: 0, limitMb: 0, isFull: false };
