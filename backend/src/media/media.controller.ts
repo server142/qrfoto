@@ -29,6 +29,20 @@ export class MediaController {
     @InjectRepository(Media) private readonly mediaRepo: Repository<Media>
   ) { }
 
+  private censorMessage(text: string): string {
+    if (!text) return text;
+    // Diccionario de FASE 1 - Opción A Silenciosa
+    const badWords = [
+      'puto', 'puta', 'putos', 'putas', 'pendejo', 'pendeja', 'pendejos', 'pendejas', 
+      'cabron', 'cabrón', 'cabrones', 'chinga', 'chingar', 'verga', 'vergazo', 
+      'culo', 'culero', 'culera', 'mierda', 'pinche', 'joto', 'maricon', 'maricón', 
+      'zorra', 'perra'
+    ];
+    // Replace whole words, case-insensitive
+    const regex = new RegExp(`\\b(${badWords.join('|')})\\b`, 'gi');
+    return text.replace(regex, '***');
+  }
+
   @Post(':slug/upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadMedia(
@@ -36,13 +50,16 @@ export class MediaController {
     @UploadedFile() file: Express.Multer.File,
     @Query('guest_name') guestName?: string,
     @Query('guest_email') guestEmail?: string,
-    @Query('message') message?: string,
+    @Query('message') rawMessage?: string,
   ) {
-    if (!file && !message) throw new BadRequestException('No file or message uploaded');
+    if (!file && !rawMessage) throw new BadRequestException('No file or message uploaded');
 
     const event = await this.eventsService.findOneBySlug(slug);
     if (!event) throw new BadRequestException('Event invalid');
     if (event.status === 'Finished') throw new BadRequestException('This event has already ended.');
+
+    // Aplicar Filtro Sanitario silcencioso al mensaje (Fase 1)
+    const message = this.censorMessage(rawMessage);
 
     // Validación de ALMACENAMIENTO (Guardia de Almacenamiento Inteligente)
     if (event.userId && file) {
