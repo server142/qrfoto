@@ -10,9 +10,11 @@ import { SystemSettings } from '../admin/entities/system-settings.entity';
 import { UploadsService } from '../media/uploads.service';
 import { PromocodesModule } from '../promocodes/promocodes.module';
 
+import { User } from '../users/entities/user.entity';
+
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Plan, Subscription, PaymentRequest, SystemSettings]),
+    TypeOrmModule.forFeature([Plan, Subscription, PaymentRequest, SystemSettings, User]),
     MulterModule.register({ limits: { fileSize: 10 * 1024 * 1024 } }), // 10MB limit
     PromocodesModule
   ],

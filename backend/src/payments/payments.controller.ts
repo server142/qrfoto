@@ -10,6 +10,8 @@ import { PaymentRequest, PaymentRequestStatus, PaymentMethod } from './entities/
 import { UploadsService } from '../media/uploads.service';
 import { SystemSettings } from '../admin/entities/system-settings.entity';
 import { PromocodesService } from '../promocodes/promocodes.service';
+import { PlanType } from '../plans/entities/plan.entity';
+import { User } from '../users/entities/user.entity';
 
 @Controller('api/payments')
 export class PaymentsController {
@@ -20,6 +22,7 @@ export class PaymentsController {
     @InjectRepository(Subscription) private subRepo: Repository<Subscription>,
     @InjectRepository(PaymentRequest) private paymentRequestRepo: Repository<PaymentRequest>,
     @InjectRepository(SystemSettings) private settingsRepo: Repository<SystemSettings>,
+    @InjectRepository(User) private userRepo: Repository<User>,
     private readonly promocodesService: PromocodesService,
   ) { }
 
@@ -173,18 +176,27 @@ export class PaymentsController {
   @Put('admin/requests/:id/approve')
   @UseGuards(JwtAuthGuard)
   async approveRequest(@Param('id') id: string, @Body() body: { notes?: string }) {
-    const pr = await this.paymentRequestRepo.findOne({ where: { id } });
+    const pr = await this.paymentRequestRepo.findOne({ where: { id }, relations: ['plan'] });
     if (!pr) throw new HttpException('Solicitud no encontrada', HttpStatus.NOT_FOUND);
 
-    // Activate subscription
-    await this.subRepo.update({ user_id: pr.user_id }, { status: SubscriptionStatus.EXPIRED });
-    const sub = this.subRepo.create({
-      user_id: pr.user_id,
-      plan_id: pr.plan_id,
-      status: SubscriptionStatus.ACTIVE,
-      starts_at: new Date(),
-    });
-    await this.subRepo.save(sub);
+    // Si es una recarga de gigas (Storage Addon)
+    if (pr.plan?.type === PlanType.STORAGE_ADDON) {
+      const user = await this.userRepo.findOne({ where: { id: pr.user_id } });
+      if (user) {
+        user.extra_storage_mb = (user.extra_storage_mb || 0) + (pr.plan.storage_limit_mb || 0);
+        await this.userRepo.save(user);
+      }
+    } else {
+      // Si es un cambio de plan normal
+      await this.subRepo.update({ user_id: pr.user_id }, { status: SubscriptionStatus.EXPIRED });
+      const sub = this.subRepo.create({
+        user_id: pr.user_id,
+        plan_id: pr.plan_id,
+        status: SubscriptionStatus.ACTIVE,
+        starts_at: new Date(),
+      });
+      await this.subRepo.save(sub);
+    }
 
     // Update request status
     pr.status = PaymentRequestStatus.APPROVED;

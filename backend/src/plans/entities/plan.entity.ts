@@ -5,6 +5,7 @@ export enum PlanType {
   MONTHLY = 'Monthly',
   ANNUAL = 'Annual',
   PAY_PER_EVENT = 'Pay-per-event',
+  STORAGE_ADDON = 'Storage-addon',
 }
 
 @Entity('plans')

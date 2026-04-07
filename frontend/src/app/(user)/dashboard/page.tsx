@@ -14,6 +14,8 @@ export default function UserDashboard() {
   const [statsData, setStatsData] = useState<any>({ totalEvents: 0, totalPhotos: 0, interactions: 0, totalStorageMb: 0 });
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [plans, setPlans] = useState<any[]>([]);
 
   const getToken = () => {
     return document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
@@ -30,6 +32,13 @@ export default function UserDashboard() {
         if (meRes.ok) {
           const uData = await meRes.json();
           setUserData(uData);
+        }
+
+        // Fetch Plans for the Quick Upgrade
+        const plansRes = await fetch(`${getApiUrl()}/plans`);
+        if (plansRes.ok) {
+          const pData = await plansRes.json();
+          setPlans(pData);
         }
 
         // Fetch Events
@@ -59,6 +68,25 @@ export default function UserDashboard() {
     fetchDashboardData();
   }, []);
 
+  const handleCheckout = async (planId: string) => {
+    try {
+      const response = await fetch(`${getApiUrl()}/payments/checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ planId })
+      });
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Checkout Error:", err);
+    }
+  };
+
   const storageUsed = statsData.totalStorageMb || 0;
   const storageLimit = userData?.limits?.storageLimitMb || 0;
   const storagePercent = storageLimit > 0 ? Math.min(100, (storageUsed / storageLimit) * 100) : 0;
@@ -68,6 +96,10 @@ export default function UserDashboard() {
     { title: t.user_dashboard.stats.total_photos, value: statsData.totalPhotos.toString(), icon: ImageIcon, color: "text-purple-400" },
     { title: "Almacenamiento (MB)", value: `${storageUsed} / ${storageLimit} MB`, icon: Zap, color: storagePercent > 90 ? "text-red-400" : (storagePercent > 70 ? "text-amber-500" : "text-amber-400") },
   ];
+
+  // Filtrar planes para el modal de rescate
+  const quickAddons = plans.filter(p => p.type === 'Storage-addon');
+  const quickUpgrades = plans.filter(p => p.type !== 'Storage-addon' && p.price > 0 && p.storage_limit_mb > storageLimit).slice(0, 1);
 
   const recentEvents = [...events].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 3);
 
@@ -80,6 +112,84 @@ export default function UserDashboard() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* QUICK UPGRADE MODAL */}
+      <AnimatePresence>
+        {isUpgradeModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => setIsUpgradeModalOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-3xl" 
+            />
+            <motion.div 
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              className="relative bg-zinc-950 border border-white/10 rounded-[3rem] p-8 sm:p-12 max-w-2xl w-full shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden"
+            >
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-10">
+                  <div>
+                    <h2 className="text-4xl sm:text-5xl font-black uppercase italic tracking-tighter leading-none mb-2 text-white">¡Rescate de Gigas!</h2>
+                    <p className="text-white/40 uppercase text-[10px] font-bold tracking-widest italic">Salva tu evento ahora mismo</p>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setIsUpgradeModalOpen(false)} className="rounded-2xl border border-white/5 hover:bg-white/5 h-12 w-12 transition-all">
+                    <Plus className="w-6 h-6 rotate-45" />
+                  </Button>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-6 pb-4">
+                  {/* Option A: Quick Addons */}
+                  {quickAddons.length > 0 ? quickAddons.map(p => (
+                    <div key={p.id} className="bg-amber-500/5 border border-amber-500/20 rounded-[2.5rem] p-8 flex flex-col justify-between group hover:border-amber-500 transition-all">
+                      <div>
+                        <div className="w-12 h-12 rounded-[1.2rem] bg-amber-500/10 flex items-center justify-center mb-6">
+                            <Zap className="w-6 h-6 text-amber-500" />
+                        </div>
+                        <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 select-none">Recarga Extra</h3>
+                        <p className="text-[10px] text-amber-500/60 font-black uppercase tracking-widest mb-6">+{p.storage_limit_mb} MB de por Vida</p>
+                      </div>
+                      <Button onClick={() => handleCheckout(p.id)} className="w-full h-14 bg-amber-500 hover:bg-amber-400 text-black font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-amber-500/10 active:scale-95 transition-all">
+                        Comprar por ${p.price}
+                      </Button>
+                    </div>
+                  )) : (
+                    <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center opacity-40 italic">
+                        <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">No hay paquetes de recarga disponibles</p>
+                    </div>
+                  )}
+
+                  {/* Option B: Plan Upgrade */}
+                  {quickUpgrades.length > 0 ? quickUpgrades.map(p => (
+                    <div key={p.id} className="bg-purple-600/5 border border-purple-600/20 rounded-[2.5rem] p-8 flex flex-col justify-between group hover:border-purple-500 transition-all">
+                      <div>
+                        <div className="w-12 h-12 rounded-[1.2rem] bg-purple-600/10 flex items-center justify-center mb-6">
+                            <ArrowUpCircle className="w-6 h-6 text-purple-400" />
+                        </div>
+                        <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1 select-none">Plan {p.name}</h3>
+                        <p className="text-[10px] text-purple-400/60 font-black uppercase tracking-widest mb-6">Capacidad {p.storage_limit_mb} MB Pro</p>
+                      </div>
+                      <Button onClick={() => handleCheckout(p.id)} className="w-full h-14 bg-purple-600 hover:bg-purple-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-purple-600/10 active:scale-95 transition-all">
+                        Upgrade por ${p.price}
+                      </Button>
+                    </div>
+                  )) : (
+                    <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center opacity-40 italic">
+                        <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">Ya tienes el plan máximo</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Decoration */}
+              <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/3" />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-zinc-950/50 p-6 sm:p-8 rounded-[2rem] border border-white/5 gap-6 sm:gap-4 overflow-hidden relative">
         <div className="relative z-10 w-full sm:w-auto">
           <h2 className="text-2xl sm:text-4xl font-black uppercase italic tracking-tighter text-white leading-none mb-2">{t.user_dashboard.title}</h2>
@@ -128,11 +238,9 @@ export default function UserDashboard() {
             </div>
           </div>
 
-          <Link href="/dashboard/plan">
-            <Button variant="outline" className="h-12 border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all active:scale-95">
-              Gestionar Almacenamiento
-            </Button>
-          </Link>
+          <Button variant="outline" onClick={() => setIsUpgradeModalOpen(true)} className="h-12 border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all active:scale-95">
+            Gestionar Almacenamiento
+          </Button>
         </div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/[0.03] blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2" />
       </Card>
